@@ -34,7 +34,7 @@ export const IsAuthProvider = ({ children }: any) => {
                 const decodedToken = await jwt.decode(token, { complete: true });
                 if (!decodedToken) {
                     localStorage.removeItem(token);
-                    router.push("/");
+                    router.push("/login");
                     return true; // Le token est invalide ou expiré
                 }
 

@@ -1,4 +1,3 @@
-// pages/profil.js
 "use client";
 import Head from 'next/head';
 import Link from 'next/link';
@@ -16,6 +15,12 @@ export default function ProfilPage() {
     // Code de récupération des données du profil, si nécessaire
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('pseudo');
+    router.push('/');
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Head>
@@ -27,9 +32,9 @@ export default function ProfilPage() {
       <header className="bg-green-500 py-4 px-6">
         <div className="flex items-center justify-between">
           <h1 className="text-white text-2xl font-bold">Accueil</h1>
-          <Link href="/">
-            <p className="text-white">Déconnexion</p>
-          </Link>
+          <p onClick={handleLogout} className="text-white cursor-pointer">
+            Déconnexion
+          </p>
         </div>
       </header>
 

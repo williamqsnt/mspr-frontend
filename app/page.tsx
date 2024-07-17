@@ -1,87 +1,76 @@
-// pages/login.js
+// pages/accueil.js
 "use client";
-import { useState } from 'react';
-import axios from 'axios';
+// pages/accueil.js
+import { CalendarIcon, FlowerIcon, MailIcon, MenuIcon, PlusIcon, UserIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export default function LoginPage() {
+export default function HomePage() {
   const router = useRouter();
+  const [isBotanist, setIsBotanist] = useState(false);
 
-  const [pseudo, setPseudo] = useState('');
-  const [motDePasse, setMotDePasse] = useState('');
-  const [error, setError] = useState('');
+  useEffect(() => {
+    fetchUserType();
+  }, []);
 
-  const handleLogin = async () => {
+  const fetchUserType = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', null, {
-        params: {
-          pseudo: pseudo,
-          motDePasse: motDePasse,
-        },
-      });
+      const response = await fetch(`http://15.237.169.255:3000/api/botaniste/estBotaniste?psd_utl=${pseudo}`);
+      // const response = await fetch(`http://localhost:3000/api/botaniste/estBotaniste?psd_utl=${pseudo}`);
 
-      const responseData = response.data;
-
-      if (responseData.token) {
-        console.log('Utilisateur trouvé');
-
-        // Sauvegarder le pseudo et le token JWT dans localStorage
-        localStorage.setItem('pseudo', pseudo);
-        localStorage.setItem('token', responseData.token);
-
-        router.push('/accueil');
+      if (response.ok) {
+        setIsBotanist(true);
       } else {
-        console.log('Utilisateur non trouvé');
-        setError('Utilisateur non trouvé.');
+        setIsBotanist(false);
       }
     } catch (error) {
-      console.error('Erreur de connexion:', error.message);
-      setError('Erreur de connexion.');
+      console.error('Erreur lors de la récupération du type utilisateur:', error);
+      setIsBotanist(false);
     }
   };
 
-  const navigateToSignUp = () => {
-    router.push('/inscription');
+  const handleNavigation = (route:any) => {
+    router.push(route);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md h-[100vh]">
-        <h1 className="text-green-600 font-bold text-6">Arrosaje</h1>
-        <div className="flex justify-center mb-8">
-          <img src="/logo.jpg" alt="Logo" className="w-32 h-32 bg-white" />
+    <div className="flex flex-col h-screen bg-background">
+      <header className="flex items-center justify-between px-4 py-3 bg-green-600 text-primary-foreground">
+        Arrosaje
+        <div className="flex items-center gap-4">
+          <button className="focus:outline-none" onClick={() => handleNavigation('/messages')}>
+            <MailIcon className="w-6 h-6" />
+            <span className="sr-only">Messages</span>
+          </button>
+          <button className="focus:outline-none" onClick={() => handleNavigation('/profile')}>
+            <UserIcon className="w-6 h-6" />
+            <span className="sr-only">Profile</span>
+          </button>
         </div>
-        <h2 className="text-3xl font-bold text-center mb-8">S'identifier</h2>
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Utilisateur"
-            value={pseudo}
-            onChange={(e) => setPseudo(e.target.value)}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+      </header>
+      <main className="flex-1 grid grid-cols-2 gap-4 p-4">
+        <Link href="/chercher-plantes">
+          <p className="flex flex-col items-center justify-center h-32 rounded-lg bg-white border border-gray-300 hover:bg-gray-100 focus:outline-none">
+            <FlowerIcon className="w-8 h-8 mb-2" />
+            <span>Chercher des plantes</span>
+          </p>
+        </Link>
         <button
-          onClick={handleLogin}
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="flex flex-col items-center justify-center h-32 rounded-lg bg-white border border-gray-300 hover:bg-gray-100 focus:outline-none"
+          onClick={() => handleNavigation('/mes-gardiennages')}
         >
-          Connexion
+          <CalendarIcon className="w-8 h-8 mb-2" />
+          <span>Mes gardiennages</span>
         </button>
+      </main>
+      {/* Bouton "+" au milieu en bas */}
+      <div className="flex justify-center pb-8">
         <button
-          onClick={navigateToSignUp}
-          className="mt-4 w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center justify-center w-16 h-16 bg-green-600 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary-dark focus:outline-none"
+          onClick={() => handleNavigation('/demande-gardiennage')}
         >
-          Inscription
+          <PlusIcon className="w-8 h-8 text-white" />
         </button>
       </div>
     </div>

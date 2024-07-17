@@ -111,7 +111,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className=" min-h-screen">
       <Head>
         <title>Ajouter une nouvelle plante</title>
       </Head>
