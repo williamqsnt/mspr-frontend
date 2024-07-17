@@ -53,7 +53,7 @@ export default function MessagesPage() {
   const getId = async (pseudo) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/utilisateurs/id?psd_utl=${pseudo}`
+        `http://localhost:3000/api/utilisateur/id?psd_utl=${pseudo}`
       );
       if (response.ok) {
         const jsonData = await response.json();
@@ -73,7 +73,7 @@ export default function MessagesPage() {
     }
     try {
       const response = await fetch(
-        `http://localhost:3000/api/utilisateurs/pseudo?id_utl=${userId}`
+        `http://localhost:3000/api/utilisateur/pseudo?id_utl=${userId}`
       );
       if (response.ok) {
         const jsonData = await response.json();

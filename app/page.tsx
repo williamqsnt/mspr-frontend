@@ -1,6 +1,5 @@
 // pages/login.js
 "use client";
-// pages/login.js
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -14,7 +13,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/utilisateurs/verifier', {
+      const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', {
         psd_utl: pseudo,
         mdp_utl: motDePasse,
       });
@@ -24,15 +23,16 @@ export default function LoginPage() {
       if (responseData.token) {
         console.log('Utilisateur trouvé');
 
-        // Sauvegarder le pseudo dans localStorage
+        // Sauvegarder le pseudo et le token JWT dans localStorage
         localStorage.setItem('pseudo', pseudo);
+        localStorage.setItem('token', responseData.token);
 
         router.push('/accueil');
       } else {
         console.log('Utilisateur non trouvé');
         setError('Utilisateur non trouvé.');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error('Erreur de connexion:', error.message);
       setError('Erreur de connexion.');
     }

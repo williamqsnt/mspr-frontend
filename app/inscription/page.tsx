@@ -1,30 +1,30 @@
-"use client";
-import React, { useState } from "react";
-import axios from "axios";
-import { ArrowLeft } from "lucide-react";
+'use client';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Inscription() {
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
-  const [age, setAge] = useState("");
-  const [numero, setNumero] = useState("");
-  const [email, setEmail] = useState("");
-  const [adresse, setAdresse] = useState("");
-  const [pseudo, setPseudo] = useState("");
-  const [motDePasse, setMotDePasse] = useState("");
+  const [nom, setNom] = useState('');
+  const [prenom, setPrenom] = useState('');
+  const [dateNaissance, setDateNaissance] = useState(''); // Utilisation de date de naissance au lieu de l'âge
+  const [numero, setNumero] = useState('');
+  const [email, setEmail] = useState('');
+  const [adresse, setAdresse] = useState('');
+  const [pseudo, setPseudo] = useState('');
+  const [motDePasse, setMotDePasse] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [errorDialog, setErrorDialog] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInscription = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/utilisateurs/ajouter",
+        'http://localhost:3000/api/utilisateur/ajouter',
         {
           nom_utl: nom,
           pre_ult: prenom,
-          age_utl: age,
+          date_naissance: dateNaissance, // Utilisation de date de naissance au lieu de l'âge
           num_utl: numero,
           eml_utl: email,
           adr_utl: adresse,
@@ -33,11 +33,11 @@ export default function Inscription() {
         }
       );
 
-      console.log("Utilisateur ajouté avec succès");
+      console.log('Utilisateur ajouté avec succès');
       handleCloseDialog();
     } catch (error: any) {
-      console.error("Erreur lors de l'ajout de l'utilisateur:", error.message);
-      setErrorMessage("Erreur lors de l'ajout de l'utilisateur");
+      console.error('Erreur lors de l\'ajout de l\'utilisateur:', error.message);
+      setErrorMessage('Erreur lors de l\'ajout de l\'utilisateur');
       setErrorDialog(true);
     }
   };
@@ -71,7 +71,10 @@ export default function Inscription() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md overflow-hidden">
         <div className="px-6 py-8">
-          <button onClick={() => window.history.back()} className="flex"><ArrowLeft className="mr-2" />Retour </button>
+          <button onClick={() => window.history.back()} className="flex">
+            <ArrowLeft className="mr-2" />
+            Retour
+          </button>
 
           <h2 className="text-3xl font-semibold text-center mb-6 text-green-600">
             Inscription
@@ -111,17 +114,18 @@ export default function Inscription() {
             </div>
             <div>
               <label
-                htmlFor="age"
+                htmlFor="dateNaissance"
                 className="block text-sm font-medium text-gray-700"
               >
-                Âge
+                Date de naissance (MM/JJ/AA)
               </label>
               <input
-                type="number"
-                id="age"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
+                type="text"
+                id="dateNaissance"
+                value={dateNaissance}
+                onChange={(e) => setDateNaissance(e.target.value)}
                 required
+                placeholder="MM/DD/YY"
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -188,6 +192,20 @@ export default function Inscription() {
                 required
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
+              <label
+                htmlFor="mot de passe"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Mot de passe
+              </label>
+              <input
+                type="text"
+                id="pseudo"
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                required
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
             </div>
             <div className="flex items-center">
               <input
@@ -215,9 +233,8 @@ export default function Inscription() {
           </form>
         </div>
         <div
-          className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 ${
-            openDialog ? "block" : "hidden"
-          }`}
+          className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 ${openDialog ? "block" : "hidden"
+            }`}
         >
           <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl mb-4">Conditions d'utilisation</h2>
@@ -241,9 +258,8 @@ export default function Inscription() {
           </div>
         </div>
         <div
-          className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 ${
-            errorDialog ? "block" : "hidden"
-          }`}
+          className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 ${errorDialog ? "block" : "hidden"
+            }`}
         >
           <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl mb-4">Erreur</h2>

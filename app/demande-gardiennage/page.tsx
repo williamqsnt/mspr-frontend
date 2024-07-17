@@ -93,7 +93,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   const getId = async (pseudo: string) => {
     try {
       const response = await axios.get<{ utilisateur: string }>(
-        `http://localhost:3000/api/utilisateurs/id?psd_utl=${pseudo}`
+        `http://localhost:3000/api/utilisateur/id?psd_utl=${pseudo}`
       );
       return response.data.utilisateur.toString();
     } catch (error) {

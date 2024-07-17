@@ -4,7 +4,7 @@ import axios from 'axios';
 // Fonction pour récupérer l'ID de l'utilisateur à partir du pseudo
 async function getId(pseudo:any) {
   try {
-    const url = `http://localhost:3000/api/utilisateurs/id?psd_utl=${encodeURIComponent(pseudo)}`;
+    const url = `http://localhost:3000/api/utilisateur/id?psd_utl=${encodeURIComponent(pseudo)}`;
     const response = await axios.get(url);
 
     if (response.status === 200) {
