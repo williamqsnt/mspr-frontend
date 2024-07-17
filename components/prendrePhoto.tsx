@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import { CameraIcon } from 'lucide-react';
 
-const PrendrePhoto = () => {
+const PrendrePhoto = ({ onPhotoConfirmed }) => {
     const webcamRef = useRef(null);
     const [imageSrc, setImageSrc] = useState(null); // Pour stocker l'image capturée
     const [showWebcam, setShowWebcam] = useState(false); // Pour afficher ou cacher la webcam
@@ -17,8 +17,10 @@ const PrendrePhoto = () => {
     // Capturer une photo depuis la webcam
     const capture = () => {
         const imageSrc = webcamRef.current?.getScreenshot();
-        setImageSrc(imageSrc);
-        setShowPreview(true); // Afficher l'aperçu de l'image capturée
+        if (imageSrc) {
+            setImageSrc(imageSrc);
+            setShowPreview(true); // Show the preview of the captured image
+        }
     };
 
     // Reprendre une nouvelle photo
@@ -27,16 +29,22 @@ const PrendrePhoto = () => {
         setShowPreview(false); // Cacher l'aperçu
     };
 
-    // Confirmer et envoyer l'image vers l'API
-    const confirmPhoto = async () => {
+    // Confirmer et envoyer l'image vers le parent
+    const confirmPhoto = async (e) => {
+        e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/api/plante/ajouterPhoto', { image: imageSrc });
-            console.log('Image uploaded successfully:', response.data);
-            // Ici, vous pourriez ajouter d'autres actions après confirmation, par exemple rediriger l'utilisateur ou afficher un message de succès.
+            if (!imageSrc) {
+                throw new Error("Aucune photo capturée.");
+            }
+
+            await onPhotoConfirmed(imageSrc);
+            setShowWebcam(false);
+            setShowPreview(false);
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error('Error confirming photo:', error);
         }
     };
+
 
     // Fermer la webcam
     const handleCloseWebcam = () => {
@@ -48,7 +56,7 @@ const PrendrePhoto = () => {
     return (
         <div className="relative">
             {!showWebcam && !showPreview && (
-                <button onClick={handleShowWebcam}><CameraIcon /></button>
+                <button onClick={handleShowWebcam}>{imageSrc ? <img src={imageSrc} alt="Captured" className="h-12 object-cover" /> : <CameraIcon />}</button>
             )}
 
             {showWebcam && !showPreview && (

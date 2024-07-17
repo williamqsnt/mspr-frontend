@@ -1,21 +1,12 @@
-// pages/plante/[pseudo].js
 "use client";
-// pages/plante/[pseudo].tsx
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarDaysIcon, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
 
 interface PlantePageProps {
@@ -33,6 +24,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   const [dateFinSelected, setDateFinSelected] = useState<boolean>(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
+  const [photos, setPhotos] = useState(null); // Pour stocker les images capturées
 
   const handleDebutDateChange = (date: Date | Date[]) => {
     const formattedDate = formatDate(date);
@@ -60,9 +52,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
 
   const ajouterPlante = async () => {
     try {
-      if (!espece || !description || !nom || !adresse || !debut || !fin) {
-        throw new Error("Veuillez remplir tous les champs.");
-      }
+      ajouterPhotos(photos);
       const storedPseudo = localStorage.getItem("pseudo");
       if (!storedPseudo) {
         throw new Error("Pseudo non trouvé dans le stockage local.");
@@ -91,6 +81,20 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
     }
   };
 
+  const ajouterPhotos = async (photo: any) => {
+    try {
+      await axios.post('http://localhost:3000/api/plante/ajouterPhoto', { image: photo });
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      throw new Error('Failed to upload photo');
+    }
+  };
+
+
+  useEffect(() => {
+    console.log("Photos updated:", photos);
+  }, [photos]);
+
   const getId = async (pseudo: string) => {
     try {
       const response = await axios.get<{ utilisateur: string }>(
@@ -118,7 +122,6 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
       </Head>
 
       <header className="bg-green-600 py-4 px-6 flex items-center">
-        <button></button>
         <button onClick={() => window.history.back()} className="flex">
           <ChevronLeft className="text-white" />
         </button>
@@ -139,12 +142,9 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
               />
             </div>
             <div className=" mt-4 mx-2 ">
-              <PrendrePhoto />
+              <PrendrePhoto onPhotoConfirmed={setPhotos} />
             </div>
-
           </div>
-
-
 
           <div className="mb-4">
             <Label htmlFor="description">Description</Label>
@@ -167,7 +167,6 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
             />
           </div>
 
-
           <div className="mb-4">
             <Label htmlFor="address">Adresse</Label>
             <Input
@@ -180,37 +179,23 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
           <div className="grid grid-cols-2 gap-6">
             <div className="mb-4">
               <Label htmlFor="start-date">Date de début</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start font-normal"
-                  >
-                    {dateDebutSelected ? debut : "Choisir une date"}
-                    <div className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" onSelect={handleDebutDateChange} />
-                </PopoverContent>
-              </Popover>
+              <Button
+                variant="outline"
+                className="w-full justify-start font-normal"
+                onClick={() => setDateDebutSelected(true)}
+              >
+                {dateDebutSelected ? debut : "Choisir une date"}
+              </Button>
             </div>
             <div className="mb-4">
               <Label htmlFor="end-date">Date de fin</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start font-normal"
-                  >
-                    {dateFinSelected ? fin : "Choisir une date"}
-                    <div className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" onSelect={handleFinDateChange} />
-                </PopoverContent>
-              </Popover>
+              <Button
+                variant="outline"
+                className="w-full justify-start font-normal"
+                onClick={() => setDateFinSelected(true)}
+              >
+                {dateFinSelected ? fin : "Choisir une date"}
+              </Button>
             </div>
           </div>
 
@@ -219,7 +204,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
             onClick={ajouterPlante}
             className="bg-green-600 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md"
           >
-            Ajouter
+            Faire garder ma plante
           </button>
         </form>
 
