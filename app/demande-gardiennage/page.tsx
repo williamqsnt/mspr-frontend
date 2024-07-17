@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarDaysIcon, ChevronLeft } from "lucide-react";
+import PrendrePhoto from "@/components/prendrePhoto";
 
 interface PlantePageProps {
   pseudo: string;
@@ -125,18 +126,26 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
           Ajouter une plante
         </h1>
       </header>
-
       <main className="container mx-auto px-4 py-6">
         <form>
-          <div className="mb-4">
-            <Label htmlFor="species">Espèce de la plante</Label>
-            <Input
-              id="species"
-              placeholder="famille des Rosaceae..."
-              value={espece}
-              onChange={(e) => setEspece(e.target.value)}
-            />
+          <div className="flex items-center w-full">
+            <div className="mb-4 w-full">
+              <Label htmlFor="name">Nom de la plante</Label>
+              <Input
+                id="name"
+                placeholder="Rose..."
+                value={nom}
+                onChange={(e) => setNom(e.target.value)}
+              />
+            </div>
+            <div className=" mt-4 mx-2 ">
+              <PrendrePhoto />
+            </div>
+
           </div>
+
+
+
           <div className="mb-4">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -147,15 +156,18 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
               className="min-h-[100px]"
             />
           </div>
+
           <div className="mb-4">
-            <Label htmlFor="name">Nom de la plante</Label>
+            <Label htmlFor="species">Espèce de la plante</Label>
             <Input
-              id="name"
-              placeholder="Rose..."
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
+              id="species"
+              placeholder="famille des Rosaceae..."
+              value={espece}
+              onChange={(e) => setEspece(e.target.value)}
             />
           </div>
+
+
           <div className="mb-4">
             <Label htmlFor="address">Adresse</Label>
             <Input
