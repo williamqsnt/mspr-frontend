@@ -20,28 +20,17 @@ export default function Inscription() {
   const handleInscription = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/utilisateur/ajouter',
-        {
-          nom_utl: nom,
-          pre_ult: prenom,
-          date_naissance: dateNaissance, // Utilisation de date de naissance au lieu de l'âge
-          num_utl: numero,
-          eml_utl: email,
-          adr_utl: adresse,
-          psd_utl: pseudo,
-          mdp_utl: motDePasse,
-        }
-      );
+        `http://localhost:3000/api/utilisateur/ajouter?nom=${nom}&prenom=${prenom}&dateNaissance=${dateNaissance}&numero=${numero}&email=${email}&adresse=${adresse}&pseudo=${pseudo}&motDePasse=${motDePasse}`
+        );
 
       console.log('Utilisateur ajouté avec succès');
       handleCloseDialog();
-    } catch (error: any) {
-      console.error('Erreur lors de l\'ajout de l\'utilisateur:', error.message);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
       setErrorMessage('Erreur lors de l\'ajout de l\'utilisateur');
       setErrorDialog(true);
     }
   };
-
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };

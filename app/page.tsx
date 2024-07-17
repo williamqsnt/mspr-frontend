@@ -13,9 +13,11 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', {
-        psd_utl: pseudo,
-        mdp_utl: motDePasse,
+      const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', null, {
+        params: {
+          pseudo: pseudo,
+          motDePasse: motDePasse,
+        },
       });
 
       const responseData = response.data;
@@ -32,7 +34,7 @@ export default function LoginPage() {
         console.log('Utilisateur non trouvé');
         setError('Utilisateur non trouvé.');
       }
-    } catch (error:any) {
+    } catch (error) {
       console.error('Erreur de connexion:', error.message);
       setError('Erreur de connexion.');
     }
