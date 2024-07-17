@@ -61,13 +61,12 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
 
       const url =
         `http://localhost:3000/api/plante/ajouter?` +
-        `esp_plt=${encodeURIComponent(espece)}&` +
-        `des_plt=${encodeURIComponent(description)}&` +
-        `nom_plt=${encodeURIComponent(nom)}&` +
-        `adr_plt=${encodeURIComponent(adresse)}&` +
-        `dat_deb_plt=${encodeURIComponent(debut)}&` +
-        `dat_fin_plt=${encodeURIComponent(fin)}&` +
-        `id_proprietaire=${encodeURIComponent(id)}`;
+        `espece=${encodeURIComponent(espece)}&` +
+        `description=${encodeURIComponent(description)}&` +
+        `nom=${encodeURIComponent(nom)}&` +
+        `adresse=${encodeURIComponent(adresse)}&` +
+        `idUtilisateur=${encodeURIComponent(5)}` + 
+        `photoUrl=${encodeURIComponent(photos)}`;
 
       const response = await axios.post(url);
       if (response.status === 200) {
