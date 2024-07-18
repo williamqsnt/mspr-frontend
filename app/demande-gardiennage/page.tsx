@@ -52,23 +52,26 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
 
   const ajouterPlante = async () => {
     try {
-      ajouterPhotos(photos);
-      const storedPseudo = localStorage.getItem("pseudo");
-      if (!storedPseudo) {
-        throw new Error("Pseudo non trouvé dans le stockage local.");
-      }
-      const id = await getId(storedPseudo);
+      // Attendre que les photos soient ajoutées
+      const responsePhoto = await ajouterPhotos(photos);
 
-      const url =
-        `http://localhost:3000/api/plante/ajouter?` +
-        `espece=${encodeURIComponent(espece)}&` +
-        `description=${encodeURIComponent(description)}&` +
-        `nom=${encodeURIComponent(nom)}&` +
-        `adresse=${encodeURIComponent(adresse)}&` +
-        `idUtilisateur=${encodeURIComponent(5)}` + 
-        `photoUrl=${encodeURIComponent(photos)}`;
+      // Construire les paramètres de la requête
+      const params = new URLSearchParams({
+        espece: espece,
+        description: description,
+        nom: nom,
+        adresse: adresse,
+        idUtilisateur: '5', // Remplacez par la valeur appropriée
+        photoUrl: responsePhoto
+      });
 
+      // Construire l'URL avec les paramètres
+      const url = `http://localhost:3000/api/plante/ajouter?${params.toString()}`;
+
+      // Envoyer la requête POST
       const response = await axios.post(url);
+
+      // Vérifier la réponse
       if (response.status === 200) {
         setSuccessDialogOpen(true);
       } else {
@@ -80,19 +83,17 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
     }
   };
 
+
+
   const ajouterPhotos = async (photo: any) => {
     try {
-      await axios.post('http://localhost:3000/api/plante/ajouterPhoto', { image: photo });
+      const response = await axios.post('http://localhost:3000/api/plante/ajouterPhoto', { image: photo });
+      return response.data.imageUrl;
     } catch (error) {
       console.error('Error uploading photo:', error);
       throw new Error('Failed to upload photo');
     }
   };
-
-
-  useEffect(() => {
-    console.log("Photos updated:", photos);
-  }, [photos]);
 
   const getId = async (pseudo: string) => {
     try {
@@ -174,28 +175,6 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
               value={adresse}
               onChange={(e) => setAdresse(e.target.value)}
             />
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="mb-4">
-              <Label htmlFor="start-date">Date de début</Label>
-              <Button
-                variant="outline"
-                className="w-full justify-start font-normal"
-                onClick={() => setDateDebutSelected(true)}
-              >
-                {dateDebutSelected ? debut : "Choisir une date"}
-              </Button>
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="end-date">Date de fin</Label>
-              <Button
-                variant="outline"
-                className="w-full justify-start font-normal"
-                onClick={() => setDateFinSelected(true)}
-              >
-                {dateFinSelected ? fin : "Choisir une date"}
-              </Button>
-            </div>
           </div>
 
           <button
