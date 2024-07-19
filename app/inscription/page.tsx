@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 export default function Inscription() {
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
-  const [dateNaissance, setDateNaissance] = useState(''); // Utilisation de date de naissance au lieu de l'âge
+  const [dateNaissance, setDateNaissance] = useState('');
   const [numero, setNumero] = useState('');
   const [email, setEmail] = useState('');
   const [adresse, setAdresse] = useState('');
@@ -16,12 +16,13 @@ export default function Inscription() {
   const [openDialog, setOpenDialog] = useState(false);
   const [errorDialog, setErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [openRgpdDialog, setOpenRgpdDialog] = useState(false);
 
   const handleInscription = async () => {
     try {
       const response = await axios.post(
         `http://localhost:3000/api/utilisateur/ajouter?nom=${nom}&prenom=${prenom}&dateNaissance=${dateNaissance}&numero=${numero}&email=${email}&adresse=${adresse}&pseudo=${pseudo}&motDePasse=${motDePasse}`
-        );
+      );
 
       console.log('Utilisateur ajouté avec succès');
       handleCloseDialog();
@@ -31,6 +32,7 @@ export default function Inscription() {
       setErrorDialog(true);
     }
   };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
@@ -47,9 +49,37 @@ export default function Inscription() {
     setErrorDialog(false);
   };
 
+  const handleShowRgpdDialog = () => {
+    setOpenRgpdDialog(true);
+  };
+
+  const handleCloseRgpdDialog = () => {
+    setOpenRgpdDialog(false);
+  };
+
+  const isDateValid = (dateStr: string) => {
+    const [day, month, year] = dateStr.split('/').map(Number);
+    if (day > 12 || month > 31 || year > new Date().getFullYear()) {
+      return false;
+    }
+
+    const birthDate = new Date(year, month - 1, day);
+    const ageDiffMs = Date.now() - birthDate.getTime();
+    const ageDate = new Date(ageDiffMs);
+
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    return age >= 18;
+  };
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
     if (!isChecked) {
+      setErrorMessage('Vous devez accepter les conditions d\'utilisation');
+      handleShowErrorDialog();
+      return;
+    }
+    if (!isDateValid(dateNaissance)) {
+      setErrorMessage('Date de naissance invalide ou vous devez avoir plus de 18 ans');
       handleShowErrorDialog();
       return;
     }
@@ -82,6 +112,8 @@ export default function Inscription() {
                 value={nom}
                 onChange={(e) => setNom(e.target.value)}
                 required
+                pattern="[A-Za-z\-]+"
+                title="Le nom ne peut contenir que des lettres et des tirets."
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -98,6 +130,8 @@ export default function Inscription() {
                 value={prenom}
                 onChange={(e) => setPrenom(e.target.value)}
                 required
+                pattern="[A-Za-z\-]+"
+                title="Le prenom ne peut contenir que des lettres et des tirets."
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -106,15 +140,17 @@ export default function Inscription() {
                 htmlFor="dateNaissance"
                 className="block text-sm font-medium text-gray-700"
               >
-                Date de naissance (MM/JJ/AA)
+                Date de naissance (JJ/MM/AAAA)
               </label>
               <input
                 type="text"
                 id="dateNaissance"
                 value={dateNaissance}
                 onChange={(e) => setDateNaissance(e.target.value)}
+                pattern="\d{2}/\d{2}/\d{4}"
+                title="Veuillez entrer une date valide au format JJ/MM/AAAA."
                 required
-                placeholder="MM/DD/YY"
+                placeholder="JJ/MM/AAAA"
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -125,14 +161,22 @@ export default function Inscription() {
               >
                 Numéro de téléphone
               </label>
-              <input
-                type="text"
-                id="numero"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
-                required
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
+            <input
+              type="text"
+              id="numero"
+              value={numero}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d{0,10}$/.test(value)) {
+                  setNumero(value);
+                }
+              }}
+              maxLength={10}
+              pattern="\d{10}"
+              required
+              title="Veuillez entrer un numéro de téléphone valide"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
             </div>
             <div>
               <label
@@ -179,17 +223,19 @@ export default function Inscription() {
                 value={pseudo}
                 onChange={(e) => setPseudo(e.target.value)}
                 required
+                pattern="[A-Za-z\-]+"
+                title="Le pseudo ne peut contenir que des lettres et des tirets."
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
               <label
-                htmlFor="mot de passe"
+                htmlFor="motDePasse"
                 className="block text-sm font-medium text-gray-700"
               >
                 Mot de passe
               </label>
               <input
-                type="text"
-                id="pseudo"
+                type="password"
+                id="motDePasse"
                 value={motDePasse}
                 onChange={(e) => setMotDePasse(e.target.value)}
                 required
@@ -220,6 +266,14 @@ export default function Inscription() {
               </button>
             </div>
           </form>
+          <div className="mt-4 text-center">
+            <button
+              onClick={handleShowRgpdDialog}
+              className="text-green-500 hover:underline"
+            >
+              Voir les conditions d'utilisation et RGPD
+            </button>
+          </div>
         </div>
         <div
           className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 ${openDialog ? "block" : "hidden"
@@ -258,6 +312,28 @@ export default function Inscription() {
               onClick={handleCloseErrorDialog}
             >
               OK
+            </button>
+          </div>
+        </div>
+        <div
+          className={`absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 ${openRgpdDialog ? "block" : "hidden"
+            }`}
+        >
+          <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-2xl mb-4">Conditions d'utilisation et RGPD</h2>
+            <p className="text-sm text-gray-700 mb-4">
+              Nous respectons votre vie privée et nous engageons à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD). Voici nos pratiques en matière de confidentialité :
+            </p>
+            <ul className="list-disc text-sm text-gray-700 mb-4">
+              <li>Nous collectons vos données uniquement pour les besoins de la gestion de votre compte.</li>
+              <li>Vos données sont sécurisées et ne seront pas partagées avec des tiers sans votre consentement.</li>
+              <li>Vous avez le droit d'accéder à vos données, de les rectifier ou de les supprimer.</li>
+            </ul>
+            <button
+              className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+              onClick={handleCloseRgpdDialog}
+            >
+              Fermer
             </button>
           </div>
         </div>
