@@ -24,7 +24,16 @@ export default function Inscription() {
         `http://localhost:3000/api/utilisateur/ajouter?nom=${nom}&prenom=${prenom}&dateNaissance=${dateNaissance}&numero=${numero}&email=${email}&adresse=${adresse}&pseudo=${pseudo}&motDePasse=${motDePasse}`
       );
 
-      console.log('Utilisateur ajouté avec succès');
+      if (response.status === 200) {
+        window.alert('Inscription réussie');
+        // Redirection vers la page de login
+        window.location.href = '/login'; // Assuming your login page is located at '/login'
+      } else {
+        console.error('Erreur lors de l\'ajout de l\'utilisateur: Code retour non 200');
+        setErrorMessage('Erreur lors de l\'ajout de l\'utilisateur');
+        setErrorDialog(true);
+      }
+
       handleCloseDialog();
     } catch (error) {
       console.error('Erreur lors de l\'ajout de l\'utilisateur:', error);
@@ -59,7 +68,7 @@ export default function Inscription() {
 
   const isDateValid = (dateStr: string) => {
     const [day, month, year] = dateStr.split('/').map(Number);
-    if (day > 12 || month > 31 || year > new Date().getFullYear()) {
+    if (day > 31 || month > 12 || year > new Date().getFullYear()) {
       return false;
     }
 

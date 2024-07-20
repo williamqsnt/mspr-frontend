@@ -19,23 +19,9 @@ export default function HomePage() {
   const [plantes, setPlantes] = useState([]);
 
   useEffect(() => {
-    fetchUserType();
     fetchPlantes();
+    fetchIsBotanist();
   }, []);
-
-  const fetchUserType = async () => {
-    try {
-      const response = await fetch(`http://15.237.169.255:3000/api/botaniste/estBotaniste?psd_utl=${pseudo}`);
-      if (response.ok) {
-        setIsBotanist(true);
-      } else {
-        setIsBotanist(false);
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération du type utilisateur:', error);
-      setIsBotanist(false);
-    }
-  };
 
   const fetchPlantes = async () => {
     try {
@@ -48,6 +34,33 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des plantes:', error);
+    }
+  };
+
+  const fetchIsBotanist = async () => {
+    try {
+      const pseudo = localStorage.getItem('pseudo');
+      if (pseudo) {
+        const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`);
+        if (userIdResponse.ok) {
+          const userIdData = await userIdResponse.json();
+          const userId = userIdData.idUtilisateur;
+
+          if (userId) {
+            const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`);
+            if (botanistResponse.ok) {
+              const botanistData = await botanistResponse.json();
+              setIsBotanist(botanistData.estBotaniste);
+            } else {
+              console.error('Erreur lors de la vérification du statut botaniste');
+            }
+          }
+        } else {
+          console.error('Erreur lors de la récupération de l\'ID utilisateur');
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'ID utilisateur et la vérification du statut botaniste:', error);
     }
   };
 
@@ -110,6 +123,14 @@ export default function HomePage() {
         >
           Déposer une plante
         </button>
+        {isBotanist && (
+        <button
+          className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+          onClick={() => handleNavigation('/ajouter-conseil')}
+        >
+          Ajouter un conseil
+        </button>
+      )}
       </main>
       <footer className="flex justify-around py-4 bg-white border-t">
         <button className="focus:outline-none" onClick={() => handleNavigation('/requests')}>

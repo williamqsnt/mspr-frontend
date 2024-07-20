@@ -34,7 +34,7 @@ export default function Login() {
                 console.log('Utilisateur non trouvé');
                 setError('Utilisateur non trouvé.');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Erreur de connexion:', error.message);
             setError('Erreur de connexion.');
         }
