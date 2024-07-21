@@ -133,7 +133,7 @@ export default function HomePage() {
         {isBotanist && (
         <button
           className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
-          onClick={() => handleNavigation('/ajouter-conseil')}
+          onClick={() => handleNavigation('/gardien')}
         >
           Ajouter un conseil
         </button>
