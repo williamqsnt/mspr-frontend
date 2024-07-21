@@ -1,16 +1,14 @@
-"use client";
-import * as React from "react";
+'use client';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { CalendarIcon, FlowerIcon, MailIcon, PlusIcon, UserIcon, SearchIcon } from 'lucide-react';
+} from '@/components/ui/carousel';
+import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -68,6 +66,10 @@ export default function HomePage() {
     router.push(route);
   };
 
+  const handleCardClick = (id) => {
+    router.push(`/plante/${id}`);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
@@ -86,11 +88,16 @@ export default function HomePage() {
       </header>
       <main className="flex-1 p-4">
         <div className="flex items-center mb-4">
-          <input
-            type="text"
-            className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none"
-            placeholder="Trouvez une plante proche de chez vous"
-          />
+          <div className="flex w-full">
+            <input
+              type="text"
+              className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none"
+              placeholder="Trouvez une plante proche de chez vous"
+            />
+            <button className="mx-2" onClick={() => handleNavigation('/chercher-plantes')}>
+              <MapPin />
+            </button>
+          </div>
         </div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold">Plantes à garder</h3>
@@ -104,8 +111,8 @@ export default function HomePage() {
               {plantes.map((plante, index) => (
                 <CarouselItem key={index} className="basis-1/2">
                   <div>
-                    <Card className="border-none shadow-none">
-                      <CardContent className="flex flex-col  h-52 w-52">
+                    <Card className="border-none shadow-none" onClick={() => handleCardClick(plante.idPlante)}>
+                      <CardContent className="flex flex-col h-52 w-52">
                         <img src={plante.photoUrl} alt={plante.nom} className="w-full h-auto object-cover" />
                         <h2 className="text-lg font-bold">{plante.nom}</h2>
                         <p className="text-sm text-gray-600">{plante.adresse}</p>
@@ -136,10 +143,6 @@ export default function HomePage() {
         <button className="focus:outline-none" onClick={() => handleNavigation('/requests')}>
           <CalendarIcon className="w-6 h-6" />
           <span className="block text-xs">Requests</span>
-        </button>
-        <button className="focus:outline-none" onClick={() => handleNavigation('/chercher-plantes')}>
-          <FlowerIcon className="w-6 h-6" />
-          <span className="block text-xs">Find Plants</span>
         </button>
         <button className="focus:outline-none" onClick={() => handleNavigation('/messages')}>
           <MailIcon className="w-6 h-6" />
