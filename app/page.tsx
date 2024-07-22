@@ -11,10 +11,17 @@ import {
 import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 
-export default function HomePage() {
+interface Plante {
+  idPlante: number;
+  nom: string;
+  photoUrl: string;
+  adresse: string;
+}
+
+const HomePage: React.FC = () => {
   const router = useRouter();
-  const [isBotanist, setIsBotanist] = useState(false);
-  const [plantes, setPlantes] = useState([]);
+  const [isBotanist, setIsBotanist] = useState<boolean>(false);
+  const [plantes, setPlantes] = useState<Plante[]>([]);
 
   useEffect(() => {
     fetchPlantes();
@@ -62,11 +69,11 @@ export default function HomePage() {
     }
   };
 
-  const handleNavigation = (route) => {
+  const handleNavigation = (route: string) => {
     router.push(route);
   };
 
-  const handleCardClick = (id) => {
+  const handleCardClick = (id: number) => {
     router.push(`/plante/${id}`);
   };
 
@@ -108,12 +115,12 @@ export default function HomePage() {
         <div className="mt-8">
           <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent className="flex ">
-              {plantes.map((plante, index) => (
-                <CarouselItem key={index} className="basis-1/2">
+              {plantes.map((plante) => (
+                <CarouselItem key={plante.idPlante} className="basis-1/2">
                   <div>
                     <Card className="border-none shadow-none" onClick={() => handleCardClick(plante.idPlante)}>
                       <CardContent className="flex flex-col h-52 w-52">
-                        <img src={plante.photoUrl} alt={plante.nom} className="w-full h-auto object-cover" />
+                        <img src={plante.photoUrl} alt={plante.nom} className="w-full h-48 object-cover" />
                         <h2 className="text-lg font-bold">{plante.nom}</h2>
                         <p className="text-sm text-gray-600">{plante.adresse}</p>
                       </CardContent>
@@ -131,24 +138,17 @@ export default function HomePage() {
           Déposer une plante
         </button>
         {isBotanist && (
-        <button
-          className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
-          onClick={() => handleNavigation('/gardien')}
-        >
-          Ajouter un conseil
-        </button>
-      )}
+          <button
+            className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+            onClick={() => handleNavigation('/gardien')}
+          >
+            Ajouter un conseil
+          </button>
+        )}
       </main>
-      <footer className="flex justify-around py-4 bg-white border-t">
-        <button className="focus:outline-none" onClick={() => handleNavigation('/requests')}>
-          <CalendarIcon className="w-6 h-6" />
-          <span className="block text-xs">Requests</span>
-        </button>
-        <button className="focus:outline-none" onClick={() => handleNavigation('/messages')}>
-          <MailIcon className="w-6 h-6" />
-          <span className="block text-xs">Messages</span>
-        </button>
-      </footer>
+
     </div>
   );
-}
+};
+
+export default HomePage;
