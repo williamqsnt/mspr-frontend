@@ -25,7 +25,7 @@ export default function ProfilPage() {
 
             if (idUtilisateur) {
               // Récupérer les informations du profil et les plantes
-              const profilResponse = await fetch(`http://localhost:3000/api/profil/infos?idUtilisateur=${idUtilisateur}`);
+              const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`);
               if (profilResponse.ok) {
                 const data = await profilResponse.json();
                 setUtilisateur({ nom: data.utilisateur.nom, prenom: data.utilisateur.prenom });
