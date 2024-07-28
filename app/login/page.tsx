@@ -2,6 +2,7 @@
 "use client";
 import { useState } from 'react';
 import axios from 'axios';
+import { encrypt } from "@/utils/cryptoUtils";
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
@@ -13,10 +14,11 @@ export default function Login() {
 
     const handleLogin = async () => {
         try {
+            const encryptedMotDePasse = encrypt(motDePasse);
             const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', null, {
                 params: {
                     pseudo: pseudo,
-                    motDePasse: motDePasse,
+                    motDePasse: encryptedMotDePasse,
                 },
             });
 

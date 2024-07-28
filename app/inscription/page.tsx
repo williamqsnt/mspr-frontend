@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
+import { encrypt } from "@/utils/cryptoUtils";
 import { ArrowLeft } from 'lucide-react';
 
 export default function Inscription() {
@@ -20,8 +21,16 @@ export default function Inscription() {
 
   const handleInscription = async () => {
     try {
+      const encryptedNom = encrypt(nom);
+      const encryptedPrenom = encrypt(prenom);
+      const encryptedDateNaissance = encrypt(dateNaissance);
+      const encryptedNumero = encrypt(numero);
+      const encryptedEmail = encrypt(email);
+      const encryptedAdresse = encrypt(adresse);
+      const encryptedMotDePasse = encrypt(motDePasse);
+
       const response = await axios.post(
-        `http://localhost:3000/api/utilisateur/ajouter?nom=${nom}&prenom=${prenom}&dateNaissance=${dateNaissance}&numero=${numero}&email=${email}&adresse=${adresse}&pseudo=${pseudo}&motDePasse=${motDePasse}`
+       `http://localhost:3000/api/utilisateur/ajouter?nom=${encryptedNom}&prenom=${encryptedPrenom}&dateNaissance=${encryptedDateNaissance}&numero=${encryptedNumero}&email=${encryptedEmail}&adresse=${encryptedAdresse}&pseudo=${pseudo}&motDePasse=${encryptedMotDePasse}`
       );
 
       if (response.status === 200) {
