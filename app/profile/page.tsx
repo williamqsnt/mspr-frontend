@@ -3,7 +3,7 @@ import * as React from "react";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon, FlowerIcon, MailIcon, UserIcon } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, FlowerIcon, MailIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilPage() {
@@ -25,7 +25,7 @@ export default function ProfilPage() {
 
             if (idUtilisateur) {
               // Récupérer les informations du profil et les plantes
-              const profilResponse = await fetch(`http://localhost:3000/api/profil/infos?idUtilisateur=${idUtilisateur}`);
+              const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`);
               if (profilResponse.ok) {
                 const data = await profilResponse.json();
                 setUtilisateur({ nom: data.utilisateur.nom, prenom: data.utilisateur.prenom });
@@ -58,14 +58,15 @@ export default function ProfilPage() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('pseudo');
-    localStorage.removeItem('idUtilisateur'); // Supprimer l'ID utilisateur du localStorage
-    router.push('/');
+    router.push('/login');
   };
 
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
-        <div className="text-xl font-bold">Profil</div>
+        <button onClick={() => window.history.back()} className="flex">
+          <ChevronLeft className="text-black" />
+        </button>
         <div className="flex items-center gap-4">
           <button className="focus:outline-none" onClick={handleLogout}>
             Déconnexion
