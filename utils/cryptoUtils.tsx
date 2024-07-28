@@ -11,10 +11,9 @@ function encrypt(text: string): string {
 }
 
 function decrypt(text: string): string {
-    const textParts = text.split(':');
-    const iv = Buffer.from(textParts.shift() || '', 'hex');
-    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(encryptionKey), iv);
+    const iv = Buffer.from('0123456789abcdef0123456789abcdef', 'hex'); // IV constant
+    const encryptedText = Buffer.from(text, 'hex'); // Le texte est entièrement chiffré
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(encryptionKey, 'hex'), iv);
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
