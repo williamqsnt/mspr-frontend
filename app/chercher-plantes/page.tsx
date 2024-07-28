@@ -46,17 +46,26 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
             "Erreur lors de la récupération des adresses de plantes."
           );
         }
-        const fetchedAddresses: Address[] = await response.json();
+        const responseData = await response.json();
+        console.log("Response data:", responseData);
+  
+        const fetchedAddresses: Address[] = responseData.adresses;
         console.log("Fetched addresses:", fetchedAddresses);
+  
+        // Vérifiez si fetchedAddresses est un tableau
+        if (!Array.isArray(fetchedAddresses)) {
+          throw new TypeError("Les adresses récupérées ne sont pas un tableau.");
+        }
+  
         setAddresses(fetchedAddresses);
-
+  
         const markers = await Promise.all(
           fetchedAddresses.map(async (addressObj) => {
             const coordinates = await getCoordinatesFromAddress(
-              addressObj.address
+              addressObj.adresse // Assurez-vous que c'est bien 'adresse' et non 'address'
             );
             if (coordinates) {
-              return createMarker(coordinates, addressObj.address);
+              return createMarker(coordinates, addressObj.adresse, addressObj.idPlante);
             }
             return null;
           })
@@ -109,7 +118,8 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
 
   function createMarker(
     latLng: LatLngExpression,
-    address: string
+    address: string,
+    idPlante: string
   ): JSX.Element {
     return (
       <Marker key={address} position={latLng}>
@@ -118,7 +128,7 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
             <h2>{address}</h2>
             <p>Latitude: {latLng[0]}</p>
             <p>Longitude: {latLng[1]}</p>
-            <button onClick={() => handlePlantDetails(address)}>
+            <button onClick={() => handlePlantDetails(idPlante)}>
               Voir les détails de la plante
             </button>
           </div>
