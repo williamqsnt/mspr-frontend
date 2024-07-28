@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
 
   const fetchPlantes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/plante/afficherAll');
+      const response = await fetch('http://localhost:3000/api/plante/recupererInfos');
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -133,9 +133,15 @@ const HomePage: React.FC = () => {
         </div>
         <button
           className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
-          onClick={() => handleNavigation('/demande-gardiennage')}
+          onClick={() => handleNavigation('/deposer-plante')}
         >
           Déposer une plante
+        </button>
+        <button
+          className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+          onClick={() => handleNavigation('/plantes-utilisateur')}
+        >
+          Demander un gardiennage
         </button>
         {isBotanist && (
           <button

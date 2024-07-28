@@ -54,6 +54,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
     try {
       // Attendre que les photos soient ajoutées
       const responsePhoto = await ajouterPhotos(photos);
+      const idUtilisateur = localStorage.getItem("idUtilisateur");
 
       // Construire les paramètres de la requête
       const params = new URLSearchParams({
@@ -61,7 +62,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
         description: description,
         nom: nom,
         adresse: adresse,
-        idUtilisateur: '5', // Remplacez par la valeur appropriée
+        idUtilisateur: idUtilisateur ?? "", // Use nullish coalescing operator to provide a default value
         photoUrl: responsePhoto
       });
 

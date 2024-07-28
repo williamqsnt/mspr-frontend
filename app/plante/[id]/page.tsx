@@ -33,7 +33,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         }
 
         const data = await response.json();
-        console.log('Données reçues:', data);
 
         // Trouver la plante correspondant à l'ID
         const planteTrouvee = data.plantes.find((p: Plante) => p.idPlante === parseInt(id));
