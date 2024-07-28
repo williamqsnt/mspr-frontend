@@ -1,7 +1,7 @@
-import crypto from 'crypto';
+import crypto, { randomBytes } from 'crypto';
 
 const encryptionKey: string = "12345678901234567890123456789012"
-const iv: string = "0123456789abcdef"
+const iv: string = randomBytes(16).toString('hex');
 
 function encrypt(text: string): string {
     const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(encryptionKey), Buffer.from(iv));
