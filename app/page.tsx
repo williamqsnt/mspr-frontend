@@ -153,6 +153,28 @@ const HomePage: React.FC = () => {
         )}
       </main>
 
+      <footer className="bg-white shadow-lg">
+      <nav className="flex flex-col items-center w-full">
+      <div className="w-full flex justify-center">
+        <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+      </div>
+        <div className="flex justify-around items-center py-3 w-full">
+          <button className="flex flex-col items-center" onClick={() => handleNavigation('/plantes')}>
+            <img src="/plante.png" alt="Plantes" className="w-6 h-6" />
+            <span className="text-xs mt-1">Plantes</span>
+          </button>
+          <button className="flex flex-col items-center" onClick={() => handleNavigation('/home')}>
+            <img src="/home.png" alt="Accueil" className="w-6 h-6" />
+            <span className="text-xs mt-1">Accueil</span>
+          </button>
+          <button className="flex flex-col items-center" onClick={() => handleNavigation('/messages')}>
+            <img src="/message.png" alt="Messages" className="w-6 h-6" />
+            <span className="text-xs mt-1">Messages</span>
+          </button>
+        </div>
+      </nav>
+    </footer>
+
     </div>
   );
 };
