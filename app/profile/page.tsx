@@ -29,9 +29,9 @@ export default function ProfilPage() {
               const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`);
               if (profilResponse.ok) {
                 const data = await profilResponse.json();
-                const decryptedData = decrypt(data);
-                console.log(decryptedData);
-                setUtilisateur({ nom: data.utilisateur.nom, prenom: data.utilisateur.prenom });
+                const nomdecrypter = decrypt(data.utilisateur.nom);
+                const prenomdecrypter = decrypt(data.utilisateur.prenom);
+                setUtilisateur({ nom: nomdecrypter, prenom: prenomdecrypter });
                 setPlantes(data.plantes);
               } else {
                 console.error('Erreur lors de la récupération du profil');

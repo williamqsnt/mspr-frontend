@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
 
   const fetchPlantes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/plante/afficherAll');
+      const response = await fetch('http://localhost:3000/api/plante/recupererInfos');
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -133,9 +133,15 @@ const HomePage: React.FC = () => {
         </div>
         <button
           className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
-          onClick={() => handleNavigation('/demande-gardiennage')}
+          onClick={() => handleNavigation('/deposer-plante')}
         >
           Déposer une plante
+        </button>
+        <button
+          className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
+          onClick={() => handleNavigation('/plantes-utilisateur')}
+        >
+          Demander un gardiennage
         </button>
         {isBotanist && (
           <button
@@ -146,6 +152,28 @@ const HomePage: React.FC = () => {
           </button>
         )}
       </main>
+
+      <footer className="bg-white shadow-lg">
+      <nav className="flex flex-col items-center w-full">
+      <div className="w-full flex justify-center">
+        <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+      </div>
+        <div className="flex justify-around items-center py-3 w-full">
+          <button className="flex flex-col items-center" onClick={() => handleNavigation('/plantes')}>
+            <img src="/plante.png" alt="Plantes" className="w-6 h-6" />
+            <span className="text-xs mt-1">Plantes</span>
+          </button>
+          <button className="flex flex-col items-center" onClick={() => handleNavigation('/home')}>
+            <img src="/home.png" alt="Accueil" className="w-6 h-6" />
+            <span className="text-xs mt-1">Accueil</span>
+          </button>
+          <button className="flex flex-col items-center" onClick={() => handleNavigation('/messages')}>
+            <img src="/message.png" alt="Messages" className="w-6 h-6" />
+            <span className="text-xs mt-1">Messages</span>
+          </button>
+        </div>
+      </nav>
+    </footer>
 
     </div>
   );

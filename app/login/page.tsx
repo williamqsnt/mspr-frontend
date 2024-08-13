@@ -30,6 +30,7 @@ export default function Login() {
                 // Sauvegarder le pseudo et le token JWT dans localStorage
                 localStorage.setItem('pseudo', pseudo);
                 localStorage.setItem('token', responseData.token);
+                localStorage.setItem('idUtilisateur', responseData.idUtilisateur);
 
                 router.push('/');
             } else {
