@@ -12,6 +12,12 @@ export default function ProfilPage() {
   const [utilisateur, setUtilisateur] = useState({ nom: '', prenom: '' });
   const [plantes, setPlantes] = useState([]);
   const [erreur, setErreur] = useState(null);
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     const fetchProfil = async () => {
@@ -19,14 +25,14 @@ export default function ProfilPage() {
         const pseudo = localStorage.getItem('pseudo');
         if (pseudo) {
           // Récupérer l'ID utilisateur à partir du pseudo
-          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`);
+          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
           if (idResponse.ok) {
             const idData = await idResponse.json();
             const idUtilisateur = idData.idUtilisateur;
 
             if (idUtilisateur) {
               // Récupérer les informations du profil et les plantes
-              const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`);
+              const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, {headers: headers});
               if (profilResponse.ok) {
                 const data = await profilResponse.json();
                 const nomdecrypter = decrypt(data.utilisateur.nom);

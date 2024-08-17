@@ -10,6 +10,12 @@ export default function ConversationsPage() {
   const [conversations, setConversations] = useState([]);
   const [erreur, setErreur] = useState(null);
   const [pseudoLocal, setPseudoLocal] = useState('');
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -18,13 +24,13 @@ export default function ConversationsPage() {
         setPseudoLocal(pseudo);
 
         if (pseudo) {
-          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`);
+          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
           if (idResponse.ok) {
             const idData = await idResponse.json();
             const idUtilisateur = idData.idUtilisateur;
 
             if (idUtilisateur) {
-              const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`);
+              const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, {headers: headers});
               if (conversationResponse.ok) {
                 const data = await conversationResponse.json();
 
@@ -32,10 +38,10 @@ export default function ConversationsPage() {
                   data.conversations.map(async (conversation) => {
                     const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
 
-                    const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`);
+                    const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, {headers: headers});
                     const pseudoData = pseudoResponse.ok ? await pseudoResponse.json() : { pseudo: "Unknown User" };
 
-                    const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`);
+                    const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, {headers: headers});
                     const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
 
                     return { 

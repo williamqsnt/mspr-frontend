@@ -21,12 +21,18 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     const fetchPlante = async () => {
       try {
         if (!id) throw new Error('ID invalide');
-        const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`);
+        const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, {headers: headers});
 
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération des détails de la plante');

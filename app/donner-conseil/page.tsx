@@ -18,6 +18,12 @@ export default function PlanteDetailsPage() {
   const [plante, setPlante] = useState<Plante | null>(null);
   const [conseil, setConseil] = useState('');
   const [userId, setUserId] = useState<number | null>(null);
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     const idPlante = localStorage.getItem('idPlante');
@@ -31,7 +37,7 @@ export default function PlanteDetailsPage() {
       try {
         const pseudo = localStorage.getItem('pseudo');
         if (pseudo) {
-          const response = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`);
+          const response = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
           if (response.ok) {
             const data = await response.json();
             setUserId(data.idUtilisateur);
@@ -52,7 +58,7 @@ export default function PlanteDetailsPage() {
   const fetchPlanteDetails = async (id: string) => {
     try {
       console.log(`Fetching details for plante ID: ${id}`);
-      const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`);
+      const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, {headers: headers});
       if (response.ok) {
         const data = await response.json();
         console.log('Plante details fetched successfully:', data);
@@ -93,6 +99,7 @@ export default function PlanteDetailsPage() {
 
       const response = await fetch(url.toString(), {
         method: 'POST',
+        headers: headers,
       });
 
       if (response.ok) {

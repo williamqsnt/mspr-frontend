@@ -34,12 +34,18 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [markerList, setMarkerList] = useState<JSX.Element[]>([]);
   const [selectedPlant, setSelectedPlant] = useState<any>(false); // State to track selected plant data
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     async function fetchAddresses() {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/plante/recupererlocalisation"
+          "http://localhost:3000/api/plante/recupererlocalisation", {headers: headers}
         );
         if (!response.ok) {
           throw new Error(

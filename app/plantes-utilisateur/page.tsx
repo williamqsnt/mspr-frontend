@@ -14,6 +14,12 @@ const PlantesUtilisateur: React.FC = () => {
   const [plantes, setPlantes] = useState<Plante[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     const fetchPlantes = async () => {
@@ -23,7 +29,7 @@ const PlantesUtilisateur: React.FC = () => {
           throw new Error("ID utilisateur non trouvé dans le localStorage");
         }
 
-        const response = await fetch(`http://localhost:3000/api/plante/afficherAllByUtilisateur?idUtilisateur=${idUtilisateur}`);
+        const response = await fetch(`http://localhost:3000/api/plante/afficherAllByUtilisateur?idUtilisateur=${idUtilisateur}`, {headers: headers});
         const data = await response.json();
 
         if (!response.ok) {

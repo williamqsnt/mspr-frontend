@@ -24,12 +24,19 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const [dateDebut, setDateDebut] = useState<string>('');
     const [dateFin, setDateFin] = useState<string>('');
     const router = useRouter();
+    const token = localStorage.getItem('token');
+
+    const headers = new Headers();
+    if (token) {
+      headers.append('Authorization', `Bearer ${token}`);
+    }
+
 
     useEffect(() => {
         const fetchPlante = async () => {
             try {
                 if (!id) throw new Error('ID invalide');
-                const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`);
+                const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, {headers: headers});
 
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des détails de la plante');
@@ -69,7 +76,9 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                     dateDebut,
                     dateFin,
                     idPlante: id
-                }
+                },        headers: {
+                    'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
+                  }
             });
 
             if (response.status === 200) {

@@ -22,6 +22,12 @@ const HomePage: React.FC = () => {
   const router = useRouter();
   const [isBotanist, setIsBotanist] = useState<boolean>(false);
   const [plantes, setPlantes] = useState<Plante[]>([]);
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     fetchPlantes();
@@ -30,7 +36,7 @@ const HomePage: React.FC = () => {
 
   const fetchPlantes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/plante/recupererInfos');
+      const response = await fetch('http://localhost:3000/api/plante/recupererInfos', {headers: headers});
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -46,13 +52,13 @@ const HomePage: React.FC = () => {
     try {
       const pseudo = localStorage.getItem('pseudo');
       if (pseudo) {
-        const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`);
+        const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
         if (userIdResponse.ok) {
           const userIdData = await userIdResponse.json();
           const userId = userIdData.idUtilisateur;
 
           if (userId) {
-            const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`);
+            const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, {headers: headers});
             if (botanistResponse.ok) {
               const botanistData = await botanistResponse.json();
               setIsBotanist(botanistData.estBotaniste);

@@ -9,6 +9,12 @@ export default function GardiennagePage() {
 
   const [plantes, setPlantes] = useState([]);
   const [selectedPlante, setSelectedPlante] = useState(null);
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     fetchPlantes();
@@ -17,7 +23,7 @@ export default function GardiennagePage() {
   const fetchPlantes = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/plante/afficherGardees?psd_utl=proprietaire`
+        `http://localhost:3000/api/plante/afficherGardees?psd_utl=proprietaire`, {headers: headers}
       );
       if (response.ok) {
         const data = await response.json();

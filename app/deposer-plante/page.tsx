@@ -25,6 +25,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
   const [photos, setPhotos] = useState(null); // Pour stocker les images capturées
+  const token = localStorage.getItem('token');
 
   const handleDebutDateChange = (date: Date | Date[]) => {
     const formattedDate = formatDate(date);
@@ -69,8 +70,17 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
       // Construire l'URL avec les paramètres
       const url = `http://localhost:3000/api/plante/ajouter?${params.toString()}`;
 
+      const headers = {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Inclure le token JWT dans l'en-tête Authorization
+        'Content-Type': 'application/json' // Spécifier le type de contenu si nécessaire
+      };
+  
       // Envoyer la requête POST
-      const response = await axios.post(url);
+      const response = await axios.post(
+        url, // URL avec les paramètres inclus
+        {}, // Corps de la requête, vide dans ce cas
+        { headers } // Inclure les en-têtes dans la requête
+      );
 
       // Vérifier la réponse
       if (response.status === 200) {
@@ -88,7 +98,16 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
 
   const ajouterPhotos = async (photo: any) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/plante/ajouterPhoto', { image: photo });
+      const response = await axios.post(
+        'http://localhost:3000/api/plante/ajouterPhoto',
+        { image: photo },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Inclure le token dans l'en-tête Authorization
+            'Content-Type': 'application/json' // Spécifier le type de contenu
+          }
+        }
+      );
       return response.data.imageUrl;
     } catch (error) {
       console.error('Error uploading photo:', error);
@@ -98,8 +117,13 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
 
   const getId = async (pseudo: string) => {
     try {
-      const response = await axios.get<{ utilisateur: string }>(
-        `http://localhost:3000/api/utilisateur/id?psd_utl=${pseudo}`
+      const response = await axios.get(
+        `http://localhost:3000/api/utilisateur/id?psd_utl=${pseudo}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
+          }
+        }
       );
       return response.data.utilisateur.toString();
     } catch (error) {

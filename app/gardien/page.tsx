@@ -17,6 +17,12 @@ interface Plante {
 export default function GardienPage() {
   const [plantes, setPlantes] = useState<Plante[]>([]);
   const router = useRouter();
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     fetchPlantes();
@@ -24,7 +30,7 @@ export default function GardienPage() {
 
   const fetchPlantes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/plante/afficherAll');
+      const response = await fetch('http://localhost:3000/api/plante/afficherAll', {headers: headers});
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);

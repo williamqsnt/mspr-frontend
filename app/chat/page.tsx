@@ -20,6 +20,12 @@ const ChatPage: React.FC<ChatPageProps> = ({ myPseudo, proprietaire, gardien }) 
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState('');
   const messageController = useRef<HTMLInputElement>(null);
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
     loadMessages();
@@ -60,7 +66,11 @@ const ChatPage: React.FC<ChatPageProps> = ({ myPseudo, proprietaire, gardien }) 
         exp_msg: myPseudo,
         psd_utl: gardien,
         psd_utl_1: proprietaire,
-      });
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Inclure le token dans l'en-tête Authorization
+          'Content-Type': 'application/json' // Spécifier le type de contenu, si nécessaire
+        }});
 
       if (response.status === 200) {
         setMessageText('');
