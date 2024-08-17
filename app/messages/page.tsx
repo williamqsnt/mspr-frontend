@@ -1,145 +1,139 @@
 "use client";
+import * as React from "react";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { CalendarIcon, ChevronLeft, FlowerIcon, MailIcon, UserIcon } from 'lucide-react';
+import Link from 'next/link';
 
-import { useState, useEffect } from "react";
-import Head from "next/head";
-import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
-
-export default function MessagesPage() {
+export default function ConversationsPage() {
   const router = useRouter();
   const [conversations, setConversations] = useState([]);
-  const [userPseudos, setUserPseudos] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [erreur, setErreur] = useState(null);
+  const [pseudoLocal, setPseudoLocal] = useState('');
 
   useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const pseudo = localStorage.getItem('pseudo');
+        setPseudoLocal(pseudo);
+
+        if (pseudo) {
+          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`);
+          if (idResponse.ok) {
+            const idData = await idResponse.json();
+            const idUtilisateur = idData.idUtilisateur;
+
+            if (idUtilisateur) {
+              const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`);
+              if (conversationResponse.ok) {
+                const data = await conversationResponse.json();
+
+                const updatedConversations = await Promise.all(
+                  data.conversations.map(async (conversation) => {
+                    const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
+
+                    const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`);
+                    const pseudoData = pseudoResponse.ok ? await pseudoResponse.json() : { pseudo: "Unknown User" };
+
+                    const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`);
+                    const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
+
+                    return { 
+                      ...conversation, 
+                      pseudo: pseudoData.pseudo, 
+                      avatar: avatarData.photoUrl  || '/default-avatar.png' 
+                    };
+                  })
+                );
+
+                setConversations(updatedConversations);
+              } else {
+                console.error('Erreur lors de la récupération des conversations');
+                setErreur('Erreur lors de la récupération des conversations');
+              }
+            } else {
+              console.error('ID utilisateur non trouvé pour le pseudo');
+              setErreur('ID utilisateur non trouvé pour le pseudo');
+            }
+          } else {
+            console.error('Erreur lors de la récupération de l\'ID utilisateur');
+            setErreur('Erreur lors de la récupération de l\'ID utilisateur');
+          }
+        } else {
+          console.error('Pseudo non trouvé dans le localStorage');
+          setErreur('Pseudo non trouvé dans le localStorage');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des conversations:', error);
+        setErreur('Erreur lors de la récupération des conversations');
+      }
+    };
+
     fetchConversations();
   }, []);
 
-  const fetchConversations = async () => {
-    try {
-      const fetchedConversations = await getConversationsFromAPI(
-        "proprietaire"
-      ); // Remplacez 'proprietaire' par votre pseudo
-      setConversations(fetchedConversations);
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getConversationsFromAPI = async (pseudo) => {
-    try {
-      const id = await getId(pseudo);
-      const response = await fetch(
-        `http://localhost:3000/api/conversation/afficher?id_utl=${id}`
-      );
-      if (response.ok) {
-        const jsonData = await response.json();
-        const conversations = jsonData.map((conv) => ({
-          id_conv: conv.id_conv,
-          other_user_id: conv.id_utl1 === id ? conv.id_utl2 : conv.id_utl1,
-        }));
-        return conversations;
-      } else {
-        throw new Error("Failed to fetch conversations");
-      }
-    } catch (error) {
-      console.error("Error in getConversationsFromAPI:", error);
-      return [];
-    }
-  };
-
-  const getId = async (pseudo) => {
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/utilisateur/id?psd_utl=${pseudo}`
-      );
-      if (response.ok) {
-        const jsonData = await response.json();
-        return jsonData.utilisateur.toString();
-      } else {
-        throw new Error("Failed to fetch user ID");
-      }
-    } catch (error) {
-      console.error("Error fetching user ID:", error);
-      throw error;
-    }
-  };
-
-  const getPseudo = async (userId) => {
-    if (userPseudos[userId]) {
-      return userPseudos[userId];
-    }
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/utilisateur/pseudo?id_utl=${userId}`
-      );
-      if (response.ok) {
-        const jsonData = await response.json();
-        setUserPseudos((prevUserPseudos) => ({
-          ...prevUserPseudos,
-          [userId]: jsonData.utilisateur,
-        }));
-        return jsonData.utilisateur;
-      } else {
-        throw new Error("Failed to fetch pseudo");
-      }
-    } catch (error) {
-      console.error("Error fetching pseudo:", error);
-      return "Unknown";
-    }
-  };
-
-  const handleConversationClick = (conversationId) => {
-    router.push(`/chat/${conversationId}`); // Redirige vers la page de chat avec l'ID de la conversation
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('pseudo');
+    router.push('/login');
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <Head>
-        <title>Conversations</title>
-        <meta name="description" content="Liste des conversations" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <header className="bg-green-500 py-4 px-6 flex items-center">
+    <div className="flex flex-col h-screen bg-background">
+      <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
         <button onClick={() => window.history.back()} className="flex">
-          <ChevronLeft className="text-white" />
+          <ChevronLeft className="text-black" />
         </button>
-        <h1 className="text-white text-2xl font-bold ml-4">
-        Conversations
-        </h1>
+        <div className="flex items-center gap-4">
+          <button className="focus:outline-none" onClick={handleLogout}>
+            Déconnexion
+          </button>
+          <button className="focus:outline-none" onClick={() => router.push('/messages')}>
+            <MailIcon className="w-6 h-6" />
+            <span className="sr-only">Messages</span>
+          </button>
+          <button className="focus:outline-none" onClick={() => router.push('/profile')}>
+            <UserIcon className="w-6 h-6" />
+            <span className="sr-only">Profile</span>
+          </button>
+        </div>
       </header>
-
-      <main className="container mx-auto px-4 py-6">
-        {loading ? (
-          <div className="flex items-center justify-center">
-            <p className="text-gray-600 text-lg">Chargement en cours...</p>
-          </div>
-        ) : conversations.length === 0 ? (
-          <div className="flex items-center justify-center">
-            <p className="text-gray-600 text-lg">
-              Aucune conversation trouvée.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {conversations.map((conv) => (
-              <div
-                key={conv.id_conv}
-                className="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleConversationClick(conv.id_conv)}
-              >
-                <p className="text-lg font-semibold">Conversation avec :</p>
-                <p className="text-green-600">
-                  {getPseudo(conv.other_user_id)}
-                </p>
+      <main className="flex-1 p-4">
+        {erreur && <p className="text-red-500">{erreur}</p>}
+        <section className="mt-8">
+          <h3 className="text-xl font-bold mb-4">Mes conversations :</h3>
+          <div className="flex flex-col space-y-4">
+            {conversations.map((conversation, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-md p-4">
+                <Link href={`/conversation/${conversation.id}`}>
+                  <button className="w-full text-left flex items-center space-x-4 p-4 cursor-pointer focus:outline-none">
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                      <img src={conversation.avatar} alt="Avatar" className="w-11 h-11 rounded-full" />
+                    </div>
+                    <div className="flex flex-col">
+                      <h2 className="text-lg font-bold">{conversation.pseudo}</h2>
+                    </div>
+                  </button>
+                </Link>
               </div>
             ))}
           </div>
-        )}
+        </section>
       </main>
+      <footer className="flex justify-around py-4 bg-white border-t">
+        <button className="focus:outline-none" onClick={() => router.push('/requests')}>
+          <CalendarIcon className="w-6 h-6" />
+          <span className="block text-xs">Requests</span>
+        </button>
+        <button className="focus:outline-none" onClick={() => router.push('/chercher-plantes')}>
+          <FlowerIcon className="w-6 h-6" />
+          <span className="block text-xs">Find Plants</span>
+        </button>
+        <button className="focus:outline-none" onClick={() => router.push('/messages')}>
+          <MailIcon className="w-6 h-6" />
+          <span className="block text-xs">Messages</span>
+        </button>
+      </footer>
     </div>
   );
 }

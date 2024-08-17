@@ -167,7 +167,7 @@ const HomePage: React.FC = () => {
             <img src="/home.png" alt="Accueil" className="w-6 h-6" />
             <span className="text-xs mt-1">Accueil</span>
           </button>
-          <button className="flex flex-col items-center" onClick={() => handleNavigation('/messages')}>
+          <button className="flex flex-col items-center" onClick={() => router.push('/messages')}>
             <img src="/message.png" alt="Messages" className="w-6 h-6" />
             <span className="text-xs mt-1">Messages</span>
           </button>
