@@ -8,11 +8,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import getCoordinatesFromAddress from "@/utils/getCoordinatesFromAddress";
-import getPlantDataFromAPI from "@/utils/getPlantDataFromAPI";
-import addGuardianToPlant from "@/utils/addGuardianToPlant";
-import addConversation from "@/utils/addConversation";
-import getId from "@/utils/getId";
-import { ArrowLeft, ChevronLeft, X } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
+import axios from "axios";
 
 // Dynamic import of MapContainer to avoid SSR issues with leaflet
 const MapContainer = dynamic(
@@ -22,19 +19,17 @@ const MapContainer = dynamic(
   }
 );
 
-interface TrouverPageProps {
-  pseudo: string;
-}
-
 interface Address {
   address: string;
+  idPlante: string;
 }
 
-const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
+export default function ChercherPlantepage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [markerList, setMarkerList] = useState<JSX.Element[]>([]);
-  const [selectedPlant, setSelectedPlant] = useState<any>(false); // State to track selected plant data
+  const [selectedPlant, setSelectedPlant] = useState<any>(null); // State to track selected plant data
   const token = localStorage.getItem('token');
+  const pseudo = localStorage.getItem('pseudo'); // Assurez-vous que le pseudo est stocké dans le localStorage
 
   const headers = new Headers();
   if (token) {
@@ -53,22 +48,15 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
           );
         }
         const responseData = await response.json();
-        console.log("Response data:", responseData);
   
         const fetchedAddresses: Address[] = responseData.adresses;
-        console.log("Fetched addresses:", fetchedAddresses);
-  
-        // Vérifiez si fetchedAddresses est un tableau
-        if (!Array.isArray(fetchedAddresses)) {
-          throw new TypeError("Les adresses récupérées ne sont pas un tableau.");
-        }
   
         setAddresses(fetchedAddresses);
   
         const markers = await Promise.all(
           fetchedAddresses.map(async (addressObj) => {
             const coordinates = await getCoordinatesFromAddress(
-              addressObj.adresse // Assurez-vous que c'est bien 'adresse' et non 'address'
+              addressObj.adresse
             );
             if (coordinates) {
               return createMarker(coordinates, addressObj.adresse, addressObj.idPlante);
@@ -86,39 +74,54 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
     fetchAddresses();
   }, []);
 
-  async function handlePlantDetails(address: string) {
+  // Fonction pour récupérer les données de la plante à partir de l'API
+  async function getPlantDataFromAPI(idPlante: string) {
     try {
-      const plantData = await getPlantDataFromAPI(address);
-      if (plantData) {
-        setSelectedPlant(plantData); // Mettez à jour l'état selectedPlant avec les détails de la plante
-        const id = await getId(pseudo);
-        showDialog(plantData, id);
-      } else {
-        console.warn("Plant data not found for the address:", address);
+      const url = `http://localhost:3000/api/plante/afficher?idPlante=${idPlante}`;
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 200) {
+        return response.data;
       }
     } catch (error) {
-      console.error("Error fetching plant data:", error);
+      console.error('Error fetching plant data:', error);
     }
+
+    return null;
   }
 
-  async function showDialog(plantData: any, userId: string) {
+  // Méthode pour gérer l'enregistrement de la plante
+  async function handleSavePlant(idPlante: string, idGardiennage: string) {
+    if (!pseudo) {
+      console.error('Pseudo is not available');
+      return;
+    }
+
     try {
-      const response = await addGuardianToPlant(
-        plantData.id_plt.toString(),
-        userId.toString()
-      );
-      if (response.status === 200 || response.status === 202) {
-        console.log("Adding conversation...");
-        await addConversation(
-          plantData.id_plt.toString(),
-          plantData.id_proprietaire.toString(),
-          userId.toString()
-        );
-        console.log("Conversation added");
-        setSelectedPlant(true); // Set selected plant data to display in the popup
+      // Étape 1: Récupérer l'ID de l'utilisateur
+      const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
+      if (!idResponse.ok) {
+        throw new Error('Erreur lors de la récupération de l\'ID utilisateur.');
       }
+
+      const idData = await idResponse.json();
+      const idUtilisateur = idData.idUtilisateur;
+      
+
+      // suite a faire
+      console.log('ID plante:', idPlante);
+      console.log('ID gardiennage:', idGardiennage);
+      console.log('ID utilisateur:', idUtilisateur);
+
+
+      console.log('Plante sauvegardée avec succès.');
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Erreur lors de l\'enregistrement de la plante:', error);
     }
   }
 
@@ -130,21 +133,81 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
     return (
       <Marker key={address} position={latLng}>
         <Popup>
-          <div>
-            <h2>{address}</h2>
-            <p>Latitude: {latLng[0]}</p>
-            <p>Longitude: {latLng[1]}</p>
-            <button onClick={() => handlePlantDetails(idPlante)}>
-              Voir les détails de la plante
-            </button>
-          </div>
+          <PlantDetails idPlante={idPlante} onSave={handleSavePlant} />
         </Popup>
       </Marker>
     );
   }
 
-  function closePopup() {
-    setSelectedPlant(false);
+  function PlantDetails({
+    idPlante,
+    onSave
+  }: {
+    idPlante: string;
+    onSave: (idPlante: string, idGardiennage: string) => void; // Mettre à jour ici pour accepter deux arguments
+  }) {
+    const [plantDetails, setPlantDetails] = useState<any>(null);
+
+    useEffect(() => {
+      async function fetchPlantDetails() {
+        const data = await getPlantDataFromAPI(idPlante);
+        setPlantDetails(data);
+      }
+
+      fetchPlantDetails();
+    }, [idPlante]);
+
+    if (!plantDetails) {
+      return <div>Chargement...</div>;
+    }
+
+    if (plantDetails && plantDetails.plante) {
+      const plant = plantDetails.plante;
+      return (
+        <div>
+          <h2 className="text-xl font-bold mb-2">{plant.adresse}</h2>
+          <img
+            src={plant.photoUrl}
+            alt={plant.nom}
+            className="w-full h-auto mb-4"
+          />
+          <p>
+            <span className="font-bold">Nom:</span> {plant.nom}
+          </p>
+          <p>
+            <span className="font-bold">Espèce:</span> {plant.espece}
+          </p>
+          <p>
+            <span className="font-bold">Description:</span> {plant.description}
+          </p>
+          <div>
+        <h3 className="text-lg font-semibold mt-4">Gardiennage(s):</h3>
+        {plant.gardiennages.map((gardiennage, index) => (
+          <div key={index} className="mb-4">
+            <p>
+              <span className="font-bold">Début:</span> {new Date(gardiennage.dateDebut).toLocaleDateString()}{" "}
+              <span className="font-bold">Fin:</span> {new Date(gardiennage.dateFin).toLocaleDateString()}
+            </p>
+            <button
+              className="mt-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+              onClick={() => {
+                console.log('ID Plante:', plant.idPlante);
+                console.log('ID Gardiennage:', gardiennage.idGardiennage);
+                onSave(plant.idPlante, gardiennage.idGardiennage);
+              }} 
+            >
+              Garder ce gardiennage
+            </button>
+
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+    
+
+    return <div>Aucune donnée disponible pour cette plante.</div>;
   }
 
   return (
@@ -169,35 +232,6 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
             {markerList}
           </MapContainer>
         </div>
-
-        {selectedPlant && (
-          <div className="popup">
-            <div className="popup-inner">
-              <button className="close-button" onClick={closePopup}>
-                <X size={20} />
-              </button>
-              <h2 className="text-xl font-bold mb-2">
-                {selectedPlant.address}
-              </h2>
-              <p>
-                <span className="font-bold">Nom:</span> {selectedPlant.nom}
-              </p>
-              <p>
-                <span className="font-bold">Type:</span> {selectedPlant.type}
-              </p>
-              <p>
-                <span className="font-bold">Description:</span>{" "}
-                {selectedPlant.description}
-              </p>
-              <button
-                className="mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
-                onClick={() => console.log("Garder la plante")}
-              >
-                Garder la plante
-              </button>
-            </div>
-          </div>
-        )}
       </main>
 
       <footer>
@@ -232,6 +266,4 @@ const TrouverPage: React.FC<TrouverPageProps> = ({ pseudo }) => {
       `}</style>
     </div>
   );
-};
-
-export default TrouverPage;
+}
