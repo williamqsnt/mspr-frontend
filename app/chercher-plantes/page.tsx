@@ -96,7 +96,7 @@ export default function ChercherPlantepage() {
   }
 
   // Méthode pour gérer l'enregistrement de la plante
-  async function handleSavePlant(idPlante: string, idGardiennage: string) {
+  async function handleSavePlant(idPlante: string, idGardiennage: string, idUtilisateur: string) {
     if (!pseudo) {
       console.error('Pseudo is not available');
       return;
@@ -110,14 +110,33 @@ export default function ChercherPlantepage() {
       }
 
       const idData = await idResponse.json();
-      const idUtilisateur = idData.idUtilisateur;
+      const idUtilisateur1 = idData.idUtilisateur;
       
 
-      // suite a faire
-      console.log('ID plante:', idPlante);
-      console.log('ID gardiennage:', idGardiennage);
-      console.log('ID utilisateur:', idUtilisateur);
+      // Etape 2: Ajouter le gardien au gardiennage
+      const ajoutResponse = await fetch(`http://localhost:3000/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur1}`, {
+        method: 'PUT',
+        headers: headers,
+      });
+  
+      if (!ajoutResponse.ok) {
+        throw new Error('Erreur lors de l\'ajout du gardien au gardiennage.');
+      }
 
+      // Etape 3 : créer conversation entre les deux utilisateurs
+        const conversationResponse = await fetch(`http://localhost:3000/api/conversation/ajouter?`
+          + new URLSearchParams({
+              idUtilisateur: idUtilisateur1,
+              idUtilisateur_1: idUtilisateur,  // Utiliser idUtilisateur pour le second utilisateur
+              idGardiennage: idGardiennage
+          }), {
+          method: 'POST',
+          headers: headers,
+      });
+
+      if (!conversationResponse.ok) {
+          throw new Error('Erreur lors de la création de la conversation.');
+      }
 
       console.log('Plante sauvegardée avec succès.');
     } catch (error) {
@@ -144,7 +163,7 @@ export default function ChercherPlantepage() {
     onSave
   }: {
     idPlante: string;
-    onSave: (idPlante: string, idGardiennage: string) => void; // Mettre à jour ici pour accepter deux arguments
+    onSave: (idPlante: string, idGardiennage: string, idUtilisateur: string) => void; // Mettre à jour ici pour accepter deux arguments
   }) {
     const [plantDetails, setPlantDetails] = useState<any>(null);
 
@@ -193,7 +212,7 @@ export default function ChercherPlantepage() {
               onClick={() => {
                 console.log('ID Plante:', plant.idPlante);
                 console.log('ID Gardiennage:', gardiennage.idGardiennage);
-                onSave(plant.idPlante, gardiennage.idGardiennage);
+                onSave(plant.idPlante, gardiennage.idGardiennage, plant.idUtilisateur);
               }} 
             >
               Garder ce gardiennage
