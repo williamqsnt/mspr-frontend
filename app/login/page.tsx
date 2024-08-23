@@ -54,7 +54,7 @@ export default function Login() {
                 <div className="flex justify-center mb-8">
                     <img src="/logo.jpg" alt="Logo" className="w-32 h-32 bg-white" />
                 </div>
-                <h2 className="text-3xl font-bold text-center mb-8">S'identifier</h2>
+                <h2 className="text-3xl font-bold text-center mb-8">S&apos;identifier</h2>
                 <div className="mb-4">
                     <input
                         type="text"
