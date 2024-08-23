@@ -272,7 +272,7 @@ export default function Inscription() {
                 htmlFor="conditions"
                 className="ml-2 block text-sm text-gray-900"
               >
-                J'accepte les conditions d'utilisation
+                J&apos;accepte les conditions d&apos;utilisation
               </label>
             </div>
             <div className="mt-4">
@@ -280,7 +280,7 @@ export default function Inscription() {
                 type="submit"
                 className="w-full bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-green-600"
               >
-                S'inscrire
+                S&apos;inscrire
               </button>
             </div>
           </form>
@@ -289,7 +289,7 @@ export default function Inscription() {
               onClick={handleShowRgpdDialog}
               className="text-green-500 hover:underline"
             >
-              Voir les conditions d'utilisation et RGPD
+              Voir les conditions d&apos;utilisation et RGPD
             </button>
           </div>
         </div>
@@ -298,17 +298,17 @@ export default function Inscription() {
             }`}
         >
           <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl mb-4">Conditions d'utilisation</h2>
+            <h2 className="text-2xl mb-4">Conditions d&apos;utilisation</h2>
             <p className="text-sm text-gray-700 mb-4">
               Bienvenue sur notre application mobile ! Nous sommes ravis de vous
               compter parmi nos utilisateurs. Veuillez lire attentivement les
-              présentes Conditions d'utilisation, car elles régissent votre
+              présentes Conditions d&apos;utilisation, car elles régissent votre
               accès et votre utilisation de nos services.
             </p>
             <ol className="list-decimal text-sm text-gray-700">
-              <li>Acceptation des Conditions d'utilisation</li>
-              <li>Modifications des Conditions d'utilisation</li>
-              <li>Utilisation de l'Application</li>
+              <li>Acceptation des Conditions d&apos;utilisation</li>
+              <li>Modifications des Conditions d&apos;utilisation</li>
+              <li>Utilisation de l&apos;Application</li>
             </ol>
             <button
               className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
@@ -338,14 +338,14 @@ export default function Inscription() {
             }`}
         >
           <div className="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl mb-4">Conditions d'utilisation et RGPD</h2>
+            <h2 className="text-2xl mb-4">Conditions d&apos;utilisation et RGPD</h2>
             <p className="text-sm text-gray-700 mb-4">
               Nous respectons votre vie privée et nous engageons à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD). Voici nos pratiques en matière de confidentialité :
             </p>
             <ul className="list-disc text-sm text-gray-700 mb-4">
               <li>Nous collectons vos données uniquement pour les besoins de la gestion de votre compte.</li>
               <li>Vos données sont sécurisées et ne seront pas partagées avec des tiers sans votre consentement.</li>
-              <li>Vous avez le droit d'accéder à vos données, de les rectifier ou de les supprimer.</li>
+              <li>Vous avez le droit d&apos;accéder à vos données, de les rectifier ou de les supprimer.</li>
             </ul>
             <button
               className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"

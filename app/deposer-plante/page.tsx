@@ -315,7 +315,7 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
                       </h3>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          Une erreur s'est produite. Veuillez réessayer.
+                          Une erreur s&apos;est produite. Veuillez réessayer.
                         </p>
                       </div>
                     </div>
