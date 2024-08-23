@@ -111,7 +111,7 @@ export default function ConversationsPage() {
           <div className="flex flex-col space-y-4">
             {conversations.map((conversation, index) => (
               <div key={index} className="bg-white rounded-lg shadow-md p-4">
-                <Link href={`/conversation/${conversation.id}`}>
+                <Link href={`/messages/${conversation.idConversation}`}>
                   <button className="w-full text-left flex items-center space-x-4 p-4 cursor-pointer focus:outline-none">
                     <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                       <img src={conversation.avatar} alt="Avatar" className="w-11 h-11 rounded-full" />
