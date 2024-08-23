@@ -10,10 +10,10 @@ import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
 
 interface PlantePageProps {
-  pseudo: string;
+  pseudo: any;
 }
 
-export default function PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
+const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   const [espece, setEspece] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
@@ -339,3 +339,4 @@ export default function PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => 
   );
 };
 
+export default PlantePage;
