@@ -34,7 +34,7 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
     };
 
     // Confirmer et envoyer l'image vers le parent
-    const confirmPhoto = async (e) => {
+    const confirmPhoto = async (e:any) => {
         e.preventDefault();
         try {
             if (!imageSrc) {
