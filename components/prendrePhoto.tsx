@@ -3,8 +3,12 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import { CameraIcon } from 'lucide-react';
 
-const PrendrePhoto = ({ onPhotoConfirmed }) => {
-    const webcamRef = useRef(null);
+type PrendrePhotoProps = {
+    onPhotoConfirmed: (imageSrc: string) => void;
+};
+
+const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
+    const webcamRef = useRef<Webcam>(null);
     const [imageSrc, setImageSrc] = useState(null); // Pour stocker l'image capturée
     const [showWebcam, setShowWebcam] = useState(false); // Pour afficher ou cacher la webcam
     const [showPreview, setShowPreview] = useState(false); // Pour afficher l'aperçu de l'image
