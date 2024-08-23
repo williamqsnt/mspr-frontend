@@ -13,7 +13,7 @@ interface PlantePageProps {
   pseudo: string;
 }
 
-const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
+export default function PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   const [espece, setEspece] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
@@ -339,4 +339,3 @@ const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
   );
 };
 
-export default PlantePage;
