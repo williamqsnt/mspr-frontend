@@ -20,7 +20,7 @@ const MapContainer = dynamic(
 );
 
 interface Address {
-  address: string;
+  adresse: string;
   idPlante: string;
 }
 
@@ -56,10 +56,10 @@ export default function ChercherPlantepage() {
         const markers = await Promise.all(
           fetchedAddresses.map(async (addressObj) => {
             const coordinates = await getCoordinatesFromAddress(
-              addressObj.address
+              addressObj.adresse
             );
             if (coordinates) {
-              return createMarker(coordinates, addressObj.address, addressObj.idPlante);
+              return createMarker(coordinates, addressObj.adresse, addressObj.idPlante);
             }
             return null;
           })
@@ -201,7 +201,7 @@ export default function ChercherPlantepage() {
           </p>
           <div>
         <h3 className="text-lg font-semibold mt-4">Gardiennage(s):</h3>
-        {plant.gardiennages.map((gardiennage, index) => (
+        {plant.gardiennages.map((gardiennage : any, index : any) => (
           <div key={index} className="mb-4">
             <p>
               <span className="font-bold">Début:</span> {new Date(gardiennage.dateDebut).toLocaleDateString()}{" "}
