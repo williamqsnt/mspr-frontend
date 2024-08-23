@@ -9,11 +9,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
 
-interface PlantePageProps {
-  pseudo: any;
-}
 
-const PlantePage: React.FC<PlantePageProps> = ({ pseudo }) => {
+const PlantePage: React.FC<{ pseudo: any }> = ({ pseudo }) => { 
   const [espece, setEspece] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
