@@ -10,7 +10,7 @@ import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
 
 
-const PlantePage: React.FC<{ pseudo: any }> = ({ pseudo }) => { 
+const PlantePage = () => {
   const [espece, setEspece] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
