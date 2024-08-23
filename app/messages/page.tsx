@@ -7,8 +7,8 @@ import Link from 'next/link';
 
 export default function ConversationsPage() {
   const router = useRouter();
-  const [conversations, setConversations] = useState([]);
-  const [erreur, setErreur] = useState(null);
+  const [conversations, setConversations] = useState<{ id: string, pseudo: string, avatar: string }[]>([]);
+  const [erreur, setErreur] = useState<string | null>(null);
   const [pseudoLocal, setPseudoLocal] = useState('');
   const token = localStorage.getItem('token');
 
@@ -20,7 +20,7 @@ export default function ConversationsPage() {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const pseudo = localStorage.getItem('pseudo');
+        const pseudo = localStorage.getItem('pseudo')|| '';;
         setPseudoLocal(pseudo);
 
         if (pseudo) {
@@ -35,7 +35,7 @@ export default function ConversationsPage() {
                 const data = await conversationResponse.json();
 
                 const updatedConversations = await Promise.all(
-                  data.conversations.map(async (conversation) => {
+                  data.conversations.map(async (conversation: { idUtilisateur: any; idUtilisateur_1: any; idConversation: any; }) => {
                     const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
 
                     const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, {headers: headers});

@@ -10,8 +10,8 @@ import { decrypt } from "@/utils/cryptoUtils";
 export default function ProfilPage() {
   const router = useRouter();
   const [utilisateur, setUtilisateur] = useState({ nom: '', prenom: '' });
-  const [plantes, setPlantes] = useState([]);
-  const [erreur, setErreur] = useState(null);
+  const [plantes, setPlantes] = useState<{ nom: string }[]>([]);
+  const [erreur, setErreur] = useState<string | null>(null);
   const token = localStorage.getItem('token');
 
   const headers = new Headers();

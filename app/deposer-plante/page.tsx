@@ -36,17 +36,25 @@ const PlantePage = () => {
     setDateFinSelected(true);
   };
 
-  const formatDate = (date: Date | Date[]) => {
-    const formattedDate = new Date(date);
+  const formatDate = (date: Date | Date[]): string => {
+    const dateToFormat = Array.isArray(date) ? date[0] : date;
+    
+    if (!(dateToFormat instanceof Date)) {
+        throw new Error('L\'argument doit être un objet Date ou un tableau d\'objets Date.');
+    }
+
+    const formattedDate = new Date(dateToFormat);
     const year = formattedDate.getFullYear();
     let month = formattedDate.getMonth() + 1;
     let day = formattedDate.getDate();
 
-    month = month < 10 ? `0${month}` : month;
-    day = day < 10 ? `0${day}` : day;
+    const monthString = month < 10 ? `0${month}` : `${month}`;
+    const dayString = day < 10 ? `0${day}` : `${day}`;
 
-    return `${month}/${day}/${year}`;
-  };
+
+    return `${monthString}/${dayString}/${year}`;
+};
+
 
   const ajouterPlante = async () => {
     try {

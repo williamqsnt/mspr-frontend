@@ -7,8 +7,8 @@ import { ChevronLeft } from "lucide-react";
 export default function GardiennagePage() {
   const router = useRouter();
 
-  const [plantes, setPlantes] = useState([]);
-  const [selectedPlante, setSelectedPlante] = useState(null);
+  const [plantes, setPlantes] = useState<any[]>([]);
+  const [selectedPlante, setSelectedPlante] = useState<any>(null);
   const token = localStorage.getItem('token');
 
   const headers = new Headers();
