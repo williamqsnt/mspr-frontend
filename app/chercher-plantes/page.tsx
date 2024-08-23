@@ -56,10 +56,10 @@ export default function ChercherPlantepage() {
         const markers = await Promise.all(
           fetchedAddresses.map(async (addressObj) => {
             const coordinates = await getCoordinatesFromAddress(
-              addressObj.adresse
+              addressObj.address
             );
             if (coordinates) {
-              return createMarker(coordinates, addressObj.adresse, addressObj.idPlante);
+              return createMarker(coordinates, addressObj.address, addressObj.idPlante);
             }
             return null;
           })
