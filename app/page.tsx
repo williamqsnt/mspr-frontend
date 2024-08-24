@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/carousel';
 import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
+import MapComponent from '@/components/map';
 
 interface Plante {
   idPlante: number;
@@ -23,6 +24,7 @@ const HomePage: React.FC = () => {
   const [isBotanist, setIsBotanist] = useState<boolean>(false);
   const [plantes, setPlantes] = useState<Plante[]>([]);
   const token = localStorage.getItem('token');
+  const [addresses, setAddresses] = useState<{ adresse: string; idPlante: string }[]>([]);
 
   const headers = new Headers();
   if (token) {
@@ -36,7 +38,7 @@ const HomePage: React.FC = () => {
 
   const fetchPlantes = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/plante/recupererInfos', {headers: headers});
+      const response = await fetch('http://localhost:3000/api/plante/recupererInfos', { headers: headers });
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -52,13 +54,13 @@ const HomePage: React.FC = () => {
     try {
       const pseudo = localStorage.getItem('pseudo');
       if (pseudo) {
-        const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
+        const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
         if (userIdResponse.ok) {
           const userIdData = await userIdResponse.json();
           const userId = userIdData.idUtilisateur;
 
           if (userId) {
-            const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, {headers: headers});
+            const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers: headers });
             if (botanistResponse.ok) {
               const botanistData = await botanistResponse.json();
               setIsBotanist(botanistData.estBotaniste);
@@ -74,6 +76,33 @@ const HomePage: React.FC = () => {
       console.error('Erreur lors de la récupération de l\'ID utilisateur et la vérification du statut botaniste:', error);
     }
   };
+
+  useEffect(() => {
+    async function fetchAddresses() {
+      try {
+        const headers = new Headers();
+        if (token) {
+          headers.append('Authorization', `Bearer ${token}`);
+        }
+
+        const response = await fetch("http://localhost:3000/api/plante/recupererlocalisation", { headers });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des adresses de plantes.");
+        }
+
+        const responseData = await response.json();
+        setAddresses(responseData.adresses);
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+      }
+    }
+    fetchAddresses();
+  }, []);
+
+  async function handleSavePlant(idPlante: string, idGardiennage: string, idUtilisateur: string) {
+    // votre logique ici
+  }
+
 
   const handleNavigation = (route: string) => {
     router.push(route);
@@ -100,20 +129,8 @@ const HomePage: React.FC = () => {
         </div>
       </header>
       <main className="flex-1 p-4">
-        <div className="flex items-center mb-4">
-          <div className="flex w-full">
-            <input
-              type="text"
-              className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none"
-              placeholder="Trouvez une plante proche de chez vous"
-            />
-            <button className="mx-2" onClick={() => handleNavigation('/chercher-plantes')}>
-              <MapPin />
-            </button>
-          </div>
-        </div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold">Plantes à garder</h3>
+          <h3 className="text-xl font-bold">Plantes en besoin d'urgence</h3>
           <Link href="/chercher-plantes" className="text-blue-600 hover:underline">
             Voir plus
           </Link>
@@ -137,6 +154,8 @@ const HomePage: React.FC = () => {
             </CarouselContent>
           </Carousel>
         </div>
+        <MapComponent addresses={addresses} height="25vh" onSave={handleSavePlant} />
+
         <button
           className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
           onClick={() => handleNavigation('/deposer-plante')}
@@ -160,26 +179,26 @@ const HomePage: React.FC = () => {
       </main>
 
       <footer className="bg-white shadow-lg">
-      <nav className="flex flex-col items-center w-full">
-      <div className="w-full flex justify-center">
-        <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
-      </div>
-        <div className="flex justify-around items-center py-3 w-full">
-          <button className="flex flex-col items-center" onClick={() => handleNavigation('/plantes')}>
-            <img src="/plante.png" alt="Plantes" className="w-6 h-6" />
-            <span className="text-xs mt-1">Plantes</span>
-          </button>
-          <button className="flex flex-col items-center" onClick={() => handleNavigation('/home')}>
-            <img src="/home.png" alt="Accueil" className="w-6 h-6" />
-            <span className="text-xs mt-1">Accueil</span>
-          </button>
-          <button className="flex flex-col items-center" onClick={() => router.push('/messages')}>
-            <img src="/message.png" alt="Messages" className="w-6 h-6" />
-            <span className="text-xs mt-1">Messages</span>
-          </button>
-        </div>
-      </nav>
-    </footer>
+        <nav className="flex flex-col items-center w-full">
+          <div className="w-full flex justify-center">
+            <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+          </div>
+          <div className="flex justify-around items-center py-3 w-full">
+            <button className="flex flex-col items-center" onClick={() => handleNavigation('/plantes')}>
+              <img src="/plante.png" alt="Plantes" className="w-6 h-6" />
+              <span className="text-xs mt-1">Plantes</span>
+            </button>
+            <button className="flex flex-col items-center" onClick={() => handleNavigation('/home')}>
+              <img src="/home.png" alt="Accueil" className="w-6 h-6" />
+              <span className="text-xs mt-1">Accueil</span>
+            </button>
+            <button className="flex flex-col items-center" onClick={() => router.push('/messages')}>
+              <img src="/message.png" alt="Messages" className="w-6 h-6" />
+              <span className="text-xs mt-1">Messages</span>
+            </button>
+          </div>
+        </nav>
+      </footer>
 
     </div>
   );

@@ -28,7 +28,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
     const headers = new Headers();
     if (token) {
-      headers.append('Authorization', `Bearer ${token}`);
+        headers.append('Authorization', `Bearer ${token}`);
     }
 
 
@@ -36,7 +36,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         const fetchPlante = async () => {
             try {
                 if (!id) throw new Error('ID invalide');
-                const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, {headers: headers});
+                const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, { headers: headers });
 
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des détails de la plante');
@@ -44,8 +44,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
                 const data = await response.json();
 
-                const planteTrouvee = data.plantes.find((p: Plante) => p.idPlante === parseInt(id));
-
+                const planteTrouvee = data;
                 if (planteTrouvee) {
                     setPlante(planteTrouvee);
                 } else {
@@ -76,9 +75,9 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                     dateDebut,
                     dateFin,
                     idPlante: id
-                },        headers: {
+                }, headers: {
                     'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
-                  }
+                }
             });
 
             if (response.status === 200) {
