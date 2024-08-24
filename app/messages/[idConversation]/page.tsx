@@ -67,6 +67,7 @@ export default function MessagesPage() {
 
     newSocket.on("messagesRecus", (messagesRecus) => {
       setMessages(messagesRecus);
+      console.log("Message recu");
     });
 
     newSocket.on("erreur", (message) => {
@@ -75,6 +76,7 @@ export default function MessagesPage() {
 
     newSocket.on("nouveauMessage", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
+      console.log("actualisation");
     });
 
     setSocket(newSocket);
