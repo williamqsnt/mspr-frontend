@@ -50,9 +50,8 @@ export default function Login() {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md h-[100vh]">
-                <h1 className="text-green-600 font-bold text-6">Arrosaje</h1>
                 <div className="flex justify-center mb-8">
-                    <img src="/logo.jpg" alt="Logo" className="w-32 h-32 bg-white" />
+                    <img src="/logo_acc.png" alt="Logo" className="w-32 h-32 bg-white" />
                 </div>
                 <h2 className="text-3xl font-bold text-center mb-8">S&apos;identifier</h2>
                 <div className="mb-4">
@@ -80,12 +79,20 @@ export default function Login() {
                 >
                     Connexion
                 </button>
-                <button
-                    onClick={navigateToSignUp}
-                    className="mt-4 w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    Inscription
-                </button>
+                <p className="mt-4 text-center">
+    Vous n'avez pas encore de compte ?
+    <span className="mx-1"> {/* Ajoute un espace entre le texte et le lien */}
+        <a
+            href="#"
+            onClick={navigateToSignUp}
+            className="text-green-500 hover:text-green-600 font-medium"
+        >
+            Créez en un ici
+        </a>
+    </span>
+</p>
+
+
             </div>
         </div>
     );
