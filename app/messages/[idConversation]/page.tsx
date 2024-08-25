@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
+import PrendrePhoto from "@/components/prendrePhoto";
 
 export default function MessagesPage() {
   const router = useRouter();
@@ -19,10 +20,11 @@ export default function MessagesPage() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [pseudo, setPseudo] = useState("");
   const [avatar, setAvatar] = useState("");
-  const token = localStorage.getItem("token");
+  const [photos, setPhotos] = useState<any>(null);
   const idUtilisateur = parseInt(localStorage.getItem("idUtilisateur") || "0");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const token = localStorage.getItem("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -67,7 +69,6 @@ export default function MessagesPage() {
 
     newSocket.on("messagesRecus", (messagesRecus) => {
       setMessages(messagesRecus);
-      console.log("Message recu");
     });
 
     newSocket.on("erreur", (message) => {
@@ -76,7 +77,6 @@ export default function MessagesPage() {
 
     newSocket.on("nouveauMessage", (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
-      console.log("actualisation");
     });
 
     setSocket(newSocket);
@@ -89,6 +89,25 @@ export default function MessagesPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const ajouterPhotos = async (photo: any) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/plante/ajouterPhoto",
+        { image: photo },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Inclure le token dans l'en-tête Authorization
+            "Content-Type": "application/json", // Spécifier le type de contenu
+          },
+        }
+      );
+      return response.data.imageUrl;
+    } catch (error) {
+      console.error("Erreur lors du téléchargement de la photo :", error);
+      throw new Error("Échec du téléchargement de la photo");
+    }
+  };
 
   // Envoyer un nouveau message
   const handleSendMessage = async () => {
@@ -107,6 +126,26 @@ export default function MessagesPage() {
         setNewMessage("");
       } catch (error) {
         setErreur("Erreur lors de l'envoi du message");
+      }
+    }
+
+    if (photos) {
+      try {
+        const contenu = await ajouterPhotos(photos);
+        // On ajoute "IsPhoto" au début du contenu pour savoir si c'est une photo ou un message
+        const url = `http://localhost:3000/api/message/ajouter?contenu=${encodeURIComponent(
+          "IsPhoto" + contenu
+        )}&idConversation=${idConversation}&idUtilisateur=${idUtilisateur}`;
+
+        await axios.post(url, null, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setPhotos(null);
+      } catch (error) {
+        setErreur("Erreur lors de l'envoi de la photo");
       }
     }
   };
@@ -131,25 +170,44 @@ export default function MessagesPage() {
       <main className="flex-1 p-4 overflow-y-auto">
         {erreur && <p className="text-red-500">{erreur}</p>}
         <div className="flex flex-col space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`p-4 rounded-lg shadow-md ${
-                message.idUtilisateur === idUtilisateur
-                  ? "bg-blue-100 self-end"
-                  : "bg-gray-100 self-start"
-              }`}
-            >
-              <p>{message.contenu}</p>
-              <small className="text-gray-500">
-                {new Date(message.dateEnvoi).toLocaleTimeString()}
-              </small>
-            </div>
-          ))}
+          {messages.map((message, index) => {
+            const isPhoto = message.contenu.startsWith("IsPhoto");
+            const photoUrl = isPhoto
+              ? message.contenu.replace("IsPhoto", "").trim()
+              : null;
+
+            return (
+              <div
+                key={index}
+                className={`p-4 rounded-lg shadow-md ${
+                  message.idUtilisateur === idUtilisateur
+                    ? "bg-blue-100 self-end"
+                    : "bg-gray-100 self-start"
+                }`}
+              >
+                {isPhoto ? (
+                  <img
+                    src={photoUrl || ""}
+                    alt="Message Image"
+                    className="rounded-lg max-w-xs"
+                  />
+                ) : (
+                  <p>{message.contenu}</p>
+                )}
+                <small className="text-gray-500">
+                  {new Date(message.dateEnvoi).toLocaleTimeString()}
+                </small>
+              </div>
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
       </main>
+
       <footer className="flex p-4 bg-white border-t">
+        <div className="mt-4 mx-2">
+          <PrendrePhoto onPhotoConfirmed={setPhotos} />
+        </div>
         <input
           type="text"
           className="flex-1 p-2 border rounded"
