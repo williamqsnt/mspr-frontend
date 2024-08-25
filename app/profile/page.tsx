@@ -73,23 +73,11 @@ export default function ProfilPage() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
-        <button onClick={() => window.history.back()} className="flex">
-          <ChevronLeft className="text-black" />
-        </button>
-        <div className="flex items-center gap-4">
           <button className="focus:outline-none" onClick={handleLogout}>
             Déconnexion
           </button>
-          <button className="focus:outline-none" onClick={() => router.push('/messages')}>
-            <MailIcon className="w-6 h-6" />
-            <span className="sr-only">Messages</span>
-          </button>
-          <button className="focus:outline-none" onClick={() => router.push('/profile')}>
-            <UserIcon className="w-6 h-6" />
-            <span className="sr-only">Profile</span>
-          </button>
-        </div>
       </header>
+
       <main className="flex-1 p-4">
         {erreur && <p className="text-red-500">{erreur}</p>}
         <div className="flex flex-col items-center mb-4">
@@ -130,7 +118,7 @@ export default function ProfilPage() {
       <footer className="bg-white shadow-lg">
         <nav className="flex flex-col items-center w-full">
           <div className="w-full flex justify-center">
-            <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
           </div>
           <div className="flex justify-around items-center py-3 w-full">
             <Link href="/" passHref>

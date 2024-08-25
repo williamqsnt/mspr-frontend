@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeft, HomeIcon, Leaf, MessageCircle, User } from 'lucide-react';
+import { ChevronLeft, HomeIcon, Leaf, MessageCircle, Plus, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -47,7 +47,7 @@ const PlantesUtilisateur: React.FC = () => {
 
     fetchPlantes();
   }, []);
-  
+
 
   const handleCardClick = (id: number) => {
     router.push(`/plantes-utilisateur/${id}`);
@@ -55,12 +55,7 @@ const PlantesUtilisateur: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-
-
       <div className="container mx-auto p-4 h-full">
-        <button onClick={() => window.history.back()} className="flex mb-4">
-          <ChevronLeft className="text-black" />
-        </button>
         <h1 className="text-2xl font-bold mb-4">Liste de vos plantes</h1>
         <ul className="grid grid-cols-2 gap-4">
           {plantes.map(plante => (
@@ -73,9 +68,14 @@ const PlantesUtilisateur: React.FC = () => {
         </ul>
       </div>
       <footer className="bg-white shadow-lg">
+
+        <div className="flex">
+          <div className="w-11/12"></div>
+          <button className="w-full px-4 py-2 mb-4 mr-8 text-white bg-green-600 rounded-full focus:outline-none hover:bg-green-700 flex items-center justify-center" onClick={() => router.push('/deposer-plante')}><Plus />Ajouter plante</button>
+        </div>
         <nav className="flex flex-col items-center w-full">
           <div className="w-full flex justify-center">
-            <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
           </div>
           <div className="flex justify-around items-center py-3 w-full">
             <Link href="/" passHref>

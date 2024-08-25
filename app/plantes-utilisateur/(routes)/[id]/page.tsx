@@ -46,14 +46,16 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 const data = await response.json();
 
                 const planteTrouvee = data;
+                
                 if (planteTrouvee) {
                     setPlante(planteTrouvee);
+                    console.log(plante);
                 } else {
                     setError('Plante non trouvée');
                 }
             } catch (error) {
                 console.error('Erreur:', error);
-                setError('Erreur lors de la récupération des détails de la plante');
+                setError('Erreur lors de la récupération des détails de la plante' + error);
             } finally {
                 setLoading(false);
             }
@@ -61,6 +63,8 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
         fetchPlante();
     }, [id]);
+
+
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();

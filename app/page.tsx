@@ -116,17 +116,6 @@ const HomePage: React.FC = () => {
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
         <div className="text-xl font-bold">Arosaje</div>
-        <div className="flex items-center gap-4">
-          <SearchIcon className="w-6 h-6" />
-          <button className="focus:outline-none" onClick={() => handleNavigation('/messages')}>
-            <MailIcon className="w-6 h-6" />
-            <span className="sr-only">Messages</span>
-          </button>
-          <button className="focus:outline-none" onClick={() => handleNavigation('/profile')}>
-            <UserIcon className="w-6 h-6" />
-            <span className="sr-only">Profile</span>
-          </button>
-        </div>
       </header>
       <main className="flex-1 p-4">
         <div className="flex items-center justify-between mb-4">
@@ -181,7 +170,7 @@ const HomePage: React.FC = () => {
       <footer className="bg-white shadow-lg">
         <nav className="flex flex-col items-center w-full">
           <div className="w-full flex justify-center">
-            <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
           </div>
           <div className="flex justify-around items-center py-3 w-full">
             <Link href="/" passHref>
