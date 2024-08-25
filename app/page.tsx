@@ -145,18 +145,7 @@ const HomePage: React.FC = () => {
         </div>
         <MapComponent addresses={addresses} height="25vh" onSave={handleSavePlant} />
 
-        <button
-          className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
-          onClick={() => handleNavigation('/deposer-plante')}
-        >
-          Déposer une plante
-        </button>
-        <button
-          className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
-          onClick={() => handleNavigation('/plantes-utilisateur')}
-        >
-          Demander un gardiennage
-        </button>
+      
         {isBotanist && (
           <button
             className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"

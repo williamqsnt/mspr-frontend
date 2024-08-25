@@ -1,15 +1,20 @@
 "use client";
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function GardiennagePage() {
-  const router = useRouter();
-
   const [plantes, setPlantes] = useState<any[]>([]);
   const [selectedPlante, setSelectedPlante] = useState<any>(null);
-  const token = localStorage.getItem('token');
+  const [error, setError] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState<'enCours' | 'aVenir' | 'passes'>('enCours');
+  const token = typeof window !== "undefined" ? localStorage.getItem('token') : null;
+  const router = useRouter();
+
+  const handleGardiennagesClick = () => {
+    router.push('/plantes-utilisateur');
+  };
 
   const headers = new Headers();
   if (token) {
@@ -17,26 +22,74 @@ export default function GardiennagePage() {
   }
 
   useEffect(() => {
-    fetchPlantes();
-  }, []);
+    const fetchPlantes = async () => {
+      try {
+        const responseGardiennages = await fetch(`http://localhost:3000/api/gardiennage/afficherGardes?idUtilisateur=52`, { headers: headers });
+        if (!responseGardiennages.ok) throw new Error("Failed to fetch gardiennages");
 
-  const fetchPlantes = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/plante/afficherGardees?psd_utl=proprietaire`, {headers: headers}
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setPlantes(data);
-      } else {
-        throw new Error("Failed to fetch plantes");
+        const dataGardiennages = await responseGardiennages.json();
+        console.log('Data fetched:', dataGardiennages);
+
+        // Regrouper les gardiennages par plante
+        const plantsWithGardiennages: { [key: number]: any } = {};
+        dataGardiennages.gardiennages.forEach((g: any) => {
+          if (!plantsWithGardiennages[g.idPlante]) {
+            plantsWithGardiennages[g.idPlante] = {
+              idPlante: g.idPlante,
+              gardiennages: [],
+            };
+          }
+          plantsWithGardiennages[g.idPlante].gardiennages.push(g);
+        });
+
+        const idsPlantes = Object.keys(plantsWithGardiennages).map(Number);
+        console.log('Plantes IDs:', idsPlantes);
+
+        const plantesPromises = idsPlantes.map(async (idPlante: number) => {
+          try {
+            const responsePlante = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${idPlante}`, { headers: headers });
+            if (!responsePlante.ok) throw new Error(`Failed to fetch plante with id ${idPlante}`);
+
+            const dataPlante = await responsePlante.json();
+            // Associer les gardiennages aux plantes
+            const planteWithGardiennages = {
+              ...dataPlante.plante,
+              gardiennages: plantsWithGardiennages[idPlante]?.gardiennages || [],
+            };
+
+            return planteWithGardiennages;
+          } catch (error) {
+            console.error(`Error fetching details for plante id ${idPlante}:`, error);
+            return null;
+          }
+        });
+
+        const plantesDetails = await Promise.all(plantesPromises);
+        const validPlantesDetails = plantesDetails.filter((plante: any) => plante !== null);
+        console.log('Plantes details:', validPlantesDetails);
+
+        setPlantes(validPlantesDetails);
+      } catch (error) {
+        console.error("Error fetching plantes:", error);
+        setError("Erreur lors de la récupération des plantes");
       }
-    } catch (error) {
-      console.error("Error fetching plantes:", error);
-    }
-  };
+    };
 
-  const formatDateTime = (dateString: any) => {
+    fetchPlantes();
+  }, [headers]);
+
+  useEffect(() => {
+    if (error) {
+      console.error('Error:', error);
+    }
+  }, [error]);
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Date invalide"; // Ou un message par défaut
+    }
+
     const options: any = {
       year: "numeric",
       month: "long",
@@ -44,7 +97,23 @@ export default function GardiennagePage() {
       hour: "numeric",
       minute: "numeric",
     };
-    return new Date(dateString).toLocaleDateString("fr-FR", options);
+    return date.toLocaleDateString("fr-FR", options);
+  };
+
+  const filterGardiennages = (gardiennages: any[]) => {
+    const now = new Date();
+    return gardiennages.filter((g: any) => {
+      const dateDebut = new Date(g.dateDebut);
+      const dateFin = new Date(g.dateFin);
+      if (selectedTab === 'enCours') {
+        return dateDebut <= now && dateFin >= now;
+      } else if (selectedTab === 'aVenir') {
+        return dateDebut > now;
+      } else if (selectedTab === 'passes') {
+        return dateFin < now;
+      }
+      return false;
+    });
   };
 
   const showPlanteDetails = (plante: any) => {
@@ -56,34 +125,62 @@ export default function GardiennagePage() {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className=" min-h-screen">
       <Head>
         <title>Mes gardiennages</title>
         <meta name="description" content="Liste des gardiennages de plantes" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="bg-green-600 py-4 px-6 flex items-center">
-        <button onClick={() => window.history.back()} className="flex">
-          <ChevronLeft className="text-white" />
-        </button>
-        <h1 className="text-white text-2xl font-bold ml-4">
-          Mes Gardiennages
-        </h1>
-      </header>
+      <div className="flex mx-auto p-4 h-full">
+        <button
+          onClick={handleGardiennagesClick}
 
+          className={`flex-1 px-4 py-2 text-base font-semibold rounded-l-lg  bg-gray-200 text-gray-600`}
+        >
+          Mes plantes
+        </button>
+        <button
+          className={`flex-1 px-4 text-base font-semibold rounded-r-lg bg-green-600 text-white`}
+
+        >
+          Mes gardiennages
+        </button>
+      </div>
       <main className="container mx-auto px-4 py-6">
+        <div className="mb-4">
+          <div className="flex space-x-4">
+            {['enCours', 'aVenir', 'passes'].map(tab => (
+              <button
+                key={tab}
+                className={`py-2 px-4 rounded-lg ${selectedTab === tab ? 'bg-green-600 text-white' : 'bg-white text-gray-700'}`}
+                onClick={() => setSelectedTab(tab as 'enCours' | 'aVenir' | 'passes')}
+              >
+                {tab === 'enCours' ? 'En cours' : tab === 'aVenir' ? 'À venir' : 'Passés'}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-4">
-          {plantes.map((plante) => (
-            <div
-              key={plante.id}
-              className="bg-white rounded-lg shadow-md p-4 cursor-pointer"
-              onClick={() => showPlanteDetails(plante)}
-            >
-              <h2 className="text-xl font-bold">{plante.nom_plt}</h2>
-              <p className="text-gray-600">{plante.adr_plt}</p>
-            </div>
-          ))}
+          {Array.isArray(plantes) && plantes.length > 0 ? (
+            plantes.flatMap(plante =>
+              filterGardiennages(plante.gardiennages).map((g: any) => (
+                <div
+                  key={`${plante.idPlante}-${g.idGardiennage}`}
+                  className="bg-white rounded-lg shadow-md p-4 cursor-pointer"
+                  onClick={() => showPlanteDetails({ ...plante, dateDebut: g.dateDebut, dateFin: g.dateFin })}
+                >
+                  <h2 className="text-xl font-bold">{plante.nom}</h2>
+                  <p className="text-gray-600">{plante.adresse}</p>
+                  <p className="text-gray-500">Date de début: {formatDateTime(g.dateDebut)}</p>
+                  <p className="text-gray-500">Date de fin: {formatDateTime(g.dateFin)}</p>
+                </div>
+              ))
+            )
+          ) : (
+            <p></p>
+          )}
         </div>
       </main>
 
@@ -91,7 +188,7 @@ export default function GardiennagePage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-700 bg-opacity-50">
           <div className="bg-white w-full max-w-md p-4 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">{selectedPlante.nom_plt}</h2>
+              <h2 className="text-xl font-bold">{selectedPlante.nom}</h2>
               <button
                 onClick={closePlanteDetails}
                 className="text-gray-500 hover:text-gray-700 focus:outline-none"
@@ -100,26 +197,30 @@ export default function GardiennagePage() {
               </button>
             </div>
             <p>
-              <strong>Espèce:</strong> {selectedPlante.esp_plt}
+              <strong>Espèce:</strong> {selectedPlante.espece}
             </p>
             <p>
-              <strong>Description:</strong> {selectedPlante.dsc_plt}
+              <strong>Description:</strong> {selectedPlante.description}
             </p>
             <p>
-              <strong>Adresse:</strong> {selectedPlante.adr_plt}
+              <strong>Adresse:</strong> {selectedPlante.adresse}
             </p>
-            <p>
-              <strong>Date de début:</strong>{" "}
-              {formatDateTime(selectedPlante.dat_deb_plt)}
-            </p>
-            <p>
-              <strong>Date de fin:</strong>{" "}
-              {formatDateTime(selectedPlante.dat_fin_plt)}
-            </p>
-            {/* Ajouter ici la logique pour afficher l'image */}
-            <button className="bg-green-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-green-600 focus:outline-none">
-              Prendre une photo
-            </button>
+         
+            {selectedPlante.photoUrl && (
+              <img src={selectedPlante.photoUrl} alt={`Photo de ${selectedPlante.nom}`} className="mt-4" />
+            )}
+            {selectedPlante.gardiennages.length > 0 && (
+              <div className="mt-4">
+                <ul>
+                  {selectedPlante.gardiennages.map((g: any) => (
+                    <li key={g.idGardiennage}>
+                      <p><strong>Date de début:</strong> {formatDateTime(g.dateDebut)}</p>
+                      <p><strong>Date de fin:</strong> {formatDateTime(g.dateFin)}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}

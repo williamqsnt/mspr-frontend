@@ -17,6 +17,9 @@ const PlantesUtilisateur: React.FC = () => {
   const router = useRouter();
   const token = localStorage.getItem('token');
 
+  const handleGardiennagesClick = () => {
+    router.push('/mes-gardiennages');
+  };
   const headers = new Headers();
   if (token) {
     headers.append('Authorization', `Bearer ${token}`);
@@ -56,7 +59,20 @@ const PlantesUtilisateur: React.FC = () => {
   return (
     <div className="flex flex-col h-screen bg-background">
       <div className="container mx-auto p-4 h-full">
-        <h1 className="text-2xl font-bold mb-4">Liste de vos plantes</h1>
+        <div className="flex mb-8">
+          <button
+            className={`flex-1 px-4 text-base font-semibold rounded-l-lg bg-green-600 text-white`}
+          >
+            Mes plantes
+          </button>
+          <button
+            onClick={handleGardiennagesClick}
+            className={`flex-1 px-4 py-2 text-base font-semibold rounded-r-lg bg-gray-200 text-gray-600`}
+          >
+            Mes gardiennages
+          </button>
+        </div>
+        <h1 className="text-lg font-bold mb-4">Liste de vos plantes</h1>
         <ul className="grid grid-cols-2 gap-4">
           {plantes.map(plante => (
             <li key={plante.idPlante} className="bg-white shadow-md rounded-lg p-4" onClick={() => handleCardClick(plante.idPlante)}>
