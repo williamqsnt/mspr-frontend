@@ -8,7 +8,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon } from 'lucide-react';
+import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon, User, HomeIcon, Leaf, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import MapComponent from '@/components/map';
 
@@ -184,18 +184,30 @@ const HomePage: React.FC = () => {
             <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
           </div>
           <div className="flex justify-around items-center py-3 w-full">
-            <button className="flex flex-col items-center" onClick={() => handleNavigation('/plantes')}>
-              <img src="/plante.png" alt="Plantes" className="w-6 h-6" />
-              <span className="text-xs mt-1">Plantes</span>
-            </button>
-            <button className="flex flex-col items-center" onClick={() => handleNavigation('/home')}>
-              <img src="/home.png" alt="Accueil" className="w-6 h-6" />
-              <span className="text-xs mt-1">Accueil</span>
-            </button>
-            <button className="flex flex-col items-center" onClick={() => router.push('/messages')}>
-              <img src="/message.png" alt="Messages" className="w-6 h-6" />
-              <span className="text-xs mt-1">Messages</span>
-            </button>
+            <Link href="/" passHref>
+              <p className="flex flex-col items-center">
+                <HomeIcon size={25} />
+                <span className="text-xs mt-1">Accueil</span>
+              </p>
+            </Link>
+            <Link href="/plantes-utilisateur" passHref>
+              <p className="flex flex-col items-center">
+                <Leaf size={25} />
+                <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/messages" passHref>
+              <p className="flex flex-col items-center">
+                <MessageCircle size={25} />
+                <span className="text-xs mt-1">Messages</span>
+              </p>
+            </Link>
+            <Link href="/profile" passHref>
+              <p className="flex flex-col items-center">
+                <User size={25} />
+                <span className="text-xs mt-1">Profil</span>
+              </p>
+            </Link>
           </div>
         </nav>
       </footer>

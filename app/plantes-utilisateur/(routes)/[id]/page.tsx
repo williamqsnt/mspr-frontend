@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, HomeIcon, Leaf, MessageCircle, User } from 'lucide-react';
 import axios from 'axios';
+import Link from 'next/link';
 
 interface Plante {
     idPlante: number;

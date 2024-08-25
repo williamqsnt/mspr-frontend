@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CalendarIcon, ChevronLeft, FlowerIcon, MailIcon, UserIcon } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ConversationsPage() {
@@ -126,19 +126,38 @@ export default function ConversationsPage() {
           </div>
         </section>
       </main>
-      <footer className="flex justify-around py-4 bg-white border-t">
-        <button className="focus:outline-none" onClick={() => router.push('/requests')}>
-          <CalendarIcon className="w-6 h-6" />
-          <span className="block text-xs">Requests</span>
-        </button>
-        <button className="focus:outline-none" onClick={() => router.push('/chercher-plantes')}>
-          <FlowerIcon className="w-6 h-6" />
-          <span className="block text-xs">Find Plants</span>
-        </button>
-        <button className="focus:outline-none" onClick={() => router.push('/messages')}>
-          <MailIcon className="w-6 h-6" />
-          <span className="block text-xs">Messages</span>
-        </button>
+      <footer className="bg-white shadow-lg">
+        <nav className="flex flex-col items-center w-full">
+          <div className="w-full flex justify-center">
+            <div className="w-5/6 h-px bg-gray-600 my-2"> </div>
+          </div>
+          <div className="flex justify-around items-center py-3 w-full">
+            <Link href="/" passHref>
+              <p className="flex flex-col items-center">
+                <HomeIcon size={25} />
+                <span className="text-xs mt-1">Accueil</span>
+              </p>
+            </Link>
+            <Link href="/plantes-utilisateur" passHref>
+              <p className="flex flex-col items-center">
+                <Leaf size={25} />
+                <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/messages" passHref>
+              <p className="flex flex-col items-center">
+                <MessageCircle size={25} />
+                <span className="text-xs mt-1">Messages</span>
+              </p>
+            </Link>
+            <Link href="/profile" passHref>
+              <p className="flex flex-col items-center">
+                <User size={25} />
+                <span className="text-xs mt-1">Profil</span>
+              </p>
+            </Link>
+          </div>
+        </nav>
       </footer>
     </div>
   );

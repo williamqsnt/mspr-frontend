@@ -253,7 +253,7 @@ export default function ChercherPlantepage() {
         </div>
       </main>
 
-      <footer>
+      <footer className="z-50">
         <button onClick={() => window.history.back()}>Retour</button>
       </footer>
 
