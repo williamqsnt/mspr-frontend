@@ -15,11 +15,9 @@ export default function Login() {
     const handleLogin = async () => {
         try {
             const encryptedMotDePasse = encrypt(motDePasse);
-            const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', null, {
-                params: {
-                    pseudo: pseudo,
-                    motDePasse: encryptedMotDePasse,
-                },
+            const response = await axios.post('http://localhost:3000/api/utilisateur/verifier', {
+                pseudo: pseudo,
+                motDePasse: encryptedMotDePasse,
             });
 
             const responseData = response.data;
