@@ -22,10 +22,11 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const [plante, setPlante] = useState<Plante | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [dateDebut, setDateDebut] = useState<string>('');
-    const [dateFin, setDateFin] = useState<string>('');
+    const [conseil, setconseil] = useState<string>('');
+
     const router = useRouter();
     const token = localStorage.getItem('token');
+    const idUtilisateur = localStorage.getItem('idUtilisateur');
 
     const headers = new Headers();
     if (token) {
@@ -69,17 +70,13 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (!dateDebut || !dateFin) {
-            alert('Veuillez remplir toutes les dates.');
-            return;
-        }
 
         try {
-            const response = await axios.post('http://localhost:3000/api/gardiennage/ajouter', null, {
+            const response = await axios.post('http://localhost:3000/api/conseil/ajouter', null, {
                 params: {
-                    dateDebut,
-                    dateFin,
-                    idPlante: id
+                    description: conseil,
+                    idPlante: id,
+                    idUtilisateur: idUtilisateur
                 }, headers: {
                     'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
                 }
@@ -93,7 +90,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             }
         } catch (error) {
             console.error('Erreur lors de la demande de gardiennage:', error);
-            alert('Erreur lors de la demande de gardiennage');
         }
     };
 
@@ -117,40 +113,26 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             </button>
             <Card className="border-none shadow-lg mx-auto max-w-lg">
                 <CardContent className="flex flex-col items-center p-4">
-                    <img src={plante.photoUrl} alt={plante.nom} className="w-full h-64 object-cover rounded-lg mb-4" />
-                    <h1 className="text-3xl font-bold mb-2">{plante.nom}</h1>
-                    <p className="text-xl text-gray-700 mb-2">{plante.espece}</p>
-                    <p className="text-base text-gray-600 mb-4">{plante.description}</p>
-                    <p className="text-sm text-gray-500">Adresse: {plante.adresse}</p>
                     <form onSubmit={handleSubmit} className="w-full mt-6 bg-white shadow-md rounded-lg p-4">
-                        <h2 className="text-2xl font-bold mb-4">Demander un gardiennage</h2>
+                        <h2 className="text-2xl font-bold mb-4">Ajouter un conseil</h2>
                         <div className="mb-4">
-                            <label htmlFor="dateDebut" className="block text-gray-700 font-bold mb-2">Date de début</label>
-                            <input
-                                type="date"
-                                id="dateDebut"
-                                value={dateDebut}
-                                onChange={(e) => setDateDebut(e.target.value)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            <label htmlFor="conseil" className="block text-gray-700 font-bold mb-2">Texte à entrer</label>
+                            <textarea
+                                id="conseil"
+                                value={conseil}
+                                onChange={(e) => setconseil(e.target.value)}
+                                className="shadow appearance-none border rounded w-full h-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none"
+                                rows={5}
                                 required
                             />
-                        </div>
-                        <div className="mb-4">
-                            <label htmlFor="dateFin" className="block text-gray-700 font-bold mb-2">Date de fin</label>
-                            <input
-                                type="date"
-                                id="dateFin"
-                                value={dateFin}
-                                onChange={(e) => setDateFin(e.target.value)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                required
-                            />
-                        </div>
+                            </div>
+
+
                         <button
                             type="submit"
                             className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
                         >
-                            Demander un gardiennage
+                            Ajouter un conseil
                         </button>
                     </form>
                 </CardContent>
