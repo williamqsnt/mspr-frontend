@@ -40,7 +40,7 @@ export default function ChercherPlantepage() {
     async function fetchAddresses() {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/plante/recupererlocalisation", {headers: headers}
+          "http://localhost:3000/api/plante/recupererlocalisation", { headers: headers }
         );
         if (!response.ok) {
           throw new Error(
@@ -48,11 +48,11 @@ export default function ChercherPlantepage() {
           );
         }
         const responseData = await response.json();
-  
+
         const fetchedAddresses: Address[] = responseData.adresses;
-  
+
         setAddresses(fetchedAddresses);
-  
+
         const markers = await Promise.all(
           fetchedAddresses.map(async (addressObj) => {
             const coordinates = await getCoordinatesFromAddress(
@@ -111,31 +111,31 @@ export default function ChercherPlantepage() {
 
       const idData = await idResponse.json();
       const idUtilisateur1 = idData.idUtilisateur;
-      
+
 
       // Etape 2: Ajouter le gardien au gardiennage
       const ajoutResponse = await fetch(`http://localhost:3000/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur1}`, {
         method: 'PUT',
         headers: headers,
       });
-  
+
       if (!ajoutResponse.ok) {
         throw new Error('Erreur lors de l\'ajout du gardien au gardiennage.');
       }
 
       // Etape 3 : créer conversation entre les deux utilisateurs
-        const conversationResponse = await fetch(`http://localhost:3000/api/conversation/ajouter?`
-          + new URLSearchParams({
-              idUtilisateur: idUtilisateur1,
-              idUtilisateur_1: idUtilisateur,  // Utiliser idUtilisateur pour le second utilisateur
-              idGardiennage: idGardiennage
-          }), {
-          method: 'POST',
-          headers: headers,
+      const conversationResponse = await fetch(`http://localhost:3000/api/conversation/ajouter?`
+        + new URLSearchParams({
+          idUtilisateur: idUtilisateur1,
+          idUtilisateur_1: idUtilisateur,  // Utiliser idUtilisateur pour le second utilisateur
+          idGardiennage: idGardiennage
+        }), {
+        method: 'POST',
+        headers: headers,
       });
 
       if (!conversationResponse.ok) {
-          throw new Error('Erreur lors de la création de la conversation.');
+        throw new Error('Erreur lors de la création de la conversation.');
       }
 
       console.log('Plante sauvegardée avec succès.');
@@ -200,31 +200,31 @@ export default function ChercherPlantepage() {
             <span className="font-bold">Description:</span> {plant.description}
           </p>
           <div>
-        <h3 className="text-lg font-semibold mt-4">Gardiennage(s):</h3>
-        {plant.gardiennages.map((gardiennage : any, index : any) => (
-          <div key={index} className="mb-4">
-            <p>
-              <span className="font-bold">Début:</span> {new Date(gardiennage.dateDebut).toLocaleDateString()}{" "}
-              <span className="font-bold">Fin:</span> {new Date(gardiennage.dateFin).toLocaleDateString()}
-            </p>
-            <button
-              className="mt-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
-              onClick={() => {
-                console.log('ID Plante:', plant.idPlante);
-                console.log('ID Gardiennage:', gardiennage.idGardiennage);
-                onSave(plant.idPlante, gardiennage.idGardiennage, plant.idUtilisateur);
-              }} 
-            >
-              Garder ce gardiennage
-            </button>
+            <h3 className="text-lg font-semibold mt-4">Gardiennage(s):</h3>
+            {plant.gardiennages.map((gardiennage: any, index: any) => (
+              <div key={index} className="mb-4">
+                <p>
+                  <span className="font-bold">Début:</span> {new Date(gardiennage.dateDebut).toLocaleDateString()}{" "}
+                  <span className="font-bold">Fin:</span> {new Date(gardiennage.dateFin).toLocaleDateString()}
+                </p>
+                <button
+                  className="mt-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+                  onClick={() => {
+                    console.log('ID Plante:', plant.idPlante);
+                    console.log('ID Gardiennage:', gardiennage.idGardiennage);
+                    onSave(plant.idPlante, gardiennage.idGardiennage, plant.idUtilisateur);
+                  }}
+                >
+                  Garder ce gardiennage
+                </button>
 
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-    
+        </div>
+      );
+    }
+
 
     return <div>Aucune donnée disponible pour cette plante.</div>;
   }

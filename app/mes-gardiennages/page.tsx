@@ -1,8 +1,9 @@
 "use client";
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, HomeIcon, Leaf, MessageCircle, Plus, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function GardiennagePage() {
   const [plantes, setPlantes] = useState<any[]>([]);
@@ -28,7 +29,6 @@ export default function GardiennagePage() {
         if (!responseGardiennages.ok) throw new Error("Failed to fetch gardiennages");
 
         const dataGardiennages = await responseGardiennages.json();
-        console.log('Data fetched:', dataGardiennages);
 
         // Regrouper les gardiennages par plante
         const plantsWithGardiennages: { [key: number]: any } = {};
@@ -43,7 +43,6 @@ export default function GardiennagePage() {
         });
 
         const idsPlantes = Object.keys(plantsWithGardiennages).map(Number);
-        console.log('Plantes IDs:', idsPlantes);
 
         const plantesPromises = idsPlantes.map(async (idPlante: number) => {
           try {
@@ -66,7 +65,6 @@ export default function GardiennagePage() {
 
         const plantesDetails = await Promise.all(plantesPromises);
         const validPlantesDetails = plantesDetails.filter((plante: any) => plante !== null);
-        console.log('Plantes details:', validPlantesDetails);
 
         setPlantes(validPlantesDetails);
       } catch (error) {
@@ -125,29 +123,29 @@ export default function GardiennagePage() {
   };
 
   return (
-    <div className=" min-h-screen">
+    <div className="flex flex-col h-screen bg-background">
       <Head>
         <title>Mes gardiennages</title>
         <meta name="description" content="Liste des gardiennages de plantes" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="flex mx-auto p-4 h-full">
+      <div className="flex mx-2 p-4">
         <button
           onClick={handleGardiennagesClick}
 
-          className={`flex-1 px-4 py-2 text-base font-semibold rounded-l-lg  bg-gray-200 text-gray-600`}
+          className={`flex-1 px-4 py-2 text-sm font-semibold rounded-l-lg  bg-gray-200 text-gray-600`}
         >
           Mes plantes
         </button>
         <button
-          className={`flex-1 px-4 text-base font-semibold rounded-r-lg bg-green-600 text-white`}
+          className={`flex-1 px-4 text-sm font-semibold rounded-r-lg bg-green-600 text-white`}
 
         >
           Mes gardiennages
         </button>
       </div>
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 h-screen">
         <div className="mb-4">
           <div className="flex space-x-4">
             {['enCours', 'aVenir', 'passes'].map(tab => (
@@ -205,7 +203,7 @@ export default function GardiennagePage() {
             <p>
               <strong>Adresse:</strong> {selectedPlante.adresse}
             </p>
-         
+
             {selectedPlante.photoUrl && (
               <img src={selectedPlante.photoUrl} alt={`Photo de ${selectedPlante.nom}`} className="mt-4" />
             )}
@@ -224,6 +222,39 @@ export default function GardiennagePage() {
           </div>
         </div>
       )}
+      <footer className="bg-white shadow-lg">
+        <nav className="flex flex-col items-center w-full">
+          <div className="w-full flex justify-center">
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
+          </div>
+          <div className="flex justify-around items-center py-3 w-full">
+            <Link href="/" passHref>
+              <p className="flex flex-col items-center">
+                <HomeIcon size={25} />
+                <span className="text-xs mt-1">Accueil</span>
+              </p>
+            </Link>
+            <Link href="/plantes-utilisateur" passHref>
+              <p className="flex flex-col items-center">
+                <Leaf size={25} />
+                <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/messages" passHref>
+              <p className="flex flex-col items-center">
+                <MessageCircle size={25} />
+                <span className="text-xs mt-1">Messages</span>
+              </p>
+            </Link>
+            <Link href="/profile" passHref>
+              <p className="flex flex-col items-center">
+                <User size={25} />
+                <span className="text-xs mt-1">Profil</span>
+              </p>
+            </Link>
+          </div>
+        </nav>
+      </footer>
     </div>
   );
 }

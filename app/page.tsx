@@ -120,7 +120,7 @@ const HomePage: React.FC = () => {
       <main className="flex-1 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold">Plantes en besoin d'urgence</h3>
-          <Link href="/chercher-plantes" className="text-blue-600 hover:underline">
+          <Link href="/plantes-gardiennage" className="text-blue-600 hover:underline">
             Voir plus
           </Link>
         </div>
@@ -145,7 +145,7 @@ const HomePage: React.FC = () => {
         </div>
         <MapComponent addresses={addresses} height="25vh" onSave={handleSavePlant} />
 
-      
+
         {isBotanist && (
           <button
             className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"

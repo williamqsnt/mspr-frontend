@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, HomeIcon, Leaf, MessageCircle, User } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
+import Link from "next/link";
 
 
 const PlantePage = () => {
@@ -38,9 +39,9 @@ const PlantePage = () => {
 
   const formatDate = (date: Date | Date[]): string => {
     const dateToFormat = Array.isArray(date) ? date[0] : date;
-    
+
     if (!(dateToFormat instanceof Date)) {
-        throw new Error('L\'argument doit être un objet Date ou un tableau d\'objets Date.');
+      throw new Error('L\'argument doit être un objet Date ou un tableau d\'objets Date.');
     }
 
     const formattedDate = new Date(dateToFormat);
@@ -53,7 +54,7 @@ const PlantePage = () => {
 
 
     return `${monthString}/${dayString}/${year}`;
-};
+  };
 
 
   const ajouterPlante = async () => {
@@ -79,7 +80,7 @@ const PlantePage = () => {
         'Authorization': `Bearer ${localStorage.getItem('token')}`, // Inclure le token JWT dans l'en-tête Authorization
         'Content-Type': 'application/json' // Spécifier le type de contenu si nécessaire
       };
-  
+
       // Envoyer la requête POST
       const response = await axios.post(
         url, // URL avec les paramètres inclus
@@ -146,7 +147,7 @@ const PlantePage = () => {
   };
 
   return (
-    <div className=" min-h-screen">
+    <div className="h-screen">
       <Head>
         <title>Ajouter une nouvelle plante</title>
       </Head>
@@ -159,7 +160,7 @@ const PlantePage = () => {
           Ajouter une plante
         </h1>
       </header>
-      <main className="container mx-auto px-4 py-6">
+      <main className="h-[82vh] container mx-auto px-4 py-6">
         <form>
           <div className="flex items-center w-full">
             <div className="mb-4 w-full">
@@ -340,6 +341,39 @@ const PlantePage = () => {
           </div>
         )}
       </main>
+      <footer className="bg-white shadow-lg">
+        <nav className="flex flex-col items-center w-full">
+          <div className="w-full flex justify-center">
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
+          </div>
+          <div className="flex justify-around items-center py-3 w-full">
+            <Link href="/" passHref>
+              <p className="flex flex-col items-center">
+                <HomeIcon size={25} />
+                <span className="text-xs mt-1">Accueil</span>
+              </p>
+            </Link>
+            <Link href="/plantes-utilisateur" passHref>
+              <p className="flex flex-col items-center">
+                <Leaf size={25} />
+                <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/messages" passHref>
+              <p className="flex flex-col items-center">
+                <MessageCircle size={25} />
+                <span className="text-xs mt-1">Messages</span>
+              </p>
+            </Link>
+            <Link href="/profile" passHref>
+              <p className="flex flex-col items-center">
+                <User size={25} />
+                <span className="text-xs mt-1">Profil</span>
+              </p>
+            </Link>
+          </div>
+        </nav>
+      </footer>
     </div>
   );
 };

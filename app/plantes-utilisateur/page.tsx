@@ -61,13 +61,13 @@ const PlantesUtilisateur: React.FC = () => {
       <div className="container mx-auto p-4 h-full">
         <div className="flex mb-8">
           <button
-            className={`flex-1 px-4 text-base font-semibold rounded-l-lg bg-green-600 text-white`}
+            className={`flex-1 px-4 text-sm font-semibold rounded-l-lg bg-green-600 text-white`}
           >
             Mes plantes
           </button>
           <button
             onClick={handleGardiennagesClick}
-            className={`flex-1 px-4 py-2 text-base font-semibold rounded-r-lg bg-gray-200 text-gray-600`}
+            className={`flex-1 px-4 py-2 text-sm font-semibold rounded-r-lg bg-gray-200 text-gray-600`}
           >
             Mes gardiennages
           </button>
@@ -87,7 +87,7 @@ const PlantesUtilisateur: React.FC = () => {
 
         <div className="flex">
           <div className="w-11/12"></div>
-          <button className="w-full px-4 py-2 mb-4 mr-8 text-white bg-green-600 rounded-full focus:outline-none hover:bg-green-700 flex items-center justify-center" onClick={() => router.push('/deposer-plante')}><Plus />Ajouter plante</button>
+          <button className="px-4 py-2 h-14 w-14 mb-4 mr-8 text-white bg-green-600 rounded-full focus:outline-none hover:bg-green-700 flex items-center justify-center" onClick={() => router.push('/deposer-plante')}><Plus /></button>
         </div>
         <nav className="flex flex-col items-center w-full">
           <div className="w-full flex justify-center">

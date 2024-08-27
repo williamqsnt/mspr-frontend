@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./provider";
 import { IsAuthProvider } from "@/lib/authContext";
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-white">
         <Providers>
-          <IsAuthProvider>{children}</IsAuthProvider>
+          <IsAuthProvider>
+            {children}
+            <Toaster position="top-right" reverseOrder={false} />
+          </IsAuthProvider>
         </Providers>
       </body>
     </html>
