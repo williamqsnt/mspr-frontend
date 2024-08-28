@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,34 +16,57 @@ interface Plante {
 const ChercherPlantes: React.FC = () => {
     const router = useRouter();
     const [plantes, setPlantes] = useState<Plante[]>([]);
-    const token = localStorage.getItem('token');
-
-    const headers = new Headers();
-    if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
-    }
+    const [token, setToken] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchPlantes();
+        // Récupérer le token depuis localStorage après le montage du composant
+        const storedToken = localStorage.getItem('token');
+        setToken(storedToken);
     }, []);
+
+    useEffect(() => {
+        // Appeler fetchPlantes uniquement après avoir récupéré le token
+        if (token) {
+            fetchPlantes();
+        }
+    }, [token]);
 
     const fetchPlantes = async () => {
         try {
+            const headers = new Headers();
+            if (token) {
+                headers.append('Authorization', `Bearer ${token}`);
+            }
+
             const response = await fetch('http://localhost:3000/api/plante/recupererInfos', { headers: headers });
             if (response.ok) {
                 const data = await response.json();
                 setPlantes(data.plantes);
             } else {
                 console.error('Erreur lors de la récupération des plantes');
+                setError('Erreur lors de la récupération des plantes');
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des plantes:', error);
+            setError('Erreur lors de la récupération des plantes');
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleCardClick = (id: number) => {
         router.push(`/plante/${id}`);
     };
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen">Chargement...</div>;
+    }
+
+    if (error) {
+        return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+    }
 
     return (
         <div>
@@ -68,7 +92,7 @@ const ChercherPlantes: React.FC = () => {
                 </div>
             </div> 
             <Menu />
-            </div>
+        </div>
     );
 };
 

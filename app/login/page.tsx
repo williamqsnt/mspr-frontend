@@ -78,7 +78,7 @@ export default function Login() {
                     Connexion
                 </button>
                 <p className="mt-4 text-center">
-    Vous n'avez pas encore de compte ?
+    Vous n&apos;avez pas encore de compte ?
     <span className="mx-1"> {/* Ajoute un espace entre le texte et le lien */}
         <a
             href="#"

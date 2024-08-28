@@ -1,4 +1,5 @@
 'use client';
+
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,26 +22,30 @@ export default function PlanteDetailsPage() {
   const [plante, setPlante] = useState<Plante | null>(null);
   const [conseil, setConseil] = useState('');
   const [userId, setUserId] = useState<number | null>(null);
-  const token = localStorage.getItem('token');
-
-  const headers = new Headers();
-  if (token) {
-    headers.append('Authorization', `Bearer ${token}`);
-  }
+  const [token, setToken] = useState<string | null>(null); // Déclaration de l'état pour le token
 
   useEffect(() => {
-    const idPlante = localStorage.getItem('idPlante');
-    if (idPlante) {
-      fetchPlanteDetails(idPlante);
+    // Récupération des données du localStorage côté client
+    const storedToken = localStorage.getItem('token');
+    const storedIdPlante = localStorage.getItem('idPlante');
+    const pseudo = localStorage.getItem('pseudo');
+
+    setToken(storedToken);
+
+    if (storedIdPlante) {
+      fetchPlanteDetails(storedIdPlante);
     } else {
       console.error('ID de la plante non trouvé dans le localStorage');
     }
 
     const fetchUserId = async () => {
       try {
-        const pseudo = localStorage.getItem('pseudo');
         if (pseudo) {
-          const response = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
+          const response = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {
+            headers: {
+              'Authorization': `Bearer ${storedToken}` // Utilisation du token récupéré
+            }
+          });
           if (response.ok) {
             const data = await response.json();
             setUserId(data.idUtilisateur);
@@ -61,12 +66,15 @@ export default function PlanteDetailsPage() {
   const fetchPlanteDetails = async (id: string) => {
     try {
       console.log(`Fetching details for plante ID: ${id}`);
-      const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, {headers: headers});
+      const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}` // Utilisation du token récupéré
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         console.log('Plante details fetched successfully:', data);
 
-        // Assurez-vous que vous accédez à la bonne propriété ici
         if (data.plantes && data.plantes.length > 0) {
           setPlante(data.plantes[0]);
         } else {
@@ -102,7 +110,9 @@ export default function PlanteDetailsPage() {
 
       const response = await fetch(url.toString(), {
         method: 'POST',
-        headers: headers,
+        headers: {
+          'Authorization': `Bearer ${token}` // Utilisation du token récupéré
+        }
       });
 
       if (response.ok) {
@@ -153,7 +163,7 @@ export default function PlanteDetailsPage() {
           </div>
         </div>
       </main>
-    <Menu />
+      <Menu />
     </div>
   );
 }
