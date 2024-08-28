@@ -40,7 +40,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
       try {
         if (!id) throw new Error('ID invalide');
 
-        const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, { headers });
+        const response = await fetch(`http://15.237.67.223:3000/api/plante/afficher?idPlante=${id}`, { headers });
 
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération des détails de la plante');
@@ -71,7 +71,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     }
 
     try {
-      const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+      const idResponse = await fetch(`http://15.237.67.223:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (!idResponse.ok) {
         throw new Error('Erreur lors de la récupération de l\'ID utilisateur.');
       }
@@ -79,7 +79,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
       const idData = await idResponse.json();
       const idUtilisateur = idData.idUtilisateur;
 
-      const ajoutResponse = await fetch(`http://localhost:3000/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur}`, {
+      const ajoutResponse = await fetch(`http://15.237.67.223:3000/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur}`, {
         method: 'PUT',
         headers: headers,
       });
@@ -88,7 +88,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         throw new Error('Erreur lors de l\'ajout du gardien au gardiennage.');
       }
 
-      const conversationResponse = await fetch(`http://localhost:3000/api/conversation/ajouter?`
+      const conversationResponse = await fetch(`http://15.237.67.223:3000/api/conversation/ajouter?`
         + new URLSearchParams({
           idUtilisateur: idUtilisateur,
           idUtilisateur_1: plante!.idUtilisateur.toString(), 

@@ -40,7 +40,7 @@ export default function MessagesPage() {
       try {
         // Récupération du pseudo de l'utilisateur connecté
         const pseudoResponse = await fetch(
-          `http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${idUtilisateur}`,
+          `http://15.237.67.223:3000/api/utilisateur/recupererPseudo?idUtilisateur=${idUtilisateur}`,
           { headers }
         );
         const pseudoData = await pseudoResponse.json();
@@ -48,7 +48,7 @@ export default function MessagesPage() {
 
         // Récupération de l'avatar de l'utilisateur connecté
         const avatarResponse = await fetch(
-          `http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${idConversation}`,
+          `http://15.237.67.223:3000/api/conversation/recupererPhotoPlante?idConversation=${idConversation}`,
           { headers }
         );
         const avatarData = await avatarResponse.json();
@@ -60,7 +60,7 @@ export default function MessagesPage() {
 
     fetchUserInfo();
 
-    const newSocket = io("http://localhost:3000", {
+    const newSocket = io("http://15.237.67.223:3000", {
       query: { token },
     });
 
@@ -95,7 +95,7 @@ export default function MessagesPage() {
   const ajouterPhotos = async (photo: any) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/plante/ajouterPhoto",
+        "http://15.237.67.223:3000/api/plante/ajouterPhoto",
         { image: photo },
         {
           headers: {
@@ -115,7 +115,7 @@ export default function MessagesPage() {
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
       try {
-        const url = `http://localhost:3000/api/message/ajouter?contenu=${encodeURIComponent(
+        const url = `http://15.237.67.223:3000/api/message/ajouter?contenu=${encodeURIComponent(
           newMessage
         )}&idConversation=${idConversation}&idUtilisateur=${idUtilisateur}`;
 
@@ -135,7 +135,7 @@ export default function MessagesPage() {
       try {
         const contenu = await ajouterPhotos(photos);
         // On ajoute "IsPhoto" au début du contenu pour savoir si c'est une photo ou un message
-        const url = `http://localhost:3000/api/message/ajouter?contenu=${encodeURIComponent(
+        const url = `http://15.237.67.223:3000/api/message/ajouter?contenu=${encodeURIComponent(
           "IsPhoto" + contenu
         )}&idConversation=${idConversation}&idUtilisateur=${idUtilisateur}`;
 

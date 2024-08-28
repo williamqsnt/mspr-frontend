@@ -29,7 +29,7 @@ export default function Inscription() {
       const encryptedAdresse = encrypt(adresse);
       const encryptedMotDePasse = encrypt(motDePasse);
 
-      const response = await axios.post('http://localhost:3000/api/utilisateur/ajouter', {
+      const response = await axios.post('http://15.237.67.223:3000/api/utilisateur/ajouter', {
         nom: encryptedNom,
         prenom: encryptedPrenom,
         dateNaissance: encryptedDateNaissance,
