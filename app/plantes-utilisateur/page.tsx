@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import Menu from '@/components/menu';
 import { ChevronLeft, HomeIcon, Leaf, MessageCircle, MapPin, Plus, User } from 'lucide-react';
 import Link from 'next/link';
@@ -16,50 +15,43 @@ interface Plante {
 const PlantesUtilisateur: React.FC = () => {
   const [plantes, setPlantes] = useState<Plante[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [token, setToken] = useState<string | null>(null);
-  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null);
   const router = useRouter();
+  const token = localStorage.getItem('token');
+
+  const handleGardiennagesClick = () => {
+    router.push('/mes-gardiennages');
+  };
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
-    // Récupération des valeurs de localStorage côté client
-    const storedToken = localStorage.getItem('token');
-    const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
-
-    setToken(storedToken);
-    setIdUtilisateur(storedIdUtilisateur);
-
     const fetchPlantes = async () => {
-      if (!storedToken || !storedIdUtilisateur) {
-        console.error('Token ou ID utilisateur non trouvés dans le localStorage');
-        setLoading(false);
-        return;
-      }
-
-      const headers = new Headers();
-      headers.append('Authorization', `Bearer ${storedToken}`);
-
       try {
-        const response = await fetch(`http://localhost:3000/api/plante/afficherAllByUtilisateur?idUtilisateur=${storedIdUtilisateur}`, { headers });
+        const idUtilisateur = localStorage.getItem("idUtilisateur");
+        if (!idUtilisateur) {
+          throw new Error("ID utilisateur non trouvé dans le localStorage");
+        }
+
+        const response = await fetch(`http://localhost:3000/api/plante/afficherAllByUtilisateur?idUtilisateur=${idUtilisateur}`, { headers: headers });
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || 'Erreur lors de la récupération des plantes');
+          throw new Error(data.message || "Erreur lors de la récupération des plantes");
         }
 
         setPlantes(data.plantes);
       } catch (error) {
-        console.error('Erreur lors de la récupération des plantes:', error);
+        console.error("Erreur lors de la récupération des plantes:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPlantes();
-  }, []); // Le tableau de dépendances est vide, donc ce useEffect s'exécute seulement après le premier rendu
+  }, []);
 
-  const handleGardiennagesClick = () => {
-    router.push('/mes-gardiennages');
-  };
 
   const handleCardClick = (id: number) => {
     router.push(`/plantes-utilisateur/${id}`);
@@ -69,10 +61,15 @@ const PlantesUtilisateur: React.FC = () => {
     <div className="flex flex-col h-screen bg-background">
       <div className="container mx-auto p-4 h-full">
         <div className="flex mb-8">
-          <button className="flex-1 px-4 text-sm font-semibold rounded-l-lg bg-[#1CD672]">
+          <button
+            className={`flex-1 px-4 text-sm font-semibold rounded-l-lg bg-[#1CD672]`}
+          >
             Mes plantes
           </button>
-          <button onClick={handleGardiennagesClick} className="flex-1 px-4 py-2 text-sm font-semibold rounded-r-lg bg-gray-200 text-gray-600">
+          <button
+            onClick={handleGardiennagesClick}
+            className={`flex-1 px-4 py-2 text-sm font-semibold rounded-r-lg bg-gray-200 text-gray-600`}
+          >
             Mes gardiennages
           </button>
         </div>

@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import Menu from '@/components/menu';
 import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from 'lucide-react';
 import Link from 'next/link';
@@ -16,22 +15,18 @@ interface Plante {
 const PlantesUtilisateur: React.FC = () => {
   const [plantes, setPlantes] = useState<Plante[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [token, setToken] = useState<string | null>(null); // État pour le token
   const router = useRouter();
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
-    // Récupération du token côté client
-    const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
-
     const fetchPlantes = async () => {
       try {
-        const headers = new Headers();
-        if (storedToken) {
-          headers.append('Authorization', `Bearer ${storedToken}`);
-        }
-
-        const response = await fetch(`http://localhost:3000/api/plante/afficherAll`, { headers });
+        const response = await fetch(`http://localhost:3000/api/plante/afficherAll`, { headers: headers });
         const data = await response.json();
 
         if (!response.ok) {
@@ -47,7 +42,7 @@ const PlantesUtilisateur: React.FC = () => {
     };
 
     fetchPlantes();
-  }, []); // Notez que vous pouvez également ajouter des dépendances ici si nécessaire
+  }, []);
 
   const handleCardClick = (id: number) => {
     router.push(`/gardien/${id}`);
@@ -68,7 +63,7 @@ const PlantesUtilisateur: React.FC = () => {
           ))}
         </ul>
       </div>
-      <Menu />
+    <Menu />
     </div>
   );
 };

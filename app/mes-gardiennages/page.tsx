@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from "lucide-react";
@@ -12,30 +11,23 @@ export default function GardiennagePage() {
   const [selectedPlante, setSelectedPlante] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<'enCours' | 'aVenir' | 'passes'>('enCours');
-  const [token, setToken] = useState<string | null>(null); // État pour le token
-  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null); // État pour l'ID utilisateur
+  const token = typeof window !== "undefined" ? localStorage.getItem('token') : null;
   const router = useRouter();
+  const idUtilisateur = localStorage.getItem('idUtilisateur');
+
+  const handleGardiennagesClick = () => {
+    router.push('/plantes-utilisateur');
+  };
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
-    // Récupération des valeurs de localStorage côté client
-    const storedToken = localStorage.getItem('token');
-    const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
-    setToken(storedToken);
-    setIdUtilisateur(storedIdUtilisateur);
-  }, []);
-
-  useEffect(() => {
-    if (!idUtilisateur || !token) return; // Ne pas exécuter si les données ne sont pas disponibles
-
     const fetchPlantes = async () => {
       try {
-        const headers = new Headers();
-        if (token) {
-          headers.append('Authorization', `Bearer ${token}`);
-        }
-
-        // Récupérer les gardiennages
-        const responseGardiennages = await fetch(`http://localhost:3000/api/gardiennage/afficherGardes?idUtilisateur=${idUtilisateur}`, { headers });
+        const responseGardiennages = await fetch(`http://localhost:3000/api/gardiennage/afficherGardes?idUtilisateur=${idUtilisateur}`, { headers: headers });
         if (!responseGardiennages.ok) throw new Error("Failed to fetch gardiennages");
 
         const dataGardiennages = await responseGardiennages.json();
@@ -54,10 +46,9 @@ export default function GardiennagePage() {
 
         const idsPlantes = Object.keys(plantsWithGardiennages).map(Number);
 
-        // Récupérer les détails des plantes
         const plantesPromises = idsPlantes.map(async (idPlante: number) => {
           try {
-            const responsePlante = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${idPlante}`, { headers });
+            const responsePlante = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${idPlante}`, { headers: headers });
             if (!responsePlante.ok) throw new Error(`Failed to fetch plante with id ${idPlante}`);
 
             const dataPlante = await responsePlante.json();
@@ -85,7 +76,7 @@ export default function GardiennagePage() {
     };
 
     fetchPlantes();
-  }, [idUtilisateur, token]); // Dépendances ajoutées
+  }, [idUtilisateur, token]);
 
   useEffect(() => {
     if (error) {
@@ -143,13 +134,15 @@ export default function GardiennagePage() {
 
       <div className="flex mx-2 p-4">
         <button
-          onClick={() => router.push('/plantes-utilisateur')}
+          onClick={handleGardiennagesClick}
+
           className={`flex-1 px-4 py-2 text-sm font-semibold rounded-l-lg  bg-gray-200 text-gray-600`}
         >
           Mes plantes
         </button>
         <button
           className={`flex-1 px-4 text-sm font-semibold rounded-r-lg bg-[#1CD672] text-black`}
+
         >
           Mes gardiennages
         </button>
@@ -186,7 +179,7 @@ export default function GardiennagePage() {
               ))
             )
           ) : (
-            <p>Aucune plante trouvée</p>
+            <p></p>
           )}
         </div>
       </main>
@@ -232,6 +225,7 @@ export default function GardiennagePage() {
         </div>
       )}
       <Menu />
+
     </div>
   );
 }

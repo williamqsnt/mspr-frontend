@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import Head from "next/head";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
@@ -23,16 +24,7 @@ const PlantePage = () => {
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
   const [photos, setPhotos] = useState<string | null>(null); // Pour stocker l'URL de la photo
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null); // Déplacez le token dans l'état
-  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null); // Déplacez l'idUtilisateur dans l'état
-
-  useEffect(() => {
-    // Récupérez le token et l'idUtilisateur uniquement côté client
-    const storedToken = localStorage.getItem('token');
-    const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
-    setToken(storedToken);
-    setIdUtilisateur(storedIdUtilisateur);
-  }, []);
+  const token = localStorage.getItem('token');
 
   const handleDebutDateChange = (date: Date | Date[]) => {
     const formattedDate = formatDate(date);
@@ -71,12 +63,9 @@ const PlantePage = () => {
     }
 
     try {
-      if (!token || !idUtilisateur) {
-        throw new Error("Token ou idUtilisateur manquant.");
-      }
-
       // Attendre que les photos soient ajoutées
       const responsePhoto = await ajouterPhotos(photos);
+      const idUtilisateur = localStorage.getItem("idUtilisateur");
 
       // Construire les paramètres de la requête
       const params = new URLSearchParams({
@@ -117,10 +106,6 @@ const PlantePage = () => {
 
   const ajouterPhotos = async (photo: any) => {
     try {
-      if (!token) {
-        throw new Error("Token manquant.");
-      }
-
       const response = await axios.post(
         'http://localhost:3000/api/plante/ajouterPhoto',
         { image: photo },

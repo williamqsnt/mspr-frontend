@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,31 +31,18 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const [dateFin, setDateFin] = useState<string>('');
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [editFields, setEditFields] = useState<Partial<Plante>>({});
-    const [token, setToken] = useState<string | null>(null);
     const router = useRouter();
+    const token = localStorage.getItem('token');
+
+    const headers = new Headers();
+    if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+    }
 
     useEffect(() => {
-        // Récupération du token et de l'idUtilisateur depuis localStorage côté client
-        const storedToken = localStorage.getItem('token');
-        setToken(storedToken);
-
         const fetchPlante = async () => {
-            if (!id) {
-                setError('ID invalide');
-                setLoading(false);
-                return;
-            }
-
-            if (!storedToken) {
-                setError('Token non trouvé dans localStorage');
-                setLoading(false);
-                return;
-            }
-
-            const headers = new Headers();
-            headers.append('Authorization', `Bearer ${storedToken}`);
-
             try {
+                if (!id) throw new Error('ID invalide');
                 const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, { headers });
 
                 if (!response.ok) {
@@ -84,7 +71,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         };
 
         fetchPlante();
-    }, [id]); // Dépendance sur id pour recharger les détails si id change
+    }, [id]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -99,7 +86,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             return;
         }
 
-        // Si l'écart entre la date de début et fin est supérieur à 1 an, ce n'est pas possible
+        // Si l'écart entre la date de début et fin est supérieur a 1 an, ce n'est pas possible
         const diff = Math.abs(new Date(dateFin).getTime() - new Date(dateDebut).getTime());
         const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
         if (diffDays > 365) {
@@ -111,12 +98,8 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             return;
         }
 
-        try {
-            if (!token) {
-                toast.error('Token non trouvé');
-                return;
-            }
 
+        try {
             const response = await axios.post('http://localhost:3000/api/gardiennage/ajouter', null, {
                 params: {
                     dateDebut,
@@ -136,7 +119,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 throw new Error(response.data.message || 'Erreur lors de la demande de gardiennage');
             }
         } catch (error) {
-            toast.error('Erreur lors de la demande de gardiennage');
+            toast.error("Erreur lors de la demande de gardiennage");
             console.error('Erreur lors de la demande de gardiennage:', error);
         }
     };
@@ -145,11 +128,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         event.preventDefault();
 
         try {
-            if (!token) {
-                toast.error('Token non trouvé');
-                return;
-            }
-
             const response = await axios.put('http://localhost:3000/api/plante/modifier', null, {
                 params: {
                     idPlante: id,
@@ -175,11 +153,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
     const handleDelete = async () => {
         try {
-            if (!token) {
-                toast.error('Token non trouvé');
-                return;
-            }
-
             const response = await axios.delete('http://localhost:3000/api/plante/supprimer', {
                 params: { idPlante: id },
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -189,7 +162,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 toast.success('Plante supprimée avec succès');
                 router.push('/');
             } else {
-                toast.error('Erreur lors de la suppression de la plante');
+                toast.error(error);
                 throw new Error(response.data.message || 'Erreur lors de la suppression de la plante');
             }
         } catch (error) {
@@ -220,15 +193,17 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
             <Card className="border-none mx-auto max-w-lg overflow-y-auto">
                 <CardContent className="flex flex-col items-center p-4">
+                    <div className="flex space-x-2 mb-4">
+                    </div>
                     <img src={plante.photoUrl} alt={plante.nom} className="w-full h-64 object-cover rounded-lg mb-4" />
                     <button
                         onClick={() => setIsEditing(!isEditing)}
-                        className="text-black font-bold py-2 px-4 rounded flex"
+                        className=" text-black font-bold py-2 px-4 rounded flex"
                     >
                         <Edit className="inline-block mr-2" />
                         {isEditing ? 'Annuler' : 'Modifier'}
                     </button>
-                    <div className={`w-full mt-8 mb-12 ${isEditing ? 'bg-white' : ''}`}>
+                    <div className={`w-full mt-8 mb-12 ${isEditing ? ' bg-white' : ''}`}>
                         <h1 className="text-base mb-2">Nom : {isEditing ? (
                             <input
                                 type="text"
@@ -237,7 +212,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                                 className="border p-2 rounded w-full"
                             />
                         ) : plante.nom}</h1>
-                        <p className="text-base mb-2">Espèce : {isEditing ? (
+                        <p className="text-base  mb-2">Espèce : {isEditing ? (
                             <input
                                 type="text"
                                 value={editFields.espece}

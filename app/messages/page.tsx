@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import * as React from "react";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,77 +8,67 @@ import Menu from "@/components/menu";
 
 export default function ConversationsPage() {
   const router = useRouter();
-  const [conversations, setConversations] = useState<{
-    idConversation: any; id: string; pseudo: string; avatar: string;
-  }[]>([]);
+  const [conversations, setConversations] = useState<{ id: string, pseudo: string, avatar: string }[]>([]);
   const [erreur, setErreur] = useState<string | null>(null);
   const [pseudoLocal, setPseudoLocal] = useState('');
-  const [token, setToken] = useState<string | null>(null);
+  const token = localStorage.getItem('token');
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
-    // Récupération des valeurs de localStorage côté client
-    const storedToken = localStorage.getItem('token');
-    const pseudo = localStorage.getItem('pseudo') || '';
-
-    setToken(storedToken);
-    setPseudoLocal(pseudo);
-
     const fetchConversations = async () => {
-      if (!pseudo || !storedToken) {
-        console.error('Pseudo ou token non trouvés dans le localStorage');
-        setErreur('Pseudo ou token non trouvés dans le localStorage');
-        return;
-      }
-
       try {
-        const headers = new Headers();
-        if (storedToken) {
-          headers.append('Authorization', `Bearer ${storedToken}`);
-        }
+        const pseudo = localStorage.getItem('pseudo')|| '';;
+        setPseudoLocal(pseudo);
 
-        // Récupérer l'ID utilisateur
-        const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
-        if (idResponse.ok) {
-          const idData = await idResponse.json();
-          const idUtilisateur = idData.idUtilisateur;
+        if (pseudo) {
+          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
+          if (idResponse.ok) {
+            const idData = await idResponse.json();
+            const idUtilisateur = idData.idUtilisateur;
 
-          if (idUtilisateur) {
-            // Récupérer les conversations
-            const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, { headers });
-            if (conversationResponse.ok) {
-              const data = await conversationResponse.json();
+            if (idUtilisateur) {
+              const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, {headers: headers});
+              if (conversationResponse.ok) {
+                const data = await conversationResponse.json();
 
-              // Récupérer les détails des conversations
-              const updatedConversations = await Promise.all(
-                data.conversations.map(async (conversation: { idUtilisateur: any; idUtilisateur_1: any; idConversation: any; }) => {
-                  const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
+                const updatedConversations = await Promise.all(
+                  data.conversations.map(async (conversation: { idUtilisateur: any; idUtilisateur_1: any; idConversation: any; }) => {
+                    const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
 
-                  const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, { headers });
-                  const pseudoData = pseudoResponse.ok ? await pseudoResponse.json() : { pseudo: "Unknown User" };
+                    const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, {headers: headers});
+                    const pseudoData = pseudoResponse.ok ? await pseudoResponse.json() : { pseudo: "Unknown User" };
 
-                  const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, { headers });
-                  const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
+                    const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, {headers: headers});
+                    const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
 
-                  return { 
-                    ...conversation, 
-                    pseudo: pseudoData.pseudo, 
-                    avatar: avatarData.photoUrl || '/default-avatar.png' 
-                  };
-                })
-              );
+                    return { 
+                      ...conversation, 
+                      pseudo: pseudoData.pseudo, 
+                      avatar: avatarData.photoUrl  || '/default-avatar.png' 
+                    };
+                  })
+                );
 
-              setConversations(updatedConversations);
+                setConversations(updatedConversations);
+              } else {
+                console.error('Erreur lors de la récupération des conversations');
+                setErreur('Erreur lors de la récupération des conversations');
+              }
             } else {
-              console.error('Erreur lors de la récupération des conversations');
-              setErreur('Erreur lors de la récupération des conversations');
+              console.error('ID utilisateur non trouvé pour le pseudo');
+              setErreur('ID utilisateur non trouvé pour le pseudo');
             }
           } else {
-            console.error('ID utilisateur non trouvé pour le pseudo');
-            setErreur('ID utilisateur non trouvé pour le pseudo');
+            console.error('Erreur lors de la récupération de l\'ID utilisateur');
+            setErreur('Erreur lors de la récupération de l\'ID utilisateur');
           }
         } else {
-          console.error('Erreur lors de la récupération de l\'ID utilisateur');
-          setErreur('Erreur lors de la récupération de l\'ID utilisateur');
+          console.error('Pseudo non trouvé dans le localStorage');
+          setErreur('Pseudo non trouvé dans le localStorage');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des conversations:', error);
@@ -88,7 +77,7 @@ export default function ConversationsPage() {
     };
 
     fetchConversations();
-  }, [pseudoLocal, token]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

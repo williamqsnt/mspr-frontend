@@ -1,9 +1,10 @@
-'use client';
-
+"use client";
 import * as React from "react";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
+import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon, MapPin } from 'lucide-react';
+import Link from 'next/link';
 import { decrypt } from "@/utils/cryptoUtils";
 import Menu from "@/components/menu";
 
@@ -12,58 +13,48 @@ export default function ProfilPage() {
   const [utilisateur, setUtilisateur] = useState({ nom: '', prenom: '' });
   const [plantes, setPlantes] = useState<{ nom: string }[]>([]);
   const [erreur, setErreur] = useState<string | null>(null);
+  const token = localStorage.getItem('token');
 
-  // États pour gérer le token et les headers
-  const [token, setToken] = useState<string | null>(null);
-  const [pseudo, setPseudo] = useState<string | null>(null);
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
-    // Récupération des valeurs de localStorage côté client
-    const storedToken = localStorage.getItem('token');
-    const storedPseudo = localStorage.getItem('pseudo');
-
-    setToken(storedToken);
-    setPseudo(storedPseudo);
-
     const fetchProfil = async () => {
-      if (!storedPseudo || !storedToken) {
-        console.error('Pseudo ou token non trouvés dans le localStorage');
-        setErreur('Pseudo ou token non trouvés dans le localStorage');
-        return;
-      }
-
-      const headers = new Headers();
-      if (storedToken) {
-        headers.append('Authorization', `Bearer ${storedToken}`);
-      }
-
       try {
-        // Récupérer l'ID utilisateur à partir du pseudo
-        const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${storedPseudo}`, { headers });
-        if (idResponse.ok) {
-          const idData = await idResponse.json();
-          const idUtilisateur = idData.idUtilisateur;
+        const pseudo = localStorage.getItem('pseudo');
+        if (pseudo) {
+          // Récupérer l'ID utilisateur à partir du pseudo
+          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
+          if (idResponse.ok) {
+            const idData = await idResponse.json();
+            const idUtilisateur = idData.idUtilisateur;
 
-          if (idUtilisateur) {
-            // Récupérer les informations du profil et les plantes
-            const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers });
-            if (profilResponse.ok) {
-              const data = await profilResponse.json();
-              const nomDecrypter = decrypt(data.utilisateur.nom);
-              const prenomDecrypter = decrypt(data.utilisateur.prenom);
-              setUtilisateur({ nom: nomDecrypter, prenom: prenomDecrypter });
-              setPlantes(data.plantes);
+            if (idUtilisateur) {
+              // Récupérer les informations du profil et les plantes
+              const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers: headers });
+              if (profilResponse.ok) {
+                const data = await profilResponse.json();
+                const nomdecrypter = decrypt(data.utilisateur.nom);
+                const prenomdecrypter = decrypt(data.utilisateur.prenom);
+                setUtilisateur({ nom: nomdecrypter, prenom: prenomdecrypter });
+                setPlantes(data.plantes);
+              } else {
+                console.error('Erreur lors de la récupération du profil');
+                setErreur('Erreur lors de la récupération du profil');
+              }
             } else {
-              console.error('Erreur lors de la récupération du profil');
-              setErreur('Erreur lors de la récupération du profil');
+              console.error('ID utilisateur non trouvé pour le pseudo');
+              setErreur('ID utilisateur non trouvé pour le pseudo');
             }
           } else {
-            console.error('ID utilisateur non trouvé pour le pseudo');
-            setErreur('ID utilisateur non trouvé pour le pseudo');
+            console.error('Erreur lors de la récupération de l\'ID utilisateur');
+            setErreur('Erreur lors de la récupération de l\'ID utilisateur');
           }
         } else {
-          console.error('Erreur lors de la récupération de l\'ID utilisateur');
-          setErreur('Erreur lors de la récupération de l\'ID utilisateur');
+          console.error('Pseudo non trouvé dans le localStorage');
+          setErreur('Pseudo non trouvé dans le localStorage');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération du profil:', error);
@@ -72,7 +63,7 @@ export default function ProfilPage() {
     };
 
     fetchProfil();
-  }, [pseudo, token]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -83,9 +74,9 @@ export default function ProfilPage() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
-        <button className="focus:outline-none" onClick={handleLogout}>
-          Déconnexion
-        </button>
+          <button className="focus:outline-none" onClick={handleLogout}>
+            Déconnexion
+          </button>
       </header>
 
       <main className="flex-1 p-4">
@@ -125,7 +116,7 @@ export default function ProfilPage() {
           </div>
         </section>
       </main>
-      <Menu />
+     <Menu />
     </div>
   );
 }

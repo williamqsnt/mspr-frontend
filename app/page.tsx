@@ -1,5 +1,4 @@
 'use client';
-
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -9,6 +8,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon, User, HomeIcon, Leaf, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import Menu from '@/components/menu';
 
@@ -23,94 +23,86 @@ const HomePage: React.FC = () => {
   const router = useRouter();
   const [isBotanist, setIsBotanist] = useState<boolean>(false);
   const [plantes, setPlantes] = useState<Plante[]>([]);
+  const token = localStorage.getItem('token');
   const [addresses, setAddresses] = useState<{ adresse: string; idPlante: string }[]>([]);
-  const [token, setToken] = useState<string | null>(null);
-  const [pseudo, setPseudo] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const headers = new Headers();
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
 
   useEffect(() => {
-    // Récupérer le token et le pseudo depuis localStorage après le montage du composant
-    setToken(localStorage.getItem('token'));
-    setPseudo(localStorage.getItem('pseudo'));
+    fetchPlantes();
+    fetchIsBotanist();
   }, []);
-
-  useEffect(() => {
-    // Effectuer les appels API après avoir récupéré le token et le pseudo
-    if (token && pseudo) {
-      fetchPlantes();
-      fetchIsBotanist();
-      fetchAddresses();
-    }
-  }, [token, pseudo]);
 
   const fetchPlantes = async () => {
     try {
-      const headers = new Headers();
-      if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
-      }
-      const response = await fetch('http://localhost:3000/api/plante/recupererInfos', { headers });
+      const response = await fetch('http://localhost:3000/api/plante/recupererInfos', { headers: headers });
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
       } else {
         console.error('Erreur lors de la récupération des plantes');
-        setError('Erreur lors de la récupération des plantes');
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des plantes:', error);
-      setError('Erreur lors de la récupération des plantes');
     }
   };
 
   const fetchIsBotanist = async () => {
     try {
-      const headers = new Headers();
-      if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
-      }
-      const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
-      if (userIdResponse.ok) {
-        const userIdData = await userIdResponse.json();
-        const userId = userIdData.idUtilisateur;
-        if (userId) {
-          const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
-          if (botanistResponse.ok) {
-            const botanistData = await botanistResponse.json();
-            setIsBotanist(botanistData.estBotaniste);
-          } else {
-            console.error('Erreur lors de la vérification du statut botaniste');
-            setError('Erreur lors de la vérification du statut botaniste');
+      const pseudo = localStorage.getItem('pseudo');
+      if (pseudo) {
+        const userIdResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
+        if (userIdResponse.ok) {
+          const userIdData = await userIdResponse.json();
+          const userId = userIdData.idUtilisateur;
+
+          if (userId) {
+            const botanistResponse = await fetch(`http://localhost:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers: headers });
+            if (botanistResponse.ok) {
+              const botanistData = await botanistResponse.json();
+              setIsBotanist(botanistData.estBotaniste);
+            } else {
+              console.error('Erreur lors de la vérification du statut botaniste');
+            }
           }
+        } else {
+          console.error('Erreur lors de la récupération de l\'ID utilisateur');
         }
-      } else {
-        console.error('Erreur lors de la récupération de l\'ID utilisateur');
-        setError('Erreur lors de la récupération de l\'ID utilisateur');
       }
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'ID utilisateur et la vérification du statut botaniste:', error);
-      setError('Erreur lors de la récupération de l\'ID utilisateur et la vérification du statut botaniste');
     }
   };
 
-  const fetchAddresses = async () => {
-    try {
-      const headers = new Headers();
-      if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
+  useEffect(() => {
+    async function fetchAddresses() {
+      try {
+        const headers = new Headers();
+        if (token) {
+          headers.append('Authorization', `Bearer ${token}`);
+        }
+
+        const response = await fetch("http://localhost:3000/api/plante/recupererlocalisation", { headers });
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des adresses de plantes.");
+        }
+
+        const responseData = await response.json();
+        setAddresses(responseData.adresses);
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
       }
-      const response = await fetch('http://localhost:3000/api/plante/recupererlocalisation', { headers });
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des adresses de plantes.');
-      }
-      const responseData = await response.json();
-      setAddresses(responseData.adresses);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des adresses:', error);
-      setError('Erreur lors de la récupération des adresses');
     }
-  };
+    fetchAddresses();
+  }, []);
+
+  async function handleSavePlant(idPlante: string, idGardiennage: string, idUtilisateur: string) {
+    // votre logique ici
+  }
+
 
   const handleNavigation = (route: string) => {
     router.push(route);
@@ -120,14 +112,6 @@ const HomePage: React.FC = () => {
     router.push(`/plante/${id}`);
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Chargement...</div>;
-  }
-
-  if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
-  }
-
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
@@ -135,7 +119,7 @@ const HomePage: React.FC = () => {
       </header>
       <main className="flex-1 p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold">Plantes en besoin d&apos;urgence</h3>
+          <h3 className="text-xl font-bold">Plantes en besoin d'urgence</h3>
           <Link href="/plantes-gardiennage" className="text-blue-600 hover:underline">
             Voir plus
           </Link>
@@ -159,6 +143,7 @@ const HomePage: React.FC = () => {
             </CarouselContent>
           </Carousel>
         </div>
+
 
         {isBotanist && (
           <button

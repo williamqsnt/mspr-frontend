@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
+import axios from 'axios';
 import { CameraIcon, Check, RotateCcw } from 'lucide-react';
 
 type PrendrePhotoProps = {
@@ -8,9 +9,9 @@ type PrendrePhotoProps = {
 
 const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
     const webcamRef = useRef<Webcam>(null);
-    const [imageSrc, setImageSrc] = useState<string | null>(null); // Typage correct de imageSrc
-    const [showWebcam, setShowWebcam] = useState<boolean>(false); // Pour afficher ou cacher la webcam
-    const [showPreview, setShowPreview] = useState<boolean>(false); // Pour afficher l'aperçu de l'image
+    const [imageSrc, setImageSrc] = useState(null); // Pour stocker l'image capturée
+    const [showWebcam, setShowWebcam] = useState(false); // Pour afficher ou cacher la webcam
+    const [showPreview, setShowPreview] = useState(false); // Pour afficher l'aperçu de l'image
 
     // Afficher la webcam
     const handleShowWebcam = () => {
@@ -33,7 +34,7 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
     };
 
     // Confirmer et envoyer l'image vers le parent
-    const confirmPhoto = async (e: React.FormEvent) => {
+    const confirmPhoto = async (e:any) => {
         e.preventDefault();
         try {
             if (!imageSrc) {
@@ -48,6 +49,7 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
         }
     };
 
+
     // Fermer la webcam
     const handleCloseWebcam = () => {
         setShowWebcam(false);
@@ -58,13 +60,7 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
     return (
         <div className="relative">
             {!showWebcam && !showPreview && (
-                <button onClick={handleShowWebcam}>
-                    {imageSrc ? (
-                        <img src={imageSrc} alt="Captured" className="h-12 object-cover" />
-                    ) : (
-                        <CameraIcon />
-                    )}
-                </button>
+                <button onClick={handleShowWebcam}>{imageSrc ? <img src={imageSrc} alt="Captured" className="h-12 object-cover" /> : <CameraIcon />}</button>
             )}
 
             {showWebcam && !showPreview && (
@@ -84,7 +80,7 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
 
             {showPreview && (
                 <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 z-50">
-                    <img src={imageSrc || ''} alt="Captured" className="w-full h-full object-cover" />
+                    <img src={imageSrc} alt="Captured" className="w-full h-full object-cover" />
                     <button onClick={handleCloseWebcam} className="absolute top-4 right-4 text-white bg-black rounded-full h-8 w-8">✕</button>
                     <div className="absolute bottom-12 flex space-x-4">
                         <button onClick={retakePhoto} className="bg-white text-black py-4 px-4 rounded-full"><RotateCcw size={45} /></button>
