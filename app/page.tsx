@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/carousel';
 import { MailIcon, UserIcon, SearchIcon, MapPin, CalendarIcon, User, HomeIcon, Leaf, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
-import MapComponent from '@/components/map';
 
 interface Plante {
   idPlante: number;
@@ -143,7 +142,6 @@ const HomePage: React.FC = () => {
             </CarouselContent>
           </Carousel>
         </div>
-        <MapComponent addresses={addresses} height="25vh" onSave={handleSavePlant} />
 
 
         {isBotanist && (
@@ -172,6 +170,12 @@ const HomePage: React.FC = () => {
               <p className="flex flex-col items-center">
                 <Leaf size={25} />
                 <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/chercher-plantes" passHref>
+              <p className="flex flex-col items-center">
+                <MapPin size={25} />
+                <span className="text-xs mt-1">Map</span>
               </p>
             </Link>
             <Link href="/messages" passHref>

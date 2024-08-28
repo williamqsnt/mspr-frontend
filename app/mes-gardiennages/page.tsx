@@ -1,7 +1,7 @@
 "use client";
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { ChevronLeft, HomeIcon, Leaf, MessageCircle, Plus, User } from "lucide-react";
+import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -12,6 +12,7 @@ export default function GardiennagePage() {
   const [selectedTab, setSelectedTab] = useState<'enCours' | 'aVenir' | 'passes'>('enCours');
   const token = typeof window !== "undefined" ? localStorage.getItem('token') : null;
   const router = useRouter();
+  const idUtilisateur = localStorage.getItem('idUtilisateur');
 
   const handleGardiennagesClick = () => {
     router.push('/plantes-utilisateur');
@@ -25,7 +26,7 @@ export default function GardiennagePage() {
   useEffect(() => {
     const fetchPlantes = async () => {
       try {
-        const responseGardiennages = await fetch(`http://localhost:3000/api/gardiennage/afficherGardes?idUtilisateur=52`, { headers: headers });
+        const responseGardiennages = await fetch(`http://localhost:3000/api/gardiennage/afficherGardes?idUtilisateur=${idUtilisateur}`, { headers: headers });
         if (!responseGardiennages.ok) throw new Error("Failed to fetch gardiennages");
 
         const dataGardiennages = await responseGardiennages.json();
@@ -228,25 +229,31 @@ export default function GardiennagePage() {
             <div className="w-full h-px bg-gray-600 my-2"> </div>
           </div>
           <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/" passHref>
+            <Link href="/">
               <p className="flex flex-col items-center">
                 <HomeIcon size={25} />
                 <span className="text-xs mt-1">Accueil</span>
               </p>
             </Link>
-            <Link href="/plantes-utilisateur" passHref>
+            <Link href="/plantes-utilisateur">
               <p className="flex flex-col items-center">
                 <Leaf size={25} />
                 <span className="text-xs mt-1">Plantes</span>
               </p>
             </Link>
-            <Link href="/messages" passHref>
+            <Link href="/chercher-plantes">
+              <p className="flex flex-col items-center">
+                <MapPin size={25} />
+                <span className="text-xs mt-1">Map</span>
+              </p>
+            </Link>
+            <Link href="/messages">
               <p className="flex flex-col items-center">
                 <MessageCircle size={25} />
                 <span className="text-xs mt-1">Messages</span>
               </p>
             </Link>
-            <Link href="/profile" passHref>
+            <Link href="/profile">
               <p className="flex flex-col items-center">
                 <User size={25} />
                 <span className="text-xs mt-1">Profil</span>

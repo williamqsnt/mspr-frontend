@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, HomeIcon, Leaf, MessageCircle, User } from 'lucide-react';
+import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, User } from 'lucide-react';
 import axios from 'axios';
 import Link from 'next/link';
 
@@ -46,13 +46,13 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 const data = await response.json();
 
                 const planteTrouvee = data;
+                console.log(planteTrouvee);
                 
-                if (planteTrouvee) {
-                    setPlante(planteTrouvee);
-                    console.log(plante);
-                } else {
+                if (data && data.plante) {
+                    setPlante(data.plante);
+                  } else {
                     setError('Plante non trouvée');
-                }
+                  }
             } catch (error) {
                 console.error('Erreur:', error);
                 setError('Erreur lors de la récupération des détails de la plante' + error);
@@ -118,9 +118,9 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             <Card className="border-none shadow-lg mx-auto max-w-lg">
                 <CardContent className="flex flex-col items-center p-4">
                     <img src={plante.photoUrl} alt={plante.nom} className="w-full h-64 object-cover rounded-lg mb-4" />
-                    <h1 className="text-3xl font-bold mb-2">{plante.nom}</h1>
-                    <p className="text-xl text-gray-700 mb-2">{plante.espece}</p>
-                    <p className="text-base text-gray-600 mb-4">{plante.description}</p>
+                    <h1 className="text-3xl font-bold mb-2">Nom : {plante.nom}</h1>
+                    <p className="text-xl text-gray-700 mb-2">Espèce : {plante.espece}</p>
+                    <p className="text-base text-gray-600 mb-4">Description : {plante.description}</p>
                     <p className="text-sm text-gray-500">Adresse: {plante.adresse}</p>
                     <form onSubmit={handleSubmit} className="w-full mt-6 bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-2xl font-bold mb-4">Demander un gardiennage</h2>
@@ -156,40 +156,45 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 </CardContent>
             </Card>
             <br></br>
-            <footer className="bg-white shadow-lg mt-auto">
-
-<nav className="flex flex-col items-center w-full">
-  <div className="w-full flex justify-center">
-    <div className="w-full h-px bg-gray-600 my-2"> </div>
-  </div>
-  <div className="flex justify-around items-center py-3 w-full">
-    <Link href="/" passHref>
-      <p className="flex flex-col items-center">
-        <HomeIcon size={25} />
-        <span className="text-xs mt-1">Accueil</span>
-      </p>
-    </Link>
-    <Link href="/plantes-utilisateur" passHref>
-      <p className="flex flex-col items-center">
-        <Leaf size={25} />
-        <span className="text-xs mt-1">Plantes</span>
-      </p>
-    </Link>
-    <Link href="/messages" passHref>
-      <p className="flex flex-col items-center">
-        <MessageCircle size={25} />
-        <span className="text-xs mt-1">Messages</span>
-      </p>
-    </Link>
-    <Link href="/profile" passHref>
-      <p className="flex flex-col items-center">
-        <User size={25} />
-        <span className="text-xs mt-1">Profil</span>
-      </p>
-    </Link>
-  </div>
-</nav>
-</footer>
+            <footer className="bg-white shadow-lg">
+        <nav className="flex flex-col items-center w-full">
+          <div className="w-full flex justify-center">
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
+          </div>
+          <div className="flex justify-around items-center py-3 w-full">
+            <Link href="/">
+              <p className="flex flex-col items-center">
+                <HomeIcon size={25} />
+                <span className="text-xs mt-1">Accueil</span>
+              </p>
+            </Link>
+            <Link href="/plantes-utilisateur">
+              <p className="flex flex-col items-center">
+                <Leaf size={25} />
+                <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/chercher-plantes">
+              <p className="flex flex-col items-center">
+                <MapPin size={25} />
+                <span className="text-xs mt-1">Map</span>
+              </p>
+            </Link>
+            <Link href="/messages">
+              <p className="flex flex-col items-center">
+                <MessageCircle size={25} />
+                <span className="text-xs mt-1">Messages</span>
+              </p>
+            </Link>
+            <Link href="/profile">
+              <p className="flex flex-col items-center">
+                <User size={25} />
+                <span className="text-xs mt-1">Profil</span>
+              </p>
+            </Link>
+          </div>
+        </nav>
+      </footer>
         </div>
         
     );

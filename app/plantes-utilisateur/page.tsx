@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeft, HomeIcon, Leaf, MessageCircle, Plus, User } from 'lucide-react';
+import { ChevronLeft, HomeIcon, Leaf, MessageCircle, MapPin, Plus, User } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -84,11 +84,6 @@ const PlantesUtilisateur: React.FC = () => {
         </ul>
       </div>
       <footer className="bg-white shadow-lg">
-
-        <div className="flex">
-          <div className="w-11/12"></div>
-          <button className="px-4 py-2 h-14 w-14 mb-4 mr-8 text-white bg-green-600 rounded-full focus:outline-none hover:bg-green-700 flex items-center justify-center" onClick={() => router.push('/deposer-plante')}><Plus /></button>
-        </div>
         <nav className="flex flex-col items-center w-full">
           <div className="w-full flex justify-center">
             <div className="w-full h-px bg-gray-600 my-2"> </div>
@@ -104,6 +99,12 @@ const PlantesUtilisateur: React.FC = () => {
               <p className="flex flex-col items-center">
                 <Leaf size={25} />
                 <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/chercher-plantes" passHref>
+              <p className="flex flex-col items-center">
+                <MapPin size={25} />
+                <span className="text-xs mt-1">Map</span>
               </p>
             </Link>
             <Link href="/messages" passHref>

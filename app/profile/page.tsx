@@ -3,7 +3,7 @@ import * as React from "react";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { decrypt } from "@/utils/cryptoUtils";
 
@@ -131,6 +131,12 @@ export default function ProfilPage() {
               <p className="flex flex-col items-center">
                 <Leaf size={25} />
                 <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/chercher-plantes" passHref>
+              <p className="flex flex-col items-center">
+                <MapPin size={25} />
+                <span className="text-xs mt-1">Map</span>
               </p>
             </Link>
             <Link href="/messages" passHref>

@@ -8,7 +8,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import getCoordinatesFromAddress from "@/utils/getCoordinatesFromAddress";
-import { ChevronLeft, X } from "lucide-react";
+import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon, MapPin, Link } from 'lucide-react';
 import axios from "axios";
 
 // Dynamic import of MapContainer to avoid SSR issues with leaflet
@@ -255,6 +255,45 @@ export default function ChercherPlantepage() {
 
       <footer className="z-50">
         <button onClick={() => window.history.back()}>Retour</button>
+      </footer>
+      <footer className="bg-white shadow-lg">
+        <nav className="flex flex-col items-center w-full">
+          <div className="w-full flex justify-center">
+            <div className="w-full h-px bg-gray-600 my-2"> </div>
+          </div>
+          <div className="flex justify-around items-center py-3 w-full">
+            <Link href="/">
+              <p className="flex flex-col items-center">
+                <HomeIcon size={25} />
+                <span className="text-xs mt-1">Accueil</span>
+              </p>
+            </Link>
+            <Link href="/plantes-utilisateur">
+              <p className="flex flex-col items-center">
+                <Leaf size={25} />
+                <span className="text-xs mt-1">Plantes</span>
+              </p>
+            </Link>
+            <Link href="/chercher-plantes">
+              <p className="flex flex-col items-center">
+                <MapPin size={25} />
+                <span className="text-xs mt-1">Map</span>
+              </p>
+            </Link>
+            <Link href="/messages">
+              <p className="flex flex-col items-center">
+                <MessageCircle size={25} />
+                <span className="text-xs mt-1">Messages</span>
+              </p>
+            </Link>
+            <Link href="/profile">
+              <p className="flex flex-col items-center">
+                <User size={25} />
+                <span className="text-xs mt-1">Profil</span>
+              </p>
+            </Link>
+          </div>
+        </nav>
       </footer>
 
       <style jsx>{`
