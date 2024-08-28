@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./provider";
 import { IsAuthProvider } from "@/lib/authContext";
 import { Toaster } from 'react-hot-toast';
+import MobileWarning from "@/components/mobile-warning";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body className="bg-white">
         <Providers>
           <IsAuthProvider>
-            {children}
+            <MobileWarning>
+              {children}
+            </MobileWarning>
             <Toaster position="top-right" reverseOrder={false} />
           </IsAuthProvider>
         </Providers>

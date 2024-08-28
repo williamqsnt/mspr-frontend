@@ -11,8 +11,9 @@ import getCoordinatesFromAddress from "@/utils/getCoordinatesFromAddress";
 import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon, MapPin, Link } from 'lucide-react';
 import axios from "axios";
 import { useRouter } from 'next/navigation';
+import Menu from "@/components/menu";
+import toast from "react-hot-toast";
 
-// Dynamic import of MapContainer to avoid SSR issues with leaflet
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   {
@@ -139,9 +140,9 @@ export default function ChercherPlantepage() {
       if (!conversationResponse.ok) {
         throw new Error('Erreur lors de la création de la conversation.');
       }
-
-      console.log('Plante sauvegardée avec succès.');
       router.push('/');
+      toast.success('Plante gardée avec succès.');
+      console.log('Plante sauvegardée avec succès.');
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement de la plante:', error);
     }
@@ -154,7 +155,7 @@ export default function ChercherPlantepage() {
   ): JSX.Element {
     return (
       <Marker key={address} position={latLng}>
-        <Popup>
+        <Popup className=" min-w-80 bg-none" >
           <PlantDetails idPlante={idPlante} onSave={handleSavePlant} />
         </Popup>
       </Marker>
@@ -186,32 +187,32 @@ export default function ChercherPlantepage() {
     if (plantDetails && plantDetails.plante) {
       const plant = plantDetails.plante;
       return (
-        <div>
-          <h2 className="text-xl font-bold mb-2">{plant.adresse}</h2>
+        <div className="p-4 bg-white  rounded-lg max-w-xs">
+          <h2 className="text-base font-bold mb-2 truncate">{plant.adresse}</h2>
           <img
             src={plant.photoUrl}
             alt={plant.nom}
-            className="w-full h-auto mb-4"
+            className="w-full h-32 object-cover rounded-md mb-4"
           />
-          <p>
-            <span className="font-bold">Nom:</span> {plant.nom}
+          <p className="">
+            <span className="font-semibold">Nom:</span> {plant.nom}
           </p>
-          <p>
-            <span className="font-bold">Espèce:</span> {plant.espece}
+          <p className="">
+            <span className="font-semibold">Espèce:</span> {plant.espece}
           </p>
-          <p>
-            <span className="font-bold">Description:</span> {plant.description}
+          <p className="">
+            <span className="font-semibold">Description:</span> {plant.description}
           </p>
           <div>
-            <h3 className="text-lg font-semibold mt-4">Gardiennage(s):</h3>
+            <h3 className="text-base font-semibold mb-2">Gardiennage(s):</h3>
             {plant.gardiennages.map((gardiennage: any, index: any) => (
-              <div key={index} className="mb-4">
-                <p>
-                  <span className="font-bold">Début:</span> {new Date(gardiennage.dateDebut).toLocaleDateString()}{" "}
-                  <span className="font-bold">Fin:</span> {new Date(gardiennage.dateFin).toLocaleDateString()}
+              <div key={index} className="mb-4 p-2 border border-gray-200 rounded-md shadow-sm">
+                <p className="mb-1">
+                  <span className="font-semibold">Début:</span> {new Date(gardiennage.dateDebut).toLocaleDateString()}{" "}
+                  <span className="font-semibold">Fin:</span> {new Date(gardiennage.dateFin).toLocaleDateString()}
                 </p>
                 <button
-                  className="mt-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+                  className="mt-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md transition duration-300 "
                   onClick={() => {
                     console.log('ID Plante:', plant.idPlante);
                     console.log('ID Gardiennage:', gardiennage.idGardiennage);
@@ -220,13 +221,13 @@ export default function ChercherPlantepage() {
                 >
                   Garder ce gardiennage
                 </button>
-
               </div>
             ))}
           </div>
         </div>
       );
     }
+
 
 
     return <div>Aucune donnée disponible pour cette plante.</div>;
@@ -241,90 +242,21 @@ export default function ChercherPlantepage() {
       </Head>
 
       <main>
-        <header className="bg-green-600 z-50 py-4 px-6 flex items-center">
-          <button></button>
-          <button onClick={() => window.history.back()} className="flex">
-            <ChevronLeft className="text-white" />
-          </button>
-        </header>
+
 
         <div style={{ height: "80vh", width: "100%" }}>
-          <MapContainer center={[45.76, 4.83]} zoom={13} className="h-screen">
+          <MapContainer center={[45.76, 4.83]} zoom={13} className="h-[91vh]">
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {markerList}
           </MapContainer>
         </div>
       </main>
 
-      <footer className="z-50">
-        <button onClick={() => window.history.back()}>Retour</button>
-      </footer>
-      <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+      <div className="z-50">
+        <Menu />
 
-      <style jsx>{`
-        .popup {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background-color: white;
-          padding: 20px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
-        }
+      </div>
 
-        .popup-inner {
-          max-width: 400px;
-          margin: auto;
-        }
-
-        .close-button {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          background: none;
-          border: none;
-          cursor: pointer;
-        }
-      `}</style>
     </div>
   );
 }

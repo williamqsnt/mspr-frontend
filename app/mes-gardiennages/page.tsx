@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Menu from "@/components/menu";
 
 export default function GardiennagePage() {
   const [plantes, setPlantes] = useState<any[]>([]);
@@ -75,7 +76,7 @@ export default function GardiennagePage() {
     };
 
     fetchPlantes();
-  }, [headers]);
+  }, [idUtilisateur, token]);
 
   useEffect(() => {
     if (error) {
@@ -140,7 +141,7 @@ export default function GardiennagePage() {
           Mes plantes
         </button>
         <button
-          className={`flex-1 px-4 text-sm font-semibold rounded-r-lg bg-green-600 text-white`}
+          className={`flex-1 px-4 text-sm font-semibold rounded-r-lg bg-[#1CD672] text-black`}
 
         >
           Mes gardiennages
@@ -152,7 +153,7 @@ export default function GardiennagePage() {
             {['enCours', 'aVenir', 'passes'].map(tab => (
               <button
                 key={tab}
-                className={`py-2 px-4 rounded-lg ${selectedTab === tab ? 'bg-green-600 text-white' : 'bg-white text-gray-700'}`}
+                className={`py-2 px-4 rounded-lg ${selectedTab === tab ? 'bg-[#1CD672] text-black' : 'bg-white text-gray-700'}`}
                 onClick={() => setSelectedTab(tab as 'enCours' | 'aVenir' | 'passes')}
               >
                 {tab === 'enCours' ? 'En cours' : tab === 'aVenir' ? 'À venir' : 'Passés'}
@@ -223,45 +224,8 @@ export default function GardiennagePage() {
           </div>
         </div>
       )}
-      <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+      <Menu />
+
     </div>
   );
 }

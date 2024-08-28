@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import axios from 'axios';
-import { CameraIcon } from 'lucide-react';
+import { CameraIcon, Check, RotateCcw } from 'lucide-react';
 
 type PrendrePhotoProps = {
     onPhotoConfirmed: (imageSrc: string) => void;
@@ -72,8 +72,8 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
                         className="w-full h-full object-cover"
                     />
                     <button onClick={handleCloseWebcam} className="absolute top-4 right-4 text-white bg-black rounded-full h-8 w-8">✕</button>
-                    <div className="absolute bottom-4 flex space-x-4">
-                        <button onClick={capture} className="bg-white text-black py-2 px-4 rounded">Prendre une photo</button>
+                    <div className="absolute bottom-12 flex space-x-4">
+                        <button onClick={capture} className="bg-white text-black py-4 px-4 rounded-full"><CameraIcon size={45} /></button>
                     </div>
                 </div>
             )}
@@ -82,9 +82,9 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
                 <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 z-50">
                     <img src={imageSrc} alt="Captured" className="w-full h-full object-cover" />
                     <button onClick={handleCloseWebcam} className="absolute top-4 right-4 text-white bg-black rounded-full h-8 w-8">✕</button>
-                    <div className="absolute bottom-4 flex space-x-4">
-                        <button onClick={retakePhoto} className="bg-white text-black py-2 px-4 rounded">Reprendre une photo</button>
-                        <button onClick={confirmPhoto} className="bg-white text-black py-2 px-4 rounded">Confirmer</button>
+                    <div className="absolute bottom-12 flex space-x-4">
+                        <button onClick={retakePhoto} className="bg-white text-black py-4 px-4 rounded-full"><RotateCcw size={45} /></button>
+                        <button onClick={confirmPhoto} className="bg-white text-black py-4 px-4 rounded-full"><Check size={45} /></button>
                     </div>
                 </div>
             )}

@@ -7,6 +7,7 @@ import axios from "axios";
 import PrendrePhoto from "@/components/prendrePhoto";
 import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MapPin, MessageCircle, User, UserIcon } from 'lucide-react';
 import Link from 'next/link';
+import Menu from "@/components/menu";
 
 export default function MessagesPage() {
   const router = useRouter();
@@ -174,11 +175,10 @@ export default function MessagesPage() {
             return (
               <div
                 key={index}
-                className={`p-4 rounded-lg shadow-md ${
-                  message.idUtilisateur === idUtilisateur
+                className={`p-4 rounded-lg shadow-md ${message.idUtilisateur === idUtilisateur
                     ? "bg-blue-100 self-end"
                     : "bg-gray-100 self-start"
-                }`}
+                  }`}
               >
                 {isPhoto ? (
                   <img
@@ -199,7 +199,7 @@ export default function MessagesPage() {
         </div>
       </main>
 
-      <footer className="flex p-4 bg-white border-t">
+      <footer className="flex p-4 bg-white border-t mb-20">
         <div className="mt-4 mx-2">
           <PrendrePhoto onPhotoConfirmed={setPhotos} />
         </div>
@@ -217,45 +217,7 @@ export default function MessagesPage() {
           Envoyer
         </button>
       </footer>
-      <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+      <Menu />
     </div>
   );
 }

@@ -3,9 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, User } from 'lucide-react';
+import { ChevronLeft, Trash, Edit, SeparatorHorizontal } from 'lucide-react';
 import axios from 'axios';
-import Link from 'next/link';
+import Menu from '@/components/menu';
+import toast from 'react-hot-toast';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { PopoverClose } from '@radix-ui/react-popover';
+import { Separator } from '@/components/ui/separator';
 
 interface Plante {
     idPlante: number;
@@ -24,6 +29,8 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const [error, setError] = useState<string | null>(null);
     const [dateDebut, setDateDebut] = useState<string>('');
     const [dateFin, setDateFin] = useState<string>('');
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [editFields, setEditFields] = useState<Partial<Plante>>({});
     const router = useRouter();
     const token = localStorage.getItem('token');
 
@@ -32,12 +39,11 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         headers.append('Authorization', `Bearer ${token}`);
     }
 
-
     useEffect(() => {
         const fetchPlante = async () => {
             try {
                 if (!id) throw new Error('ID invalide');
-                const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, { headers: headers });
+                const response = await fetch(`http://localhost:3000/api/plante/afficher?idPlante=${id}`, { headers });
 
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des détails de la plante');
@@ -45,17 +51,20 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
                 const data = await response.json();
 
-                const planteTrouvee = data;
-                console.log(planteTrouvee);
-                
                 if (data && data.plante) {
                     setPlante(data.plante);
-                  } else {
+                    setEditFields({
+                        nom: data.plante.nom,
+                        espece: data.plante.espece,
+                        description: data.plante.description,
+                        adresse: data.plante.adresse,
+                    });
+                } else {
                     setError('Plante non trouvée');
-                  }
+                }
             } catch (error) {
                 console.error('Erreur:', error);
-                setError('Erreur lors de la récupération des détails de la plante' + error);
+                setError('Erreur lors de la récupération des détails de la plante');
             } finally {
                 setLoading(false);
             }
@@ -64,15 +73,31 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         fetchPlante();
     }, [id]);
 
-
-
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
         if (!dateDebut || !dateFin) {
-            alert('Veuillez remplir toutes les dates.');
+            toast.error('Veuillez remplir les dates de début et de fin');
             return;
         }
+
+        if (dateDebut > dateFin) {
+            toast.error('La date de fin ne peut pas être antérieure à la date de début');
+            return;
+        }
+
+        // Si l'écart entre la date de début et fin est supérieur a 1 an, ce n'est pas possible
+        const diff = Math.abs(new Date(dateFin).getTime() - new Date(dateDebut).getTime());
+        const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+        if (diffDays > 365) {
+            toast.error('La date de fin ne peut pas être supérieure à 1 an après la date de début');
+            return;
+        }
+        if (new Date(dateDebut) < new Date()) {
+            toast.error('La date de début ne peut pas être inférieure à la date actuelle');
+            return;
+        }
+
 
         try {
             const response = await axios.post('http://localhost:3000/api/gardiennage/ajouter', null, {
@@ -80,20 +105,69 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                     dateDebut,
                     dateFin,
                     idPlante: id
-                }, headers: {
-                    'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
             if (response.status === 200) {
-                alert('Gardiennage demandé avec succès');
-                router.push('/'); // Redirection vers la liste des plantes
+                toast.success('Demande de gardiennage envoyée avec succès');
+                router.push('/plantes-utilisateur');
             } else {
+                toast.error(response.data.message || 'Erreur lors de la demande de gardiennage');
                 throw new Error(response.data.message || 'Erreur lors de la demande de gardiennage');
             }
         } catch (error) {
+            toast.error("Erreur lors de la demande de gardiennage");
             console.error('Erreur lors de la demande de gardiennage:', error);
-            alert('Erreur lors de la demande de gardiennage');
+        }
+    };
+
+    const handleModify = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        try {
+            const response = await axios.put('http://localhost:3000/api/plante/modifier', null, {
+                params: {
+                    idPlante: id,
+                    ...editFields
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                toast.success('Plante modifiée avec succès');
+                setPlante(response.data.plante);
+                setIsEditing(false);
+            } else {
+                throw new Error(response.data.message || 'Erreur lors de la modification de la plante');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la modification de la plante:', error);
+            alert('Erreur lors de la modification de la plante');
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete('http://localhost:3000/api/plante/supprimer', {
+                params: { idPlante: id },
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.status === 200) {
+                toast.success('Plante supprimée avec succès');
+                router.push('/');
+            } else {
+                toast.error(error);
+                throw new Error(response.data.message || 'Erreur lors de la suppression de la plante');
+            }
+        } catch (error) {
+            toast.error('Erreur lors de la suppression, cette plante a des gardiennages en cours');
+            console.error('Erreur lors de la suppression de la plante:', error);
         }
     };
 
@@ -110,20 +184,70 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     }
 
     return (
-        <div className="p-4 md:p-8 lg:p-12 bg-gray-50 min-h-screen flex flex-col">
-            <button onClick={() => window.history.back()} className="flex items-center mb-6 text-blue-600 hover:underline">
-                <ChevronLeft className="mr-2" />
-                Retour
-            </button>
-            <Card className="border-none shadow-lg mx-auto max-w-lg">
+        <div className="min-h-screen flex flex-col pb-24 overflow-y-auto">
+            <div className="bg-[#1CD672] p-4">
+                <button onClick={() => window.history.back()} className="flex items-center hover:underline">
+                    <ChevronLeft />
+                </button>
+            </div>
+
+            <Card className="border-none mx-auto max-w-lg overflow-y-auto">
                 <CardContent className="flex flex-col items-center p-4">
+                    <div className="flex space-x-2 mb-4">
+                    </div>
                     <img src={plante.photoUrl} alt={plante.nom} className="w-full h-64 object-cover rounded-lg mb-4" />
-                    <h1 className="text-3xl font-bold mb-2">Nom : {plante.nom}</h1>
-                    <p className="text-xl text-gray-700 mb-2">Espèce : {plante.espece}</p>
-                    <p className="text-base text-gray-600 mb-4">Description : {plante.description}</p>
-                    <p className="text-sm text-gray-500">Adresse: {plante.adresse}</p>
-                    <form onSubmit={handleSubmit} className="w-full mt-6 bg-white shadow-md rounded-lg p-4">
-                        <h2 className="text-2xl font-bold mb-4">Demander un gardiennage</h2>
+                    <button
+                        onClick={() => setIsEditing(!isEditing)}
+                        className=" text-black font-bold py-2 px-4 rounded flex"
+                    >
+                        <Edit className="inline-block mr-2" />
+                        {isEditing ? 'Annuler' : 'Modifier'}
+                    </button>
+                    <div className={`w-full mt-8 mb-12 ${isEditing ? ' bg-white' : ''}`}>
+                        <h1 className="text-base mb-2">Nom : {isEditing ? (
+                            <input
+                                type="text"
+                                value={editFields.nom}
+                                onChange={(e) => setEditFields({ ...editFields, nom: e.target.value })}
+                                className="border p-2 rounded w-full"
+                            />
+                        ) : plante.nom}</h1>
+                        <p className="text-base  mb-2">Espèce : {isEditing ? (
+                            <input
+                                type="text"
+                                value={editFields.espece}
+                                onChange={(e) => setEditFields({ ...editFields, espece: e.target.value })}
+                                className="border p-2 rounded w-full"
+                            />
+                        ) : plante.espece}</p>
+                        <p className="text-base mb-4">Description : {isEditing ? (
+                            <textarea
+                                value={editFields.description}
+                                onChange={(e) => setEditFields({ ...editFields, description: e.target.value })}
+                                className="border p-2 rounded w-full"
+                            />
+                        ) : plante.description}</p>
+                        <p className="text-base mb-4">Adresse: {isEditing ? (
+                            <input
+                                type="text"
+                                value={editFields.adresse}
+                                onChange={(e) => setEditFields({ ...editFields, adresse: e.target.value })}
+                                className="border p-2 rounded w-full"
+                            />
+                        ) : plante.adresse}</p>
+
+                        {isEditing && (
+                            <button
+                                onClick={handleModify}
+                                className="bg-[#1CD672] text-white font-bold py-2 px-4 rounded mt-4"
+                            >
+                                Sauvegarder
+                            </button>
+                        )}
+                    </div>
+                    <Separator />
+                    <form onSubmit={handleSubmit} className="w-full mt-12 bg-white rounded-lg">
+                        <h2 className="text-xl font-bold mb-4">Demander un gardiennage</h2>
                         <div className="mb-4">
                             <label htmlFor="dateDebut" className="block text-gray-700 font-bold mb-2">Date de début</label>
                             <input
@@ -148,57 +272,40 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                         </div>
                         <button
                             type="submit"
-                            className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                            className="bg-[#1CD672] hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
                         >
                             Demander un gardiennage
                         </button>
                     </form>
                 </CardContent>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button className="bg-white hover:bg-white text-red-500 mt-12 font-bold py-2 px-4 rounded flex items-center w-full">
+                            Supprimer
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-4 bg-white shadow-lg rounded">
+                        <p className="text-lg mb-4">Êtes-vous sûr de vouloir supprimer cette plante ?</p>
+                        <div className="flex space-x-4">
+                            <Button
+                                onClick={handleDelete}
+                                className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Supprimer
+                            </Button>
+                            <PopoverClose asChild>
+                                <Button className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded">
+                                    Annuler
+                                </Button>
+                            </PopoverClose>
+
+                        </div>
+                    </PopoverContent>
+                </Popover>
             </Card>
-            <br></br>
-            <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+            <Menu />
         </div>
-        
     );
-    
 };
 
 export default PlantDetailPage;

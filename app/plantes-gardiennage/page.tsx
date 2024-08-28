@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-react';
+import Menu from '@/components/menu';
 
 interface Plante {
     idPlante: number;
@@ -65,7 +66,9 @@ const ChercherPlantes: React.FC = () => {
                         </Card>
                     ))}
                 </div>
-            </div> </div>
+            </div> 
+            <Menu />
+            </div>
     );
 };
 

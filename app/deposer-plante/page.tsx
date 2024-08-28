@@ -1,15 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
 import Head from "next/head";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, User } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
-import Link from "next/link";
-
+import Menu from "@/components/menu";
 
 const PlantePage = () => {
   const [espece, setEspece] = useState<string>("");
@@ -22,7 +22,8 @@ const PlantePage = () => {
   const [dateFinSelected, setDateFinSelected] = useState<boolean>(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
-  const [photos, setPhotos] = useState(null); // Pour stocker les images capturées
+  const [photos, setPhotos] = useState<string | null>(null); // Pour stocker l'URL de la photo
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const token = localStorage.getItem('token');
 
   const handleDebutDateChange = (date: Date | Date[]) => {
@@ -52,12 +53,15 @@ const PlantePage = () => {
     const monthString = month < 10 ? `0${month}` : `${month}`;
     const dayString = day < 10 ? `0${day}` : `${day}`;
 
-
     return `${monthString}/${dayString}/${year}`;
   };
 
-
   const ajouterPlante = async () => {
+    if (!photos) {
+      setErrorMessage('Veuillez ajouter une photo de la plante.');
+      return;
+    }
+
     try {
       // Attendre que les photos soient ajoutées
       const responsePhoto = await ajouterPhotos(photos);
@@ -77,7 +81,7 @@ const PlantePage = () => {
       const url = `http://localhost:3000/api/plante/ajouter?${params.toString()}`;
 
       const headers = {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`, // Inclure le token JWT dans l'en-tête Authorization
+        'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête Authorization
         'Content-Type': 'application/json' // Spécifier le type de contenu si nécessaire
       };
 
@@ -100,8 +104,6 @@ const PlantePage = () => {
     }
   };
 
-
-
   const ajouterPhotos = async (photo: any) => {
     try {
       const response = await axios.post(
@@ -121,22 +123,6 @@ const PlantePage = () => {
     }
   };
 
-  const getId = async (pseudo: string) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/utilisateur/id?psd_utl=${pseudo}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
-          }
-        }
-      );
-      return response.data.utilisateur.toString();
-    } catch (error) {
-      throw new Error("Failed to load user ID");
-    }
-  };
-
   const handleCloseSuccessDialog = () => {
     setSuccessDialogOpen(false);
     window.history.back();
@@ -152,16 +138,16 @@ const PlantePage = () => {
         <title>Ajouter une nouvelle plante</title>
       </Head>
 
-      <header className="bg-green-600 py-4 px-6 flex items-center">
+      <header className="bg-[#1CD672] py-4 px-6 flex items-center">
         <button onClick={() => window.history.back()} className="flex">
-          <ChevronLeft className="text-white" />
+          <ChevronLeft className="text-black" />
         </button>
-        <h1 className="text-white text-2xl font-bold ml-4">
-          Ajouter une plante
-        </h1>
       </header>
       <main className="h-[82vh] container mx-auto px-4 py-6">
         <form>
+          <h1 className="text-black text-2xl font-semibold my-4">
+            Ajouter une plante
+          </h1>
           <div className="flex items-center w-full">
             <div className="mb-4 w-full">
               <Label htmlFor="name">Nom de la plante</Label>
@@ -172,7 +158,7 @@ const PlantePage = () => {
                 onChange={(e) => setNom(e.target.value)}
               />
             </div>
-            <div className=" mt-4 mx-2 ">
+            <div className="mt-4 mx-2">
               <PrendrePhoto onPhotoConfirmed={setPhotos} />
             </div>
           </div>
@@ -208,13 +194,22 @@ const PlantePage = () => {
             />
           </div>
 
-          <button
-            type="button"
-            onClick={ajouterPlante}
-            className="bg-green-600 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md"
-          >
-            Faire garder ma plante
-          </button>
+          <div className="flex items-center justify-center mt-12">
+            <button
+              type="button"
+              onClick={ajouterPlante}
+              className="bg-[#1CD672] text-white font-semibold py-2 px-4 rounded-full"
+            >
+              Ajouter
+            </button>
+          </div>
+
+          {/* Affichage du message d'erreur si nécessaire */}
+          {errorMessage && (
+            <div className="mt-4 text-red-500">
+              {errorMessage}
+            </div>
+          )}
         </form>
 
         {/* Dialogue de succès */}
@@ -281,7 +276,7 @@ const PlantePage = () => {
 
         {/* Dialogue d'erreur */}
         {errorDialogOpen && (
-          <div className="fixed z-10  inset-0 overflow-y-auto">
+          <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div
                 className="fixed inset-0 transition-opacity"
@@ -341,45 +336,7 @@ const PlantePage = () => {
           </div>
         )}
       </main>
-      <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+      <Menu />
     </div>
   );
 };
