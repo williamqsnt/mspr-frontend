@@ -10,6 +10,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import getCoordinatesFromAddress from "@/utils/getCoordinatesFromAddress";
 import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MessageCircle, User, UserIcon, MapPin, Link } from 'lucide-react';
 import axios from "axios";
+import { useRouter } from 'next/navigation';
 
 // Dynamic import of MapContainer to avoid SSR issues with leaflet
 const MapContainer = dynamic(
@@ -30,6 +31,7 @@ export default function ChercherPlantepage() {
   const [selectedPlant, setSelectedPlant] = useState<any>(null); // State to track selected plant data
   const token = localStorage.getItem('token');
   const pseudo = localStorage.getItem('pseudo'); // Assurez-vous que le pseudo est stocké dans le localStorage
+  const router = useRouter();
 
   const headers = new Headers();
   if (token) {
@@ -139,6 +141,7 @@ export default function ChercherPlantepage() {
       }
 
       console.log('Plante sauvegardée avec succès.');
+      router.push('/');
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement de la plante:', error);
     }
