@@ -120,9 +120,6 @@ const HomePage: React.FC = () => {
     router.push(`/plante/${id}`);
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Chargement...</div>;
-  }
 
   if (error) {
     return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
