@@ -7,13 +7,22 @@ import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, Messag
 import Link from 'next/link';
 import { decrypt } from "@/utils/cryptoUtils";
 import Menu from "@/components/menu";
+import ConfirmationPopup from "@/components/supprimer-compte";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { error } from "console";
 
 export default function ProfilPage() {
   const router = useRouter();
   const [utilisateur, setUtilisateur] = useState({ nom: '', prenom: '' });
   const [plantes, setPlantes] = useState<{ nom: string }[]>([]);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const token = localStorage.getItem('token');
+  const pseudo = localStorage.getItem('pseudo');
+
 
   const headers = new Headers();
   if (token) {
@@ -71,6 +80,31 @@ export default function ProfilPage() {
     router.push('/login');
   };
 
+  const handleCancel = () => {
+    setIsPopupOpen(false);
+  };
+  const handleConfirm = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/api/utilisateur/supprimer?pseudo=${pseudo}`, {
+        params: { pseudo: pseudo },
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.status === 200) {
+        toast.success('Compte supprimé avec succès');
+        router.push('/login');
+      } else {
+        toast.error(error);
+        throw new Error(response.data.message || 'Erreur lors de la suppression du compte');
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la suppression du compte');
+      console.error('Erreur lors de la suppression du compte:', error);
+    }
+
+    setIsPopupOpen(false);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
@@ -100,22 +134,18 @@ export default function ProfilPage() {
           </div>
           <h2 className="text-2xl font-bold">{utilisateur.prenom} {utilisateur.nom}</h2>
         </div>
-
-        <section className="mt-8">
-          <h3 className="text-xl font-bold mb-4">Mes plantes :</h3>
-          <div className="bg-white rounded-lg shadow-md">
-            <div className="flex overflow-x-auto space-x-4 p-4">
-              {plantes.map((plante, index) => (
-                <Card key={index} className="border-none shadow-none w-52">
-                  <CardContent className="flex flex-col items-center">
-                    <h2 className="text-lg font-bold">{plante.nom}</h2>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
+      <button
+        onClick={() => setIsPopupOpen(true)}
+          className="fixed bottom-16 left-1/2 transform -translate-x-1/2 mb-16 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Supprimer mon compte
+      </button>
+      <ConfirmationPopup
+        isOpen={isPopupOpen}
+        onCancel={handleCancel}
+        handleConfirm={handleConfirm}
+      />
      <Menu />
     </div>
   );
