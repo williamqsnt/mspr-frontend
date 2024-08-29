@@ -36,7 +36,6 @@ const HomePage: React.FC = () => {
     setPseudo(storedPseudo);
 
     if (!storedToken) {
-      // Si aucun token, rediriger vers la page de connexion
       router.push('/login');
       return;
     }
@@ -47,14 +46,12 @@ const HomePage: React.FC = () => {
         if (!isValid) {
           router.push('/login');
         } else {
-          // Token valide, continuez avec les appels API
           fetchPlantes();
           fetchIsBotanist();
           fetchAddresses();
         }
       })
       .catch(() => {
-        // Erreur lors de la validation du token, rediriger
         router.push('/login');
       });
   }, [router]);
@@ -63,11 +60,11 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/validerToken`, { headers });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/validerToken`, { headers });
 
       if (response.ok) {
         const data = await response.json();
-        return data.valide; // Assurez-vous que votre API retourne un champ "valide" qui est un booléen
+        return data.valide; 
       } else {
         return false;
       }
@@ -83,7 +80,7 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererInfos`, { headers });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererInfos`, { headers });
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
