@@ -37,7 +37,7 @@ const ChercherPlantes = () => {
                 headers.append('Authorization', `Bearer ${token}`);
             }
 
-            const response = await fetch('http://localhost:3000/api/plante/recupererInfos', { headers: headers });
+            const response = await fetch('https://localhost:3000/api/plante/recupererInfos', { headers: headers });
             if (response.ok) {
                 const data = await response.json();
                 setPlantes(data.plantes);
@@ -120,7 +120,7 @@ export default function ChercherPlantepage() {
       headers.append('Authorization', `Bearer ${token}`);
 
       try {
-        const response = await fetch("http://localhost:3000/api/plante/recupererlocalisation", { headers });
+        const response = await fetch("https://localhost:3000/api/plante/recupererlocalisation", { headers });
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des adresses de plantes.");
         }
@@ -149,7 +149,7 @@ export default function ChercherPlantepage() {
     if (!token) return null;
 
     try {
-      const url = `http://localhost:3000/api/plante/afficher?idPlante=${idPlante}`;
+      const url = `https://localhost:3000/api/plante/afficher?idPlante=${idPlante}`;
       const response = await axios.get(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -177,7 +177,7 @@ export default function ChercherPlantepage() {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
 
-      const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+      const idResponse = await fetch(`https://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (!idResponse.ok) {
         throw new Error('Erreur lors de la récupération de l\'ID utilisateur.');
       }
@@ -185,7 +185,7 @@ export default function ChercherPlantepage() {
       const idData = await idResponse.json();
       const idUtilisateur1 = idData.idUtilisateur;
 
-      const ajoutResponse = await fetch(`http://localhost:3000/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur1}`, {
+      const ajoutResponse = await fetch(`https://localhost:3000/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur1}`, {
         method: 'PUT',
         headers,
       });
@@ -194,7 +194,7 @@ export default function ChercherPlantepage() {
         throw new Error('Erreur lors de l\'ajout du gardien au gardiennage.');
       }
 
-      const conversationResponse = await fetch(`http://localhost:3000/api/conversation/ajouter?` + new URLSearchParams({
+      const conversationResponse = await fetch(`https://localhost:3000/api/conversation/ajouter?` + new URLSearchParams({
         idUtilisateur: idUtilisateur1,
         idUtilisateur_1: idUtilisateur,
         idGardiennage: idGardiennage

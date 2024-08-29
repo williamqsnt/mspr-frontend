@@ -38,14 +38,14 @@ export default function ConversationsPage() {
         }
 
         // Récupérer l'ID utilisateur
-        const idResponse = await fetch(`http://15.237.67.223:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+        const idResponse = await fetch(`https://15.237.67.223:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
         if (idResponse.ok) {
           const idData = await idResponse.json();
           const idUtilisateur = idData.idUtilisateur;
 
           if (idUtilisateur) {
             // Récupérer les conversations
-            const conversationResponse = await fetch(`http://15.237.67.223:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, { headers });
+            const conversationResponse = await fetch(`https://15.237.67.223:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, { headers });
             if (conversationResponse.ok) {
               const data = await conversationResponse.json();
 
@@ -54,10 +54,10 @@ export default function ConversationsPage() {
                 data.conversations.map(async (conversation: { idUtilisateur: any; idUtilisateur_1: any; idConversation: any; }) => {
                   const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
 
-                  const pseudoResponse = await fetch(`http://15.237.67.223:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, { headers });
+                  const pseudoResponse = await fetch(`https://15.237.67.223:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, { headers });
                   const pseudoData = pseudoResponse.ok ? await pseudoResponse.json() : { pseudo: "Unknown User" };
 
-                  const avatarResponse = await fetch(`http://15.237.67.223:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, { headers });
+                  const avatarResponse = await fetch(`https://15.237.67.223:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, { headers });
                   const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
 
                   return { 

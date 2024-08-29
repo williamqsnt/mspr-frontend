@@ -39,14 +39,14 @@ export default function ProfilPage() {
 
       try {
         // Récupérer l'ID utilisateur à partir du pseudo
-        const idResponse = await fetch(`http://15.237.67.223:3000/api/utilisateur/recupererId?pseudo=${storedPseudo}`, { headers });
+        const idResponse = await fetch(`https://15.237.67.223:3000/api/utilisateur/recupererId?pseudo=${storedPseudo}`, { headers });
         if (idResponse.ok) {
           const idData = await idResponse.json();
           const idUtilisateur = idData.idUtilisateur;
 
           if (idUtilisateur) {
             // Récupérer les informations du profil et les plantes
-            const profilResponse = await fetch(`http://15.237.67.223:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers });
+            const profilResponse = await fetch(`https://15.237.67.223:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers });
             if (profilResponse.ok) {
               const data = await profilResponse.json();
               const nomDecrypter = decrypt(data.utilisateur.nom);
