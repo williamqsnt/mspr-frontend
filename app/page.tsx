@@ -36,6 +36,7 @@ const HomePage: React.FC = () => {
     setPseudo(storedPseudo);
 
     if (!storedToken) {
+      // Si aucun token, rediriger vers la page de connexion
       router.push('/login');
       return;
     }
@@ -46,12 +47,14 @@ const HomePage: React.FC = () => {
         if (!isValid) {
           router.push('/login');
         } else {
+          // Token valide, continuez avec les appels API
           fetchPlantes();
           fetchIsBotanist();
           fetchAddresses();
         }
       })
       .catch(() => {
+        // Erreur lors de la validation du token, rediriger
         router.push('/login');
       });
   }, [router]);
@@ -60,11 +63,11 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/validerToken`, { headers });
+      const response = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/validerToken`, { headers });
 
       if (response.ok) {
         const data = await response.json();
-        return data.valide; 
+        return data.valide; // Assurez-vous que votre API retourne un champ "valide" qui est un booléen
       } else {
         return false;
       }
@@ -80,7 +83,7 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererInfos`, { headers });
+      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererInfos`, { headers });
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -100,12 +103,12 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const userIdResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+      const userIdResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (userIdResponse.ok) {
         const userIdData = await userIdResponse.json();
         const userId = userIdData.idUtilisateur;
         if (userId) {
-          const botanistResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
+          const botanistResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
           if (botanistResponse.ok) {
             const botanistData = await botanistResponse.json();
             setIsBotanist(botanistData.estBotaniste);
@@ -130,7 +133,7 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
+      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des adresses de plantes.');
       }
