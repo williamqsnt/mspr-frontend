@@ -1,8 +1,8 @@
-"use client";
+'use client';
+
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import "leaflet/dist/leaflet.css";
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
@@ -30,57 +30,27 @@ const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedPseudo = localStorage.getItem('pseudo');
-    setToken(storedToken);
-    setPseudo(storedPseudo);
+    // Récupérer le token et le pseudo depuis localStorage après le montage du composant
+    setToken(localStorage.getItem('token'));
+    setPseudo(localStorage.getItem('pseudo'));
+  }, []);
 
-    if (!storedToken) {
-      router.push('/login');
-      return;
+  useEffect(() => {
+    // Effectuer les appels API après avoir récupéré le token et le pseudo
+    if (token && pseudo) {
+      fetchPlantes();
+      fetchIsBotanist();
+      fetchAddresses();
     }
-
-    // Vérifier la validité du token
-    validateToken(storedToken)
-      .then(isValid => {
-        if (!isValid) {
-          router.push('/login');
-        } else {
-          fetchPlantes();
-          fetchIsBotanist();
-          fetchAddresses();
-        }
-      })
-      .catch(() => {
-        router.push('/login');
-      });
-  }, [router]);
-
-  const validateToken = async (token: string): Promise<boolean> => {
-    try {
-      const headers = new Headers();
-      headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/validerToken`, { headers });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.valide; 
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.error('Erreur lors de la validation du token:', error);
-      return false;
-    }
-  };
+  }, [token, pseudo]);
 
   const fetchPlantes = async () => {
-    if (!token) return;
-
     try {
       const headers = new Headers();
-      headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererInfos`, { headers });
+      if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+      }
+      const response = await fetch('https://15.237.67.223:3000/api/plante/recupererInfos', { headers });
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -95,11 +65,11 @@ const HomePage: React.FC = () => {
   };
 
   const fetchIsBotanist = async () => {
-    if (!token || !pseudo) return;
-
     try {
       const headers = new Headers();
-      headers.append('Authorization', `Bearer ${token}`);
+      if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+      }
       const userIdResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (userIdResponse.ok) {
         const userIdData = await userIdResponse.json();
@@ -125,11 +95,11 @@ const HomePage: React.FC = () => {
   };
 
   const fetchAddresses = async () => {
-    if (!token) return;
-
     try {
       const headers = new Headers();
-      headers.append('Authorization', `Bearer ${token}`);
+      if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+      }
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des adresses de plantes.');
@@ -149,6 +119,7 @@ const HomePage: React.FC = () => {
   const handleCardClick = (id: number) => {
     router.push(`/plante/${id}`);
   };
+
 
   if (error) {
     return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
