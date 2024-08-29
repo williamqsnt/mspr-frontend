@@ -60,10 +60,10 @@ export default function ConversationsPage() {
                   const avatarResponse = await fetch(`https://15.237.67.223:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, { headers });
                   const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
 
-                  return { 
-                    ...conversation, 
-                    pseudo: pseudoData.pseudo, 
-                    avatar: avatarData.photoUrl || '/default-avatar.png' 
+                  return {
+                    ...conversation,
+                    pseudo: pseudoData.pseudo,
+                    avatar: avatarData.photoUrl || '/default-avatar.png'
                   };
                 })
               );
@@ -96,6 +96,11 @@ export default function ConversationsPage() {
     router.push('/login');
   };
 
+  const handleConversationClick = (pseudo: string) => {
+    localStorage.setItem('memberPseudo', pseudo);  // Enregistrer le pseudo dans le localStorage
+  };
+
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 p-4">
@@ -106,7 +111,10 @@ export default function ConversationsPage() {
             {conversations.map((conversation, index) => (
               <div key={index} className="bg-white rounded-lg shadow-md p-4">
                 <Link href={`/messages/${conversation.idConversation}`}>
-                  <button className="w-full text-left flex items-center space-x-4 p-4 cursor-pointer focus:outline-none">
+                  <button
+                    className="w-full text-left flex items-center space-x-4 p-4 cursor-pointer focus:outline-none"
+                    onClick={() => handleConversationClick(conversation.pseudo)}  // Appel de la fonction lors du clic
+                  >
                     <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                       <img src={conversation.avatar} alt="Avatar" className="w-11 h-11 rounded-full" />
                     </div>

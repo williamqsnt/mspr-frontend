@@ -27,6 +27,7 @@ export default function MessagesPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const token = localStorage.getItem("token");
+  const membre = localStorage.getItem("memberPseudo");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -160,7 +161,7 @@ export default function MessagesPage() {
           alt="Avatar"
           className="w-16 h-16 rounded-full mb-2"
         />
-        <h1 className="text-xl font-bold">{pseudo}</h1>
+        <h1 className="text-xl font-bold">{membre}</h1>
       </div>
 
       <main className="flex-1 p-4 overflow-y-auto">
@@ -176,8 +177,8 @@ export default function MessagesPage() {
               <div
                 key={index}
                 className={`p-4 rounded-lg shadow-md ${message.idUtilisateur === idUtilisateur
-                    ? "bg-blue-100 self-end"
-                    : "bg-gray-100 self-start"
+                  ? "bg-blue-100 self-end"
+                  : "bg-gray-100 self-start"
                   }`}
               >
                 {isPhoto ? (
@@ -190,7 +191,14 @@ export default function MessagesPage() {
                   <p>{message.contenu}</p>
                 )}
                 <small className="text-gray-500">
-                  {new Date(message.dateEnvoi).toLocaleTimeString()}
+                  {new Date(message.dateEnvoi).toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })} à {new Date(message.dateEnvoi).toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
                 </small>
               </div>
             );
