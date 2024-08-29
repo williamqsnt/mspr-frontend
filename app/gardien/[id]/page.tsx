@@ -38,7 +38,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         const fetchPlante = async () => {
             try {
                 if (!id) throw new Error('ID invalide');
-                const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, { headers: headers });
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, { headers: headers });
 
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des détails de la plante');
@@ -72,7 +72,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
 
         try {
-            const response = await axios.post(`${process.env.API_ENDPOINT}/api/conseil/ajouter`, null, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/conseil/ajouter`, null, {
                 params: {
                     description: conseil,
                     idPlante: id,

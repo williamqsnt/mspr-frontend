@@ -80,7 +80,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ addresses, onSave }) => {
     useEffect(() => {
       async function fetchPlantDetails() {
         try {
-          const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficher?idPlante=${idPlante}`, { headers: headers });
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/afficher?idPlante=${idPlante}`, { headers: headers });
           if (!response.ok) {
             throw new Error('Erreur lors de la récupération des détails de la plante.');
           }

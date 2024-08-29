@@ -39,7 +39,7 @@ const PlantesUtilisateur: React.FC = () => {
       headers.append('Authorization', `Bearer ${storedToken}`);
 
       try {
-        const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficherAllByUtilisateur?idUtilisateur=${storedIdUtilisateur}`, { headers });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/afficherAllByUtilisateur?idUtilisateur=${storedIdUtilisateur}`, { headers });
         const data = await response.json();
 
         if (!response.ok) {

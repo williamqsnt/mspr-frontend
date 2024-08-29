@@ -38,13 +38,13 @@ export default function ProfilPage() {
       }
 
       try {
-        const idResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${storedPseudo}`, { headers });
+        const idResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${storedPseudo}`, { headers });
         if (idResponse.ok) {
           const idData = await idResponse.json();
           const idUtilisateur = idData.idUtilisateur;
 
           if (idUtilisateur) {
-            const profilResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers });
+            const profilResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers });
             if (profilResponse.ok) {
               const data = await profilResponse.json();
               const nomDecrypter = decrypt(data.utilisateur.nom);

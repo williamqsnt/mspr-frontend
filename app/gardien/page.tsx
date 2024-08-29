@@ -28,7 +28,7 @@ const PlantesUtilisateur: React.FC = () => {
           headers.append('Authorization', `Bearer ${storedToken}`);
         }
 
-        const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficherAll`, { headers });
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/afficherAll`, { headers });
         const data = await response.json();
 
         if (!response.ok) {

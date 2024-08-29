@@ -28,7 +28,7 @@ export default function ChercherPlantePage() {
     async function fetchAddresses() {
       try {
         const response = await fetch(
-          `${process.env.API_ENDPOINT}/api/plante/recupererlocalisation`, { headers: headers }
+          `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererlocalisation`, { headers: headers }
         );
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des adresses de plantes.");
@@ -49,7 +49,7 @@ export default function ChercherPlantePage() {
     }
 
     try {
-      const idResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
+      const idResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
       if (!idResponse.ok) {
         throw new Error('Erreur lors de la récupération de l\'ID utilisateur.');
       }
@@ -57,7 +57,7 @@ export default function ChercherPlantePage() {
       const idData = await idResponse.json();
       const idUtilisateur1 = idData.idUtilisateur;
 
-      const ajoutResponse = await fetch(`${process.env.API_ENDPOINT}/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur1}`, {
+      const ajoutResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/gardiennage/ajouterGardien?idGardiennage=${idGardiennage}&idUtilisateur=${idUtilisateur1}`, {
         method: 'PUT',
         headers: headers,
       });
@@ -66,7 +66,7 @@ export default function ChercherPlantePage() {
         throw new Error('Erreur lors de l\'ajout du gardien au gardiennage.');
       }
 
-      const conversationResponse = await fetch(`${process.env.API_ENDPOINT}/api/conversation/ajouter?`
+      const conversationResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/conversation/ajouter?`
         + new URLSearchParams({
           idUtilisateur: idUtilisateur1,
           idUtilisateur_1: idUtilisateur,

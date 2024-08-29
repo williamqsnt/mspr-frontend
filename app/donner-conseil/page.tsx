@@ -38,7 +38,7 @@ export default function PlanteDetailsPage() {
     const fetchUserId = async () => {
       try {
         if (pseudo) {
-          const response = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, {
             headers: {
               'Authorization': `Bearer ${storedToken}`
             }
@@ -63,7 +63,7 @@ export default function PlanteDetailsPage() {
   const fetchPlanteDetails = async (id: string) => {
     try {
       console.log(`Fetching details for plante ID: ${id}`);
-      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -98,7 +98,7 @@ export default function PlanteDetailsPage() {
         return;
       }
 
-      const url = new URL(`${process.env.API_ENDPOINT}/api/conseil/ajouter`);
+      const url = new URL(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/conseil/ajouter`);
       url.searchParams.append('description', conseil);
       url.searchParams.append('idPlante', idPlante);
       url.searchParams.append('idUtilisateur', userId.toString());

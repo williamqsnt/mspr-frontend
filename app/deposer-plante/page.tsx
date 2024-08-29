@@ -50,7 +50,7 @@ const PlantePage = () => {
         photoUrl: responsePhoto
       });
 
-      const url = `${process.env.API_ENDPOINT}/api/plante/ajouter?${params.toString()}`;
+      const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/ajouter?${params.toString()}`;
 
       const headers = {
         'Authorization': `Bearer ${token}`,
@@ -81,7 +81,7 @@ const PlantePage = () => {
       }
 
       const response = await axios.post(
-        `${process.env.API_ENDPOINT}/api/plante/ajouterPhoto`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/ajouterPhoto`,
         { image: photo },
         {
           headers: {

@@ -38,7 +38,7 @@ const ChercherPlantes: React.FC = () => {
                 headers.append('Authorization', `Bearer ${token}`);
             }
 
-            const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererInfos`, { headers: headers });
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererInfos`, { headers: headers });
             if (response.ok) {
                 const data = await response.json();
                 setPlantes(data.plantes);
