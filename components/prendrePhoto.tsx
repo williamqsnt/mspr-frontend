@@ -8,7 +8,7 @@ type PrendrePhotoProps = {
 
 const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
     const webcamRef = useRef<Webcam>(null);
-    const [imageSrc, setImageSrc] = useState<string | null>(null); // Typage correct de imageSrc
+    const [imageSrc, setImageSrc] = useState<string | null>(null); 
     const [showWebcam, setShowWebcam] = useState<boolean>(false); // Pour afficher ou cacher la webcam
     const [showPreview, setShowPreview] = useState<boolean>(false); // Pour afficher l'aperçu de l'image
 
@@ -22,7 +22,7 @@ const PrendrePhoto = ({ onPhotoConfirmed }: PrendrePhotoProps) => {
         const imageSrc = webcamRef.current?.getScreenshot();
         if (imageSrc) {
             setImageSrc(imageSrc);
-            setShowPreview(true); // Show the preview of the captured image
+            setShowPreview(true); 
         }
     };
 

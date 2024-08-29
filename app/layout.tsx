@@ -6,8 +6,6 @@ import { IsAuthProvider } from "@/lib/authContext";
 import { Toaster } from 'react-hot-toast';
 import MobileWarning from "@/components/mobile-warning";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "Arosaje",
   description: "Arosaje est une application de gardiennage de plantes. Elle permet de trouver des personnes pour s'occuper de vos plantes pendant vos absences.",

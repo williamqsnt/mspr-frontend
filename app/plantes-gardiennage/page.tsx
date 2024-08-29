@@ -21,13 +21,11 @@ const ChercherPlantes: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Récupérer le token depuis localStorage après le montage du composant
         const storedToken = localStorage.getItem('token');
         setToken(storedToken);
     }, []);
 
     useEffect(() => {
-        // Appeler fetchPlantes uniquement après avoir récupéré le token
         if (token) {
             fetchPlantes();
         }

@@ -2,12 +2,10 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import dynamic from "next/dynamic";
-import axios from "axios";
 import { useRouter } from 'next/navigation';
 import toast from "react-hot-toast";
 import Menu from "@/components/menu";
 
-// Importez dynamiquement le composant MapComponent
 const MapComponent = dynamic(() => import("@/components/MapComponent"), { ssr: false });
 
 interface Address {

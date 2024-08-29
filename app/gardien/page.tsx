@@ -1,8 +1,6 @@
 'use client';
 
 import Menu from '@/components/menu';
-import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -16,11 +14,10 @@ interface Plante {
 const PlantesUtilisateur: React.FC = () => {
   const [plantes, setPlantes] = useState<Plante[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [token, setToken] = useState<string | null>(null); // État pour le token
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Récupération du token côté client
     const storedToken = localStorage.getItem('token');
     setToken(storedToken);
 
@@ -47,14 +44,14 @@ const PlantesUtilisateur: React.FC = () => {
     };
 
     fetchPlantes();
-  }, []); // Notez que vous pouvez également ajouter des dépendances ici si nécessaire
+  }, []);
 
   const handleCardClick = (id: number) => {
     router.push(`/gardien/${id}`);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-16"> {/* Ajout de pb-16 pour l'espace au-dessus du footer */}
+    <div className="flex flex-col min-h-screen bg-background pb-16">
       <div className="container mx-auto p-4 flex-grow">
 
         <h1 className="text-lg font-bold mb-4">Liste de vos plantes</h1>

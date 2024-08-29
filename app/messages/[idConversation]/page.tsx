@@ -5,8 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
 import PrendrePhoto from "@/components/prendrePhoto";
-import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MapPin, MessageCircle, User, UserIcon } from 'lucide-react';
-import Link from 'next/link';
 import Menu from "@/components/menu";
 
 export default function MessagesPage() {
@@ -100,8 +98,8 @@ export default function MessagesPage() {
         { image: photo },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Inclure le token dans l'en-tête Authorization
-            "Content-Type": "application/json", // Spécifier le type de contenu
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );

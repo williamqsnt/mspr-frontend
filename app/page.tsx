@@ -1,5 +1,4 @@
-'use client';
-
+"use client";
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,13 +30,18 @@ const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Récupérer le token et le pseudo depuis localStorage après le montage du composant
-    setToken(localStorage.getItem('token'));
-    setPseudo(localStorage.getItem('pseudo'));
-  }, []);
+    const storedToken = localStorage.getItem('token');
+    const storedPseudo = localStorage.getItem('pseudo');
+    setToken(storedToken);
+    setPseudo(storedPseudo);
+
+    if (!storedToken) {
+      // Si aucun token, rediriger vers la page de connexion
+      router.push('/login');
+    }
+  }, [router]);
 
   useEffect(() => {
-    // Effectuer les appels API après avoir récupéré le token et le pseudo
     if (token && pseudo) {
       fetchPlantes();
       fetchIsBotanist();
@@ -120,7 +124,6 @@ const HomePage: React.FC = () => {
   const handleCardClick = (id: number) => {
     router.push(`/plante/${id}`);
   };
-
 
   if (error) {
     return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;

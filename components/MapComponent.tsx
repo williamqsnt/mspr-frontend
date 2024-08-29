@@ -2,13 +2,12 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { LatLngExpression } from "leaflet";
-import { Marker, Popup, TileLayer, MapContainer } from "react-leaflet";
+import { Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import getCoordinatesFromAddress from "@/utils/getCoordinatesFromAddress";
 
-// Importez dynamiquement MapContainer pour éviter le rendu côté serveur
 const MapContainerNoSSR = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
@@ -28,7 +27,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ addresses, onSave }) => {
   const [markerList, setMarkerList] = useState<JSX.Element[]>([]);
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
-  // Configuration des en-têtes pour les requêtes
   const headers = new Headers();
   if (token) {
     headers.append('Authorization', `Bearer ${token}`);

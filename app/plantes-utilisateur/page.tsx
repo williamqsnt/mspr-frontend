@@ -1,7 +1,7 @@
 'use client';
 
 import Menu from '@/components/menu';
-import { ChevronLeft, HomeIcon, Leaf, MessageCircle, MapPin, Plus, User } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -55,7 +55,7 @@ const PlantesUtilisateur: React.FC = () => {
     };
 
     fetchPlantes();
-  }, []); // Le tableau de dépendances est vide, donc ce useEffect s'exécute seulement après le premier rendu
+  }, []); 
 
   const handleGardiennagesClick = () => {
     router.push('/mes-gardiennages');

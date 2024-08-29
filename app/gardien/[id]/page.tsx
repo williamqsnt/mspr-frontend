@@ -47,7 +47,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 const data = await response.json();
 
                 const planteTrouvee = data;
-                
+
                 if (planteTrouvee) {
                     setPlante(planteTrouvee);
                     console.log(plante);
@@ -78,13 +78,13 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                     idPlante: id,
                     idUtilisateur: idUtilisateur
                 }, headers: {
-                    'Authorization': `Bearer ${token}` // Inclure le token dans l'en-tête Authorization
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
             if (response.status === 200) {
                 alert('Gardiennage demandé avec succès');
-                router.push('/'); // Redirection vers la liste des plantes
+                router.push('/');
             } else {
                 throw new Error(response.data.message || 'Erreur lors de la demande de gardiennage');
             }
@@ -125,7 +125,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                                 rows={5}
                                 required
                             />
-                            </div>
+                        </div>
 
 
                         <button
@@ -139,48 +139,48 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             </Card>
             <br></br>
             <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+                <nav className="flex flex-col items-center w-full">
+                    <div className="w-full flex justify-center">
+                        <div className="w-full h-px bg-gray-600 my-2"> </div>
+                    </div>
+                    <div className="flex justify-around items-center py-3 w-full">
+                        <Link href="/">
+                            <p className="flex flex-col items-center">
+                                <HomeIcon size={25} />
+                                <span className="text-xs mt-1">Accueil</span>
+                            </p>
+                        </Link>
+                        <Link href="/plantes-utilisateur">
+                            <p className="flex flex-col items-center">
+                                <Leaf size={25} />
+                                <span className="text-xs mt-1">Plantes</span>
+                            </p>
+                        </Link>
+                        <Link href="/chercher-plantes">
+                            <p className="flex flex-col items-center">
+                                <MapPin size={25} />
+                                <span className="text-xs mt-1">Map</span>
+                            </p>
+                        </Link>
+                        <Link href="/messages">
+                            <p className="flex flex-col items-center">
+                                <MessageCircle size={25} />
+                                <span className="text-xs mt-1">Messages</span>
+                            </p>
+                        </Link>
+                        <Link href="/profile">
+                            <p className="flex flex-col items-center">
+                                <User size={25} />
+                                <span className="text-xs mt-1">Profil</span>
+                            </p>
+                        </Link>
+                    </div>
+                </nav>
+            </footer>
         </div>
-        
+
     );
-    
+
 };
 
 export default PlantDetailPage;

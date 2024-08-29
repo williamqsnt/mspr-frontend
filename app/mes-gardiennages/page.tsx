@@ -2,9 +2,7 @@
 
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Menu from "@/components/menu";
 
 export default function GardiennagePage() {
@@ -12,8 +10,8 @@ export default function GardiennagePage() {
   const [selectedPlante, setSelectedPlante] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<'enCours' | 'aVenir' | 'passes'>('enCours');
-  const [token, setToken] = useState<string | null>(null); // État pour le token
-  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null); // État pour l'ID utilisateur
+  const [token, setToken] = useState<string | null>(null); 
+  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null); 
   const router = useRouter();
 
   useEffect(() => {
@@ -25,7 +23,7 @@ export default function GardiennagePage() {
   }, []);
 
   useEffect(() => {
-    if (!idUtilisateur || !token) return; // Ne pas exécuter si les données ne sont pas disponibles
+    if (!idUtilisateur || !token) return;
 
     const fetchPlantes = async () => {
       try {
@@ -85,7 +83,7 @@ export default function GardiennagePage() {
     };
 
     fetchPlantes();
-  }, [idUtilisateur, token]); // Dépendances ajoutées
+  }, [idUtilisateur, token]); 
 
   useEffect(() => {
     if (error) {
@@ -96,7 +94,7 @@ export default function GardiennagePage() {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return "Date invalide"; // Ou un message par défaut
+      return "Date invalide"; 
     }
 
     const options: any = {

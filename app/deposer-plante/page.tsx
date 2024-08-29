@@ -5,7 +5,6 @@ import axios from "axios";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
 import Menu from "@/components/menu";
@@ -15,54 +14,19 @@ const PlantePage = () => {
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
   const [adresse, setAdresse] = useState<string>("");
-  const [debut, setDebut] = useState<string>("");
-  const [fin, setFin] = useState<string>("");
-  const [dateDebutSelected, setDateDebutSelected] = useState<boolean>(false);
-  const [dateFinSelected, setDateFinSelected] = useState<boolean>(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
-  const [photos, setPhotos] = useState<string | null>(null); // Pour stocker l'URL de la photo
+  const [photos, setPhotos] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null); // Déplacez le token dans l'état
-  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null); // Déplacez l'idUtilisateur dans l'état
+  const [token, setToken] = useState<string | null>(null);
+  const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null);
 
   useEffect(() => {
-    // Récupérez le token et l'idUtilisateur uniquement côté client
     const storedToken = localStorage.getItem('token');
     const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
     setToken(storedToken);
     setIdUtilisateur(storedIdUtilisateur);
   }, []);
-
-  const handleDebutDateChange = (date: Date | Date[]) => {
-    const formattedDate = formatDate(date);
-    setDebut(formattedDate);
-    setDateDebutSelected(true);
-  };
-
-  const handleFinDateChange = (date: Date | Date[]) => {
-    const formattedDate = formatDate(date);
-    setFin(formattedDate);
-    setDateFinSelected(true);
-  };
-
-  const formatDate = (date: Date | Date[]): string => {
-    const dateToFormat = Array.isArray(date) ? date[0] : date;
-
-    if (!(dateToFormat instanceof Date)) {
-      throw new Error('L\'argument doit être un objet Date ou un tableau d\'objets Date.');
-    }
-
-    const formattedDate = new Date(dateToFormat);
-    const year = formattedDate.getFullYear();
-    let month = formattedDate.getMonth() + 1;
-    let day = formattedDate.getDate();
-
-    const monthString = month < 10 ? `0${month}` : `${month}`;
-    const dayString = day < 10 ? `0${day}` : `${day}`;
-
-    return `${monthString}/${dayString}/${year}`;
-  };
 
   const ajouterPlante = async () => {
     if (!photos) {
@@ -75,35 +39,30 @@ const PlantePage = () => {
         throw new Error("Token ou idUtilisateur manquant.");
       }
 
-      // Attendre que les photos soient ajoutées
       const responsePhoto = await ajouterPhotos(photos);
 
-      // Construire les paramètres de la requête
       const params = new URLSearchParams({
         espece: espece,
         description: description,
         nom: nom,
         adresse: adresse,
-        idUtilisateur: idUtilisateur ?? "", // Use nullish coalescing operator to provide a default value
+        idUtilisateur: idUtilisateur ?? "",
         photoUrl: responsePhoto
       });
 
-      // Construire l'URL avec les paramètres
       const url = `${process.env.API_ENDPOINT}/api/plante/ajouter?${params.toString()}`;
 
       const headers = {
-        'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête Authorization
-        'Content-Type': 'application/json' // Spécifier le type de contenu si nécessaire
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       };
 
-      // Envoyer la requête POST
       const response = await axios.post(
-        url, // URL avec les paramètres inclus
-        {}, // Corps de la requête, vide dans ce cas
-        { headers } // Inclure les en-têtes dans la requête
+        url,
+        {},
+        { headers }
       );
 
-      // Vérifier la réponse
       if (response.status === 200) {
         setSuccessDialogOpen(true);
       } else {
@@ -126,8 +85,8 @@ const PlantePage = () => {
         { image: photo },
         {
           headers: {
-            'Authorization': `Bearer ${token}`, // Inclure le token dans l'en-tête Authorization
-            'Content-Type': 'application/json' // Spécifier le type de contenu
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
         }
       );
@@ -219,7 +178,6 @@ const PlantePage = () => {
             </button>
           </div>
 
-          {/* Affichage du message d'erreur si nécessaire */}
           {errorMessage && (
             <div className="mt-4 text-red-500">
               {errorMessage}
@@ -227,7 +185,6 @@ const PlantePage = () => {
           )}
         </form>
 
-        {/* Dialogue de succès */}
         {successDialogOpen && (
           <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -289,7 +246,6 @@ const PlantePage = () => {
           </div>
         )}
 
-        {/* Dialogue d'erreur */}
         {errorDialogOpen && (
           <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

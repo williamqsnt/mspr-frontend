@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, Trash, Edit, SeparatorHorizontal } from 'lucide-react';
+import { ChevronLeft, Edit } from 'lucide-react';
 import axios from 'axios';
 import Menu from '@/components/menu';
 import toast from 'react-hot-toast';
@@ -35,7 +35,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const router = useRouter();
 
     useEffect(() => {
-        // Récupération du token et de l'idUtilisateur depuis localStorage côté client
         const storedToken = localStorage.getItem('token');
         setToken(storedToken);
 
@@ -99,7 +98,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             return;
         }
 
-        // Si l'écart entre la date de début et fin est supérieur à 1 an, ce n'est pas possible
         const diff = Math.abs(new Date(dateFin).getTime() - new Date(dateDebut).getTime());
         const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
         if (diffDays > 365) {

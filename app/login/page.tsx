@@ -25,7 +25,6 @@ export default function Login() {
             if (responseData.token) {
                 console.log('Utilisateur trouvé');
 
-                // Sauvegarder le pseudo et le token JWT dans localStorage
                 localStorage.setItem('pseudo', pseudo);
                 localStorage.setItem('token', responseData.token);
                 localStorage.setItem('idUtilisateur', responseData.idUtilisateur);
@@ -78,17 +77,17 @@ export default function Login() {
                     Connexion
                 </button>
                 <p className="mt-4 text-center">
-    Vous n&apos;avez pas encore de compte ?
-    <span className="mx-1"> {/* Ajoute un espace entre le texte et le lien */}
-        <a
-            href="#"
-            onClick={navigateToSignUp}
-            className="text-green-500 hover:text-green-600 font-medium"
-        >
-            Créez en un ici
-        </a>
-    </span>
-</p>
+                    Vous n&apos;avez pas encore de compte ?
+                    <span className="mx-1">
+                        <a
+                            href="#"
+                            onClick={navigateToSignUp}
+                            className="text-green-500 hover:text-green-600 font-medium"
+                        >
+                            Créez en un ici
+                        </a>
+                    </span>
+                </p>
 
 
             </div>

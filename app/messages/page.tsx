@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CalendarIcon, ChevronLeft, FlowerIcon, HomeIcon, Leaf, MailIcon, MapPin, MessageCircle, User, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import Menu from "@/components/menu";
 
@@ -17,7 +16,6 @@ export default function ConversationsPage() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Récupération des valeurs de localStorage côté client
     const storedToken = localStorage.getItem('token');
     const pseudo = localStorage.getItem('pseudo') || '';
 

@@ -38,11 +38,11 @@ export default function Inscription() {
         adresse: encryptedAdresse,
         pseudo: pseudo,
         motDePasse: encryptedMotDePasse,
-    });
-    
+      });
+
 
       if (response.status === 200) {
-        window.location.href = '/login'; // Assuming your login page is located at '/login'
+        window.location.href = '/login';
       } else {
         console.error('Erreur lors de l\'ajout de l\'utilisateur: Code retour non 200');
         setErrorMessage('Erreur lors de l\'ajout de l\'utilisateur');
@@ -160,36 +160,36 @@ export default function Inscription() {
               />
             </div>
             <div>
-  <label
-    htmlFor="dateNaissance"
-    className="block text-sm font-medium text-gray-700"
-  >
-    Date de naissance (JJ/MM/AAAA)
-  </label>
-  <input
-    type="tel"
-    id="dateNaissance"
-    value={dateNaissance}
-    onChange={(e) => {
-      const input = e.target.value.replace(/[^\d]/g, ''); // Enlever tous les caractères non numériques
-      let formattedDate = input;
+              <label
+                htmlFor="dateNaissance"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Date de naissance (JJ/MM/AAAA)
+              </label>
+              <input
+                type="tel"
+                id="dateNaissance"
+                value={dateNaissance}
+                onChange={(e) => {
+                  const input = e.target.value.replace(/[^\d]/g, '');
+                  let formattedDate = input;
 
-      if (input.length > 2) {
-        formattedDate = `${input.slice(0, 2)}/${input.slice(2)}`;
-      }
-      if (input.length > 4) {
-        formattedDate = `${input.slice(0, 2)}/${input.slice(2, 4)}/${input.slice(4, 8)}`;
-      }
+                  if (input.length > 2) {
+                    formattedDate = `${input.slice(0, 2)}/${input.slice(2)}`;
+                  }
+                  if (input.length > 4) {
+                    formattedDate = `${input.slice(0, 2)}/${input.slice(2, 4)}/${input.slice(4, 8)}`;
+                  }
 
-      setDateNaissance(formattedDate);
-    }}
-    pattern="\d{2}/\d{2}/\d{4}"
-    title="Veuillez entrer une date valide au format JJ/MM/AAAA."
-    required
-    placeholder="JJ/MM/AAAA"
-    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-  />
-</div>
+                  setDateNaissance(formattedDate);
+                }}
+                pattern="\d{2}/\d{2}/\d{4}"
+                title="Veuillez entrer une date valide au format JJ/MM/AAAA."
+                required
+                placeholder="JJ/MM/AAAA"
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
 
             <div>
               <label
@@ -198,22 +198,22 @@ export default function Inscription() {
               >
                 Numéro de téléphone
               </label>
-            <input
-              type="text"
-              id="numero"
-              value={numero}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d{0,10}$/.test(value)) {
-                  setNumero(value);
-                }
-              }}
-              maxLength={10}
-              pattern="\d{10}"
-              required
-              title="Veuillez entrer un numéro de téléphone valide"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
+              <input
+                type="text"
+                id="numero"
+                value={numero}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,10}$/.test(value)) {
+                    setNumero(value);
+                  }
+                }}
+                maxLength={10}
+                pattern="\d{10}"
+                required
+                title="Veuillez entrer un numéro de téléphone valide"
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
             </div>
             <div>
               <label

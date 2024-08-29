@@ -38,14 +38,12 @@ export default function ProfilPage() {
       }
 
       try {
-        // Récupérer l'ID utilisateur à partir du pseudo
         const idResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${storedPseudo}`, { headers });
         if (idResponse.ok) {
           const idData = await idResponse.json();
           const idUtilisateur = idData.idUtilisateur;
 
           if (idUtilisateur) {
-            // Récupérer les informations du profil et les plantes
             const profilResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers });
             if (profilResponse.ok) {
               const data = await profilResponse.json();

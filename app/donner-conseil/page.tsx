@@ -3,8 +3,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, User } from "lucide-react";
-import Link from "next/link";
 import Menu from '@/components/menu';
 
 interface Plante {
@@ -22,10 +20,9 @@ export default function PlanteDetailsPage() {
   const [plante, setPlante] = useState<Plante | null>(null);
   const [conseil, setConseil] = useState('');
   const [userId, setUserId] = useState<number | null>(null);
-  const [token, setToken] = useState<string | null>(null); // Déclaration de l'état pour le token
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Récupération des données du localStorage côté client
     const storedToken = localStorage.getItem('token');
     const storedIdPlante = localStorage.getItem('idPlante');
     const pseudo = localStorage.getItem('pseudo');
@@ -43,7 +40,7 @@ export default function PlanteDetailsPage() {
         if (pseudo) {
           const response = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, {
             headers: {
-              'Authorization': `Bearer ${storedToken}` // Utilisation du token récupéré
+              'Authorization': `Bearer ${storedToken}`
             }
           });
           if (response.ok) {
@@ -68,7 +65,7 @@ export default function PlanteDetailsPage() {
       console.log(`Fetching details for plante ID: ${id}`);
       const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, {
         headers: {
-          'Authorization': `Bearer ${token}` // Utilisation du token récupéré
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -111,7 +108,7 @@ export default function PlanteDetailsPage() {
       const response = await fetch(url.toString(), {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}` // Utilisation du token récupéré
+          'Authorization': `Bearer ${token}`
         }
       });
 
