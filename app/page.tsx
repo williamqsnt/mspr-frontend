@@ -103,12 +103,12 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const userIdResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+      const userIdResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (userIdResponse.ok) {
         const userIdData = await userIdResponse.json();
         const userId = userIdData.idUtilisateur;
         if (userId) {
-          const botanistResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
+          const botanistResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
           if (botanistResponse.ok) {
             const botanistData = await botanistResponse.json();
             setIsBotanist(botanistData.estBotaniste);
@@ -133,7 +133,7 @@ const HomePage: React.FC = () => {
     try {
       const headers = new Headers();
       headers.append('Authorization', `Bearer ${token}`);
-      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des adresses de plantes.');
       }
