@@ -36,25 +36,50 @@ const HomePage: React.FC = () => {
     setPseudo(storedPseudo);
 
     if (!storedToken) {
-      // Si aucun token, rediriger vers la page de connexion
       router.push('/login');
+      return;
     }
+
+    // Vérifier la validité du token
+    validateToken(storedToken)
+      .then(isValid => {
+        if (!isValid) {
+          router.push('/login');
+        } else {
+          fetchPlantes();
+          fetchIsBotanist();
+          fetchAddresses();
+        }
+      })
+      .catch(() => {
+        router.push('/login');
+      });
   }, [router]);
 
-  useEffect(() => {
-    if (token && pseudo) {
-      fetchPlantes();
-      fetchIsBotanist();
-      fetchAddresses();
-    }
-  }, [token, pseudo]);
-
-  const fetchPlantes = async () => {
+  const validateToken = async (token: string): Promise<boolean> => {
     try {
       const headers = new Headers();
-      if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
+      headers.append('Authorization', `Bearer ${token}`);
+      const response = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/validerToken`, { headers });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.valide; 
+      } else {
+        return false;
       }
+    } catch (error) {
+      console.error('Erreur lors de la validation du token:', error);
+      return false;
+    }
+  };
+
+  const fetchPlantes = async () => {
+    if (!token) return;
+
+    try {
+      const headers = new Headers();
+      headers.append('Authorization', `Bearer ${token}`);
       const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererInfos`, { headers });
       if (response.ok) {
         const data = await response.json();
@@ -70,11 +95,11 @@ const HomePage: React.FC = () => {
   };
 
   const fetchIsBotanist = async () => {
+    if (!token || !pseudo) return;
+
     try {
       const headers = new Headers();
-      if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
-      }
+      headers.append('Authorization', `Bearer ${token}`);
       const userIdResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (userIdResponse.ok) {
         const userIdData = await userIdResponse.json();
@@ -100,11 +125,11 @@ const HomePage: React.FC = () => {
   };
 
   const fetchAddresses = async () => {
+    if (!token) return;
+
     try {
       const headers = new Headers();
-      if (token) {
-        headers.append('Authorization', `Bearer ${token}`);
-      }
+      headers.append('Authorization', `Bearer ${token}`);
       const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des adresses de plantes.');
