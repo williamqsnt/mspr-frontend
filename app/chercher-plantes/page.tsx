@@ -40,7 +40,7 @@ export default function ChercherPlantePage() {
       }
     }
     fetchAddresses();
-  }, [headers]);
+  }, []);
 
   async function handleSavePlant(idPlante: string, idGardiennage: string, idUtilisateur: string) {
     if (!pseudo) {
