@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import "leaflet/dist/leaflet.css";
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
