@@ -56,7 +56,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             headers.append('Authorization', `Bearer ${storedToken}`);
 
             try {
-                const response = await fetch(`https://15.237.67.223:3000/api/plante/afficher?idPlante=${id}`, { headers });
+                const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, { headers });
 
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des détails de la plante');
@@ -117,7 +117,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 return;
             }
 
-            const response = await axios.post('https://15.237.67.223:3000/api/gardiennage/ajouter', null, {
+            const response = await axios.post(`${process.env.API_ENDPOINT}/api/gardiennage/ajouter`, null, {
                 params: {
                     dateDebut,
                     dateFin,
@@ -150,7 +150,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 return;
             }
 
-            const response = await axios.put('https://15.237.67.223:3000/api/plante/modifier', null, {
+            const response = await axios.put(`${process.env.API_ENDPOINT}/api/plante/modifier`, null, {
                 params: {
                     idPlante: id,
                     ...editFields
@@ -180,7 +180,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 return;
             }
 
-            const response = await axios.delete('https://15.237.67.223:3000/api/plante/supprimer', {
+            const response = await axios.delete(`${process.env.API_ENDPOINT}/api/plante/supprimer`, {
                 params: { idPlante: id },
                 headers: { 'Authorization': `Bearer ${token}` }
             });

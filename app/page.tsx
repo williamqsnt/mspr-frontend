@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
       if (token) {
         headers.append('Authorization', `Bearer ${token}`);
       }
-      const response = await fetch('https://15.237.67.223:3000/api/plante/recupererInfos', { headers });
+      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererInfos`, { headers });
       if (response.ok) {
         const data = await response.json();
         setPlantes(data.plantes);
@@ -71,12 +71,12 @@ const HomePage: React.FC = () => {
       if (token) {
         headers.append('Authorization', `Bearer ${token}`);
       }
-      const userIdResponse = await fetch(`https://15.237.67.223:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+      const userIdResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
       if (userIdResponse.ok) {
         const userIdData = await userIdResponse.json();
         const userId = userIdData.idUtilisateur;
         if (userId) {
-          const botanistResponse = await fetch(`https://15.237.67.223:3000/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
+          const botanistResponse = await fetch(`${process.env.API_ENDPOINT}/api/utilisateur/estBotaniste?idUtilisateur=${userId}`, { headers });
           if (botanistResponse.ok) {
             const botanistData = await botanistResponse.json();
             setIsBotanist(botanistData.estBotaniste);
@@ -101,7 +101,7 @@ const HomePage: React.FC = () => {
       if (token) {
         headers.append('Authorization', `Bearer ${token}`);
       }
-      const response = await fetch('https://15.237.67.223:3000/api/plante/recupererlocalisation', { headers });
+      const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des adresses de plantes.');
       }

@@ -35,7 +35,7 @@ export default function GardiennagePage() {
         }
 
         // Récupérer les gardiennages
-        const responseGardiennages = await fetch(`https://15.237.67.223:3000/api/gardiennage/afficherGardes?idUtilisateur=${idUtilisateur}`, { headers });
+        const responseGardiennages = await fetch(`${process.env.API_ENDPOINT}/api/gardiennage/afficherGardes?idUtilisateur=${idUtilisateur}`, { headers });
         if (!responseGardiennages.ok) throw new Error("Failed to fetch gardiennages");
 
         const dataGardiennages = await responseGardiennages.json();
@@ -57,7 +57,7 @@ export default function GardiennagePage() {
         // Récupérer les détails des plantes
         const plantesPromises = idsPlantes.map(async (idPlante: number) => {
           try {
-            const responsePlante = await fetch(`https://15.237.67.223:3000/api/plante/afficher?idPlante=${idPlante}`, { headers });
+            const responsePlante = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficher?idPlante=${idPlante}`, { headers });
             if (!responsePlante.ok) throw new Error(`Failed to fetch plante with id ${idPlante}`);
 
             const dataPlante = await responsePlante.json();

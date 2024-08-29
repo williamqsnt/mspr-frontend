@@ -31,7 +31,7 @@ const PlantesUtilisateur: React.FC = () => {
           headers.append('Authorization', `Bearer ${storedToken}`);
         }
 
-        const response = await fetch(`https://15.237.67.223:3000/api/plante/afficherAll`, { headers });
+        const response = await fetch(`${process.env.API_ENDPOINT}/api/plante/afficherAll`, { headers });
         const data = await response.json();
 
         if (!response.ok) {

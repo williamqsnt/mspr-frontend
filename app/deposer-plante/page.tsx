@@ -89,7 +89,7 @@ const PlantePage = () => {
       });
 
       // Construire l'URL avec les paramètres
-      const url = `https://15.237.67.223:3000/api/plante/ajouter?${params.toString()}`;
+      const url = `${process.env.API_ENDPOINT}/api/plante/ajouter?${params.toString()}`;
 
       const headers = {
         'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête Authorization
@@ -122,7 +122,7 @@ const PlantePage = () => {
       }
 
       const response = await axios.post(
-        'https://15.237.67.223:3000/api/plante/ajouterPhoto',
+        `${process.env.API_ENDPOINT}/api/plante/ajouterPhoto`,
         { image: photo },
         {
           headers: {
