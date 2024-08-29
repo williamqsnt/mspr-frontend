@@ -21,17 +21,17 @@ export default function ConversationsPage() {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const pseudo = localStorage.getItem('pseudo')|| '';;
+        const pseudo = localStorage.getItem('pseudo') || '';
         setPseudoLocal(pseudo);
 
         if (pseudo) {
-          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, {headers: headers});
+          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
           if (idResponse.ok) {
             const idData = await idResponse.json();
             const idUtilisateur = idData.idUtilisateur;
 
             if (idUtilisateur) {
-              const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, {headers: headers});
+              const conversationResponse = await fetch(`http://localhost:3000/api/conversation/afficher?idUtilisateur=${idUtilisateur}`, { headers: headers });
               if (conversationResponse.ok) {
                 const data = await conversationResponse.json();
 
@@ -39,16 +39,16 @@ export default function ConversationsPage() {
                   data.conversations.map(async (conversation: { idUtilisateur: any; idUtilisateur_1: any; idConversation: any; }) => {
                     const otherUserId = (conversation.idUtilisateur === idUtilisateur) ? conversation.idUtilisateur_1 : conversation.idUtilisateur;
 
-                    const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, {headers: headers});
+                    const pseudoResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererPseudo?idUtilisateur=${otherUserId}`, { headers: headers });
                     const pseudoData = pseudoResponse.ok ? await pseudoResponse.json() : { pseudo: "Unknown User" };
 
-                    const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, {headers: headers});
+                    const avatarResponse = await fetch(`http://localhost:3000/api/conversation/recupererPhotoPlante?idConversation=${conversation.idConversation}`, { headers: headers });
                     const avatarData = avatarResponse.ok ? await avatarResponse.json() : { avatar: '/default-avatar.png' };
 
                     return { 
                       ...conversation, 
                       pseudo: pseudoData.pseudo, 
-                      avatar: avatarData.photoUrl  || '/default-avatar.png' 
+                      avatar: avatarData.photoUrl || '/default-avatar.png' 
                     };
                   })
                 );
@@ -85,6 +85,10 @@ export default function ConversationsPage() {
     router.push('/login');
   };
 
+  const handleConversationClick = (pseudo: string) => {
+    localStorage.setItem('memberPseudo', pseudo);  // Enregistrer le pseudo dans le localStorage
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 p-4">
@@ -95,7 +99,10 @@ export default function ConversationsPage() {
             {conversations.map((conversation, index) => (
               <div key={index} className="bg-white rounded-lg shadow-md p-4">
                 <Link href={`/messages/${conversation.idConversation}`}>
-                  <button className="w-full text-left flex items-center space-x-4 p-4 cursor-pointer focus:outline-none">
+                  <button 
+                    className="w-full text-left flex items-center space-x-4 p-4 cursor-pointer focus:outline-none"
+                    onClick={() => handleConversationClick(conversation.pseudo)}  // Appel de la fonction lors du clic
+                  >
                     <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                       <img src={conversation.avatar} alt="Avatar" className="w-11 h-11 rounded-full" />
                     </div>

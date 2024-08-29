@@ -27,6 +27,7 @@ export default function MessagesPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const token = localStorage.getItem("token");
+  const membre = localStorage.getItem("memberPseudo");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -53,6 +54,10 @@ export default function MessagesPage() {
         );
         const avatarData = await avatarResponse.json();
         setAvatar(avatarData.photoUrl || "/default-avatar.png");
+
+        //recuperation du pseudo du deuxieme utilisateur
+
+        
       } catch (error) {
         setErreur("Erreur lors de la récupération des informations utilisateur");
       }
@@ -160,7 +165,7 @@ export default function MessagesPage() {
           alt="Avatar"
           className="w-16 h-16 rounded-full mb-2"
         />
-        <h1 className="text-xl font-bold">{pseudo}</h1>
+        <h1 className="text-xl font-bold">{membre}</h1>
       </div>
 
       <main className="flex-1 p-4 overflow-y-auto">
@@ -190,8 +195,16 @@ export default function MessagesPage() {
                   <p>{message.contenu}</p>
                 )}
                 <small className="text-gray-500">
-                  {new Date(message.dateEnvoi).toLocaleTimeString()}
+                  {new Date(message.dateEnvoi).toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })} à {new Date(message.dateEnvoi).toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
                 </small>
+
               </div>
             );
           })}
