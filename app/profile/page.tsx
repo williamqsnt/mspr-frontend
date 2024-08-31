@@ -86,10 +86,9 @@ export default function ProfilPage() {
   const handleConfirm = async () => {
     try {
       const response = await axios.delete(`http://localhost:3000/api/utilisateur/supprimer?pseudo=${pseudo}`, {
-        params: { pseudo: pseudo },
         headers: { 'Authorization': `Bearer ${token}` }
-      });
-
+    });
+    
       if (response.status === 200) {
         toast.success('Compte supprimé avec succès');
         router.push('/login');
@@ -114,27 +113,21 @@ export default function ProfilPage() {
       </header>
 
       <main className="flex-1 p-4">
-        {erreur && <p className="text-red-500">{erreur}</p>}
-        <div className="flex flex-col items-center mb-4">
-          <div className="w-32 h-32 rounded-full bg-green-500 flex items-center justify-center">
-            <svg
-              className="w-20 h-20 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold">{utilisateur.prenom} {utilisateur.nom}</h2>
+      <br></br>
+      {erreur && <p className="text-red-500">{erreur}</p>}
+      <div className="flex flex-col items-center mb-4">
+        <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center">
+          <img
+            src="/pp.jpg"
+            alt="Profil"
+            className="object-cover w-full h-full"
+          />
         </div>
-      </main>
+        <br></br>
+        <h2 className="text-2xl font-bold">{utilisateur.prenom} {utilisateur.nom}</h2>
+      </div>
+
+    </main>
       <button
         onClick={() => setIsPopupOpen(true)}
           className="fixed bottom-16 left-1/2 transform -translate-x-1/2 mb-16 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
