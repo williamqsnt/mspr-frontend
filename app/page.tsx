@@ -114,19 +114,23 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
-        <div className="text-xl font-bold">Arosaje</div>
-      </header>
       <main className="flex-1 p-4">
+      {/* Bandeau d'accueil */}
+      <section className="bg-gradient-to-b from-green-400 via-green-300 to-green-200 p-6 text-center mb-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-2">Bienvenue sur Arosaje !</h1>
+        <p className="text-lg mb-4">Découvrez des plantes qui ont besoin de votre aide et faites garder vos plantes quand vous le souhaitez.</p>
+        <img src="./accueil.png" alt="Bandeau d'accueil" className="mx-auto w-4/5 rounded-lg"/>
+      </section>
+
+
+        {/* Plantes en besoin d'urgence */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold">Plantes en besoin d'urgence</h3>
-          <Link href="/plantes-gardiennage" className="text-blue-600 hover:underline">
-            Voir plus
-          </Link>
+          <Link href="/plantes-gardiennage" className="text-blue-600 hover:underline">Voir plus</Link>
         </div>
         <div className="mt-8">
           <Carousel className="w-full max-w-4xl mx-auto">
-            <CarouselContent className="flex ">
+            <CarouselContent className="flex">
               {plantes.map((plante) => (
                 <CarouselItem key={plante.idPlante} className="basis-1/2">
                   <div>
@@ -144,7 +148,20 @@ const HomePage: React.FC = () => {
           </Carousel>
         </div>
 
+        {/* Section des témoignages */}
+        <section className="mt-8 p-4 bg-gray-100 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold mb-2">Témoignages</h3>
+          <div className="space-y-4">
+            <blockquote className="bg-white p-4 rounded-lg shadow">
+              <p className="text-gray-800">"Une plateforme exceptionnelle pour les amateurs de plantes. J'ai pu partir en vacances sereinement grâce à Arosaje !" - Marie P.</p>
+            </blockquote>
+            <blockquote className="bg-white p-4 rounded-lg shadow">
+              <p className="text-gray-800">"Les conseils et la communauté sont super utiles. Je recommande vivement !" - Paul L.</p>
+            </blockquote>
+          </div>
+        </section>
 
+        {/* Bouton pour ajouter un conseil */}
         {isBotanist && (
           <button
             className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
