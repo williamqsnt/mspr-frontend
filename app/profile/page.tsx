@@ -8,7 +8,6 @@ import { decrypt } from "@/utils/cryptoUtils";
 import Menu from "@/components/menu";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { error } from "console";
 import ConfirmationPopup from "@/components/supprimer-compte";
 
 export default function ProfilPage() {
@@ -98,7 +97,6 @@ export default function ProfilPage() {
         toast.success('Compte supprimé avec succès');
         router.push('/login');
       } else {
-        toast.error(error.toString());
         throw new Error(response.data.message || 'Erreur lors de la suppression du compte');
       }
     } catch (error) {
