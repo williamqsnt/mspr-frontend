@@ -83,7 +83,6 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             });
 
             if (response.status === 200) {
-                alert('Gardiennage demandé avec succès');
                 router.push('/'); // Redirection vers la liste des plantes
             } else {
                 throw new Error(response.data.message || 'Erreur lors de la demande de gardiennage');
@@ -106,81 +105,78 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     }
 
     return (
-        <div className="p-4 md:p-8 lg:p-12 bg-gray-50 min-h-screen flex flex-col">
+        <div className="p-4 md:p-8 lg:p-12 bg-gray-50 min-h-screen flex flex-col h-screen">
             <button onClick={() => window.history.back()} className="flex items-center mb-6 text-blue-600 hover:underline">
                 <ChevronLeft className="mr-2" />
                 Retour
             </button>
-            <Card className="border-none shadow-lg mx-auto max-w-lg">
-                <CardContent className="flex flex-col items-center p-4">
-                    <form onSubmit={handleSubmit} className="w-full mt-6 bg-white shadow-md rounded-lg p-4">
-                        <h2 className="text-2xl font-bold mb-4">Ajouter un conseil</h2>
-                        <div className="mb-4">
-                            <label htmlFor="conseil" className="block text-gray-700 font-bold mb-2">Texte à entrer</label>
+            <Card className="border-none shadow-lg mx-auto max-w-2xl flex-grow">
+                <CardContent className="flex flex-col items-center p-6">
+                    <form onSubmit={handleSubmit} className="w-full mt-6 bg-white shadow-md rounded-lg p-6">
+                        <h2 className="text-3xl font-bold mb-6">Ajouter un conseil</h2>
+                        <div className="mb-6">
+                            <label htmlFor="conseil" className="block text-gray-700 font-bold mb-3 text-lg">Texte à entrer</label>
                             <textarea
                                 id="conseil"
                                 value={conseil}
                                 onChange={(e) => setconseil(e.target.value)}
-                                className="shadow appearance-none border rounded w-full h-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none"
-                                rows={5}
+                                className="shadow appearance-none border rounded w-full h-60 py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline resize-none text-lg"
+                                rows={7}
                                 required
                             />
-                            </div>
-
-
+                        </div>
                         <button
                             type="submit"
-                            className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                            className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded text-lg"
                         >
                             Ajouter un conseil
                         </button>
                     </form>
                 </CardContent>
             </Card>
-            <br></br>
-            <footer className="bg-white shadow-lg">
-        <nav className="flex flex-col items-center w-full">
-          <div className="w-full flex justify-center">
-            <div className="w-full h-px bg-gray-600 my-2"> </div>
-          </div>
-          <div className="flex justify-around items-center py-3 w-full">
-            <Link href="/">
-              <p className="flex flex-col items-center">
-                <HomeIcon size={25} />
-                <span className="text-xs mt-1">Accueil</span>
-              </p>
-            </Link>
-            <Link href="/plantes-utilisateur">
-              <p className="flex flex-col items-center">
-                <Leaf size={25} />
-                <span className="text-xs mt-1">Plantes</span>
-              </p>
-            </Link>
-            <Link href="/chercher-plantes">
-              <p className="flex flex-col items-center">
-                <MapPin size={25} />
-                <span className="text-xs mt-1">Map</span>
-              </p>
-            </Link>
-            <Link href="/messages">
-              <p className="flex flex-col items-center">
-                <MessageCircle size={25} />
-                <span className="text-xs mt-1">Messages</span>
-              </p>
-            </Link>
-            <Link href="/profile">
-              <p className="flex flex-col items-center">
-                <User size={25} />
-                <span className="text-xs mt-1">Profil</span>
-              </p>
-            </Link>
-          </div>
-        </nav>
-      </footer>
+            <footer className="bg-white shadow-lg mt-auto">
+                <nav className="flex flex-col items-center w-full">
+                    <div className="w-full flex justify-center">
+                        <div className="w-full h-px bg-gray-600 my-2"></div>
+                    </div>
+                    <div className="flex justify-around items-center py-3 w-full">
+                        <Link href="/">
+                            <p className="flex flex-col items-center">
+                                <HomeIcon size={30} />
+                                <span className="text-sm mt-1">Accueil</span>
+                            </p>
+                        </Link>
+                        <Link href="/plantes-utilisateur">
+                            <p className="flex flex-col items-center">
+                                <Leaf size={30} />
+                                <span className="text-sm mt-1">Plantes</span>
+                            </p>
+                        </Link>
+                        <Link href="/chercher-plantes">
+                            <p className="flex flex-col items-center">
+                                <MapPin size={30} />
+                                <span className="text-sm mt-1">Map</span>
+                            </p>
+                        </Link>
+                        <Link href="/messages">
+                            <p className="flex flex-col items-center">
+                                <MessageCircle size={30} />
+                                <span className="text-sm mt-1">Messages</span>
+                            </p>
+                        </Link>
+                        <Link href="/profile">
+                            <p className="flex flex-col items-center">
+                                <User size={30} />
+                                <span className="text-sm mt-1">Profil</span>
+                            </p>
+                        </Link>
+                    </div>
+                </nav>
+            </footer>
         </div>
-        
     );
     
-};
+}
+    
 
 export default PlantDetailPage;

@@ -1,9 +1,7 @@
 "use client";
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { ChevronLeft, HomeIcon, Leaf, MapPin, MessageCircle, Plus, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Menu from "@/components/menu";
 
 export default function GardiennagePage() {
@@ -13,7 +11,7 @@ export default function GardiennagePage() {
   const [selectedTab, setSelectedTab] = useState<'enCours' | 'aVenir' | 'passes'>('enCours');
   const token = typeof window !== "undefined" ? localStorage.getItem('token') : null;
   const router = useRouter();
-  const idUtilisateur = localStorage.getItem('idUtilisateur');
+  const idUtilisateur = typeof window !== "undefined" ? localStorage.getItem('idUtilisateur') : null;
 
   const handleGardiennagesClick = () => {
     router.push('/plantes-utilisateur');
@@ -32,7 +30,6 @@ export default function GardiennagePage() {
 
         const dataGardiennages = await responseGardiennages.json();
 
-        // Regrouper les gardiennages par plante
         const plantsWithGardiennages: { [key: number]: any } = {};
         dataGardiennages.gardiennages.forEach((g: any) => {
           if (!plantsWithGardiennages[g.idPlante]) {
@@ -52,19 +49,25 @@ export default function GardiennagePage() {
             if (!responsePlante.ok) throw new Error(`Failed to fetch plante with id ${idPlante}`);
 
             const dataPlante = await responsePlante.json();
-            // Associer les gardiennages aux plantes
-            const planteWithGardiennages = {
+
+            // Récupération des conseils pour la plante
+            const responseConseils = await fetch(`http://localhost:3000/api/conseil/afficher?idPlante=${idPlante}`, { headers: headers });
+            if (!responseConseils.ok) throw new Error(`Failed to fetch conseils for plante with id ${idPlante}`);
+            
+            const dataConseils = await responseConseils.json();
+
+            const planteWithDetails = {
               ...dataPlante.plante,
               gardiennages: plantsWithGardiennages[idPlante]?.gardiennages || [],
+              conseils: dataConseils.conseils || [], // Ajouter les conseils récupérés
             };
 
-            return planteWithGardiennages;
+            return planteWithDetails;
           } catch (error) {
             console.error(`Error fetching details for plante id ${idPlante}:`, error);
             return null;
           }
         });
-
         const plantesDetails = await Promise.all(plantesPromises);
         const validPlantesDetails = plantesDetails.filter((plante: any) => plante !== null);
 
@@ -87,7 +90,7 @@ export default function GardiennagePage() {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return "Date invalide"; // Ou un message par défaut
+      return "Date invalide";
     }
 
     const options: any = {
@@ -142,7 +145,6 @@ export default function GardiennagePage() {
         </button>
         <button
           className={`flex-1 px-4 text-sm font-semibold rounded-r-lg bg-[#1CD672] text-black`}
-
         >
           Mes gardiennages
         </button>
@@ -209,6 +211,20 @@ export default function GardiennagePage() {
             {selectedPlante.photoUrl && (
               <img src={selectedPlante.photoUrl} alt={`Photo de ${selectedPlante.nom}`} className="mt-4" />
             )}
+            
+            {selectedPlante.conseils.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-semibold">Conseils:</h3>
+                <ul>
+                  {selectedPlante.conseils.map((conseil: any, index: number) => (
+                    <li key={index}>
+                      <p> - {conseil.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {selectedPlante.gardiennages.length > 0 && (
               <div className="mt-4">
                 <ul>
@@ -225,7 +241,6 @@ export default function GardiennagePage() {
         </div>
       )}
       <Menu />
-
     </div>
   );
 }

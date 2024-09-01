@@ -129,13 +129,13 @@ const HomePage: React.FC = () => {
           <Link href="/plantes-gardiennage" className="text-blue-600 hover:underline">Voir plus</Link>
         </div>
         <div className="mt-8">
-          <Carousel className="w-full max-w-4xl mx-auto">
+          <Carousel className="w-full max-w-4xl mx-auto py-4">
             <CarouselContent className="flex">
               {plantes.map((plante) => (
                 <CarouselItem key={plante.idPlante} className="basis-1/2">
                   <div>
                     <Card className="border-none shadow-none" onClick={() => handleCardClick(plante.idPlante)}>
-                      <CardContent className="flex flex-col h-52 w-52">
+                      <CardContent className="flex flex-col w-52">
                         <img src={plante.photoUrl} alt={plante.nom} className="w-full h-48 object-cover" />
                         <h2 className="text-lg font-bold">{plante.nom}</h2>
                         <p className="text-sm text-gray-600">{plante.adresse}</p>
@@ -149,7 +149,7 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Section des témoignages */}
-        <section className="mt-8 p-4 bg-gray-100 rounded-lg shadow-md">
+        <section className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
           <h3 className="text-xl font-bold mb-2">Témoignages</h3>
           <div className="space-y-4">
             <blockquote className="bg-white p-4 rounded-lg shadow">
@@ -171,7 +171,7 @@ const HomePage: React.FC = () => {
           </button>
         )}
       </main>
-
+      <div className="pb-28"></div>
       <Menu />
     </div>
   );
