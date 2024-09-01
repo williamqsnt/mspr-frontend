@@ -22,13 +22,20 @@ const HomePage: React.FC = () => {
   const router = useRouter();
   const [isBotanist, setIsBotanist] = useState<boolean>(false);
   const [plantes, setPlantes] = useState<Plante[]>([]);
-  const token = localStorage.getItem('token');
-  const [addresses, setAddresses] = useState<{ adresse: string; idPlante: string }[]>([]);
+  const [token, setToken] = useState<string | null>(null);
+  const [pseudo, setPseudo] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); const [addresses, setAddresses] = useState<{ adresse: string; idPlante: string }[]>([]);
 
   const headers = new Headers();
   if (token) {
     headers.append('Authorization', `Bearer ${token}`);
   }
+
+  useEffect(() => {
+    // Récupérer le token et le pseudo depuis localStorage après le montage du composant
+    setToken(localStorage.getItem('token'));
+    setPseudo(localStorage.getItem('pseudo'));
+  }, []);
 
   useEffect(() => {
     fetchPlantes();
@@ -159,7 +166,6 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Bouton pour ajouter un conseil */}
         {isBotanist && (
           <button
             className="w-full px-4 py-2 mt-12 text-white bg-green-600 rounded-lg focus:outline-none hover:bg-green-700"
