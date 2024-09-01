@@ -33,11 +33,20 @@ const HomePage: React.FC = () => {
 
 
   useEffect(() => {
+    // Récupérer le token et le pseudo depuis localStorage après le montage du composant
     setToken(localStorage.getItem('token'));
     setPseudo(localStorage.getItem('pseudo'));
-    fetchPlantes();
-    fetchIsBotanist();
   }, []);
+
+  useEffect(() => {
+    // Effectuer les appels API après avoir récupéré le token et le pseudo
+    if (token && pseudo) {
+      fetchPlantes();
+      fetchIsBotanist();
+      fetchAddresses();
+    }
+  }, [token, pseudo]);
+
 
   const fetchPlantes = async () => {
     try {
@@ -80,31 +89,27 @@ const HomePage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    async function fetchAddresses() {
-      try {
-        const headers = new Headers();
-        if (token) {
-          headers.append('Authorization', `Bearer ${token}`);
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
-        if (!response.ok) {
-          throw new Error("Erreur lors de la récupération des adresses de plantes.");
-        }
-
-        const responseData = await response.json();
-        setAddresses(responseData.adresses);
-      } catch (error) {
-        console.error("Error fetching addresses:", error);
+  async function fetchAddresses() {
+    try {
+      const headers = new Headers();
+      if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
       }
-    }
-    fetchAddresses();
-  }, []);
 
-  async function handleSavePlant(idPlante: string, idGardiennage: string, idUtilisateur: string) {
-    // votre logique ici
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/recupererlocalisation`, { headers });
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des adresses de plantes.");
+      }
+
+      const responseData = await response.json();
+      setAddresses(responseData.adresses);
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+    }
   }
+  fetchAddresses();
+
+
 
 
   const handleNavigation = (route: string) => {
