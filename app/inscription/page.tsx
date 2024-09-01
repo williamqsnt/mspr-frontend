@@ -273,6 +273,7 @@ export default function Inscription() {
               <input
                 type="password"
                 id="motDePasse"
+                minLength={8}
                 value={motDePasse}
                 onChange={(e) => setMotDePasse(e.target.value)}
                 required

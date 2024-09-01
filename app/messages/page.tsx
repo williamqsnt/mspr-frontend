@@ -36,7 +36,7 @@ export default function ConversationsPage() {
         }
 
         // Récupérer l'ID utilisateur
-        const idResponse = await fetch(`https${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
+        const idResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers });
         if (idResponse.ok) {
           const idData = await idResponse.json();
           const idUtilisateur = idData.idUtilisateur;

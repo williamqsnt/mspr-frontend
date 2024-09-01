@@ -39,7 +39,9 @@ export default function GardiennagePage() {
         const dataGardiennages = await responseGardiennages.json();
 
         // Regrouper les gardiennages par plante
-        const plantsWithGardiennages: { [key: number]: any } = {};
+        const plantsWithGardiennages: { [key: number]: any } = {
+          
+        };
         dataGardiennages.gardiennages.forEach((g: any) => {
           if (!plantsWithGardiennages[g.idPlante]) {
             plantsWithGardiennages[g.idPlante] = {
