@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
 
         {/* Plantes en besoin d'urgence */}
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold">Plantes en besoin d'urgence</h3>
+          <h3 className="text-xl font-bold">Plantes en besoin d&apos;urgence</h3>
           <Link href="/plantes-gardiennage" className="text-blue-600 hover:underline">Voir plus</Link>
         </div>
         <div className="mt-8">
@@ -151,10 +151,10 @@ const HomePage: React.FC = () => {
           <h3 className="text-xl font-bold mb-2">Témoignages</h3>
           <div className="space-y-4">
             <blockquote className="bg-white p-4 rounded-lg shadow">
-              <p className="text-gray-800">"Une plateforme exceptionnelle pour les amateurs de plantes. J'ai pu partir en vacances sereinement grâce à Arosaje !" - Marie P.</p>
+              <p className="text-gray-800">&quot;Une plateforme exceptionnelle pour les amateurs de plantes. J&apos;ai pu partir en vacances sereinement grâce à Arosaje !&quot; - Marie P.</p>
             </blockquote>
             <blockquote className="bg-white p-4 rounded-lg shadow">
-              <p className="text-gray-800">"Les conseils et la communauté sont super utiles. Je recommande vivement !" - Paul L.</p>
+              <p className="text-gray-800">&quot;Les conseils et la communauté sont super utiles. Je recommande vivement !&quot; - Paul L.</p>
             </blockquote>
           </div>
         </section>
