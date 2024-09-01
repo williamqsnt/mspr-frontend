@@ -32,6 +32,10 @@ export default function ProfilPage() {
     setPseudo(storedPseudo);
 
     const fetchProfil = async () => {
+      const headers = new Headers();
+      if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+      }
       try {
         const pseudo = localStorage.getItem('pseudo');
         if (pseudo) {
@@ -88,8 +92,8 @@ export default function ProfilPage() {
     try {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/supprimer?pseudo=${pseudo}`, {
         headers: { 'Authorization': `Bearer ${token}` }
-    });
-    
+      });
+
       if (response.status === 200) {
         toast.success('Compte supprimé avec succès');
         router.push('/login');
@@ -108,39 +112,39 @@ export default function ProfilPage() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <header className="flex items-center justify-between px-4 py-3 bg-white shadow">
-          <button className="focus:outline-none" onClick={handleLogout}>
-            Déconnexion
-          </button>
+        <button className="focus:outline-none" onClick={handleLogout}>
+          Déconnexion
+        </button>
       </header>
 
       <main className="flex-1 p-4">
-      <br></br>
-      {erreur && <p className="text-red-500">{erreur}</p>}
-      <div className="flex flex-col items-center mb-4">
-        <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center">
-          <img
-            src="/pp.jpg"
-            alt="Profil"
-            className="object-cover w-full h-full"
-          />
-        </div>
         <br></br>
-        <h2 className="text-2xl font-bold">{utilisateur.prenom} {utilisateur.nom}</h2>
-      </div>
+        {erreur && <p className="text-red-500">{erreur}</p>}
+        <div className="flex flex-col items-center mb-4">
+          <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center">
+            <img
+              src="/pp.jpg"
+              alt="Profil"
+              className="object-cover w-full h-full"
+            />
+          </div>
+          <br></br>
+          <h2 className="text-2xl font-bold">{utilisateur.prenom} {utilisateur.nom}</h2>
+        </div>
 
-    </main>
+      </main>
       <button
         onClick={() => setIsPopupOpen(true)}
-          className="fixed bottom-16 left-1/2 transform -translate-x-1/2 mb-16 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          Supprimer mon compte
+        className="fixed bottom-16 left-1/2 transform -translate-x-1/2 mb-16 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+      >
+        Supprimer mon compte
       </button>
       <ConfirmationPopup
         isOpen={isPopupOpen}
         onCancel={handleCancel}
         handleConfirm={handleConfirm}
       />
-     <Menu />
+      <Menu />
     </div>
   );
 }
