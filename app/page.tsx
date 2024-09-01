@@ -31,13 +31,10 @@ const HomePage: React.FC = () => {
     headers.append('Authorization', `Bearer ${token}`);
   }
 
-  useEffect(() => {
-    // Récupérer le token et le pseudo depuis localStorage après le montage du composant
-    setToken(localStorage.getItem('token'));
-    setPseudo(localStorage.getItem('pseudo'));
-  }, []);
 
   useEffect(() => {
+    setToken(localStorage.getItem('token'));
+    setPseudo(localStorage.getItem('pseudo'));
     fetchPlantes();
     fetchIsBotanist();
   }, []);
