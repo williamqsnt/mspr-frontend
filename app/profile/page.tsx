@@ -39,14 +39,14 @@ export default function ProfilPage() {
         const pseudo = localStorage.getItem('pseudo');
         if (pseudo) {
           // Récupérer l'ID utilisateur à partir du pseudo
-          const idResponse = await fetch(`http://localhost:3000/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
+          const idResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/recupererId?pseudo=${pseudo}`, { headers: headers });
           if (idResponse.ok) {
             const idData = await idResponse.json();
             const idUtilisateur = idData.idUtilisateur;
 
             if (idUtilisateur) {
               // Récupérer les informations du profil et les plantes
-              const profilResponse = await fetch(`http://localhost:3000/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers: headers });
+              const profilResponse = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/infos?idUtilisateur=${idUtilisateur}`, { headers: headers });
               if (profilResponse.ok) {
                 const data = await profilResponse.json();
                 const nomdecrypter = decrypt(data.utilisateur.nom);
