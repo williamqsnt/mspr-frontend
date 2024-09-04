@@ -13,7 +13,10 @@ import { useRouter } from 'next/navigation';
 import Menu from "@/components/menu";
 
 const PlantePage = () => {
-  const [especes, setEspeces] = useState<Array<{ id: number; nom: string }>>([]);
+  const [especes, setEspeces] = useState<Array<{
+    libelle: ReactNode;
+    idEspece: string | number | readonly string[] | undefined; id: number; nom: string 
+}>>([]);
   const [selectedEspeceId, setSelectedEspeceId] = useState<number | null>(null);
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
@@ -77,6 +80,21 @@ const PlantePage = () => {
 
     if (!selectedEspeceId) {
       setErrorMessage("Veuillez sélectionner une espèce.");
+      return;
+    }
+
+    if (!description) {
+      setErrorMessage("Veuillez ajouter une description de la plante.");
+      return;
+    }
+
+    if (!nom) {
+      setErrorMessage("Veuillez ajouter un nom de la plante.");
+      return;
+    }
+
+    if (!adresse) {
+      setErrorMessage("Veuillez ajouter une adresse.");
       return;
     }
 
@@ -166,6 +184,7 @@ const PlantePage = () => {
                 id="name"
                 placeholder="Rose..."
                 value={nom}
+                required
                 onChange={(e) => setNom(e.target.value)}
               />
             </div>
@@ -180,6 +199,7 @@ const PlantePage = () => {
               id="description"
               placeholder="Plante de couleur rose..."
               value={description}
+              required
               onChange={(e) => setDescription(e.target.value)}
               className="min-h-[100px]"
             />
@@ -190,13 +210,13 @@ const PlantePage = () => {
   onChange={(e) => setSelectedEspeceId(parseInt(e.target.value))}
   className="border p-2 rounded w-full max-h-48 overflow-y-auto"
 >
-  <option value="">Sélectionner une espèce...</option>
-  {Array.isArray(especes) && especes.map((espece) => (
-    <option key={espece.idEspece} value={espece.idEspece}>
-      {espece.libelle}
-    </option>
-  ))}
-</select>
+      <option value="">Sélectionner une espèce...</option>
+        {Array.isArray(especes) && especes.map((espece) => (
+          <option key={String(espece.idEspece)} value={espece.idEspece}>
+            {espece.libelle}
+          </option>
+        ))}
+      </select>
 
 
 
@@ -209,6 +229,7 @@ const PlantePage = () => {
               id="address"
               placeholder=""
               value={adresse}
+              required
               onChange={(e) => setAdresse(e.target.value)}
             />
           </div>
