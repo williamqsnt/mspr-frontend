@@ -198,7 +198,7 @@ export default function ChercherPlantepage() {
             <span className="font-semibold">Nom:</span> {plant.nom}
           </p>
           <p className="">
-            <span className="font-semibold">Espèce:</span> {plant.espece}
+            <span className="font-semibold">Espèce:</span> {plant.espece.libelle}
           </p>
           <p className="">
             <span className="font-semibold">Description:</span> {plant.description}

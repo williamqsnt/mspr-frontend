@@ -199,7 +199,7 @@ export default function GardiennagePage() {
               </button>
             </div>
             <p>
-              <strong>Espèce:</strong> {selectedPlante.espece}
+              <strong>Espèce:</strong> {selectedPlante.espece.libelle}
             </p>
             <p>
               <strong>Description:</strong> {selectedPlante.description}

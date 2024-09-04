@@ -14,12 +14,16 @@ import { Separator } from '@/components/ui/separator';
 
 interface Plante {
     idPlante: number;
-    espece: string;
     description: string;
     nom: string;
     adresse: string;
     photoUrl: string;
     idUtilisateur: number;
+    idEspece: number; // Ajout de l'ID de l'espèce
+    gardiennages: any[]; // Définir le type exact si possible
+    espece: {
+        libelle: string; // Libellé de l'espèce
+    };
 }
 
 const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
@@ -55,7 +59,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                     setPlante(data.plante);
                     setEditFields({
                         nom: data.plante.nom,
-                        espece: data.plante.espece,
+                        idEspece: data.plante.idEspece,
                         description: data.plante.description,
                         adresse: data.plante.adresse,
                     });
@@ -212,14 +216,9 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                                 className="border p-2 rounded w-full"
                             />
                         ) : plante.nom}</h1>
-                        <p className="text-base  mb-2">Espèce : {isEditing ? (
-                            <input
-                                type="text"
-                                value={editFields.espece}
-                                onChange={(e) => setEditFields({ ...editFields, espece: e.target.value })}
-                                className="border p-2 rounded w-full"
-                            />
-                        ) : plante.espece}</p>
+                        <p className="text-base mb-2">Espèce : {plante.espece.libelle}</p>
+
+
                         <p className="text-base mb-4">Description : {isEditing ? (
                             <textarea
                                 value={editFields.description}
