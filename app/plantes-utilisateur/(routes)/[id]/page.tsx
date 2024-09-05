@@ -122,6 +122,60 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         }
     };
 
+    const handleSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        if (!dateDebut || !dateFin) {
+            toast.error('Veuillez remplir les dates de début et de fin');
+            return;
+        }
+
+        if (dateDebut > dateFin) {
+            toast.error('La date de fin ne peut pas être antérieure à la date de début');
+            return;
+        }
+
+        const diff = Math.abs(new Date(dateFin).getTime() - new Date(dateDebut).getTime());
+        const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+        if (diffDays > 365) {
+            toast.error('La date de fin ne peut pas être supérieure à 1 an après la date de début');
+            return;
+        }
+        if (new Date(dateDebut) < new Date()) {
+            toast.error('La date de début ne peut pas être inférieure à la date actuelle');
+            return;
+        }
+
+        try {
+            if (!token) {
+                toast.error('Token non trouvé');
+                return;
+            }
+
+            const response = await axios.post('http://localhost:3000/api/gardiennage/ajouter', null, {
+                params: {
+                    dateDebut,
+                    dateFin,
+                    idPlante: id
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                toast.success('Demande de gardiennage envoyée avec succès');
+                router.push('/');
+            } else {
+                toast.error(response.data.message || 'Erreur lors de la demande de gardiennage');
+                throw new Error(response.data.message || 'Erreur lors de la demande de gardiennage');
+            }
+        } catch (error) {
+            toast.error('Erreur lors de la demande de gardiennage');
+            console.error('Erreur lors de la demande de gardiennage:', error);
+        }
+    };
+
     const handleDelete = async () => {
         try {
             const response = await axios.delete('http://localhost:3000/api/plante/supprimer', {
@@ -223,7 +277,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                         )}
                     </div>
                     <Separator />
-                    <form onSubmit={handleModify} className="w-full mt-12 bg-white rounded-lg">
+                    <form onSubmit={handleSubmit} className="w-full mt-12 bg-white rounded-lg">
                         <h2 className="text-xl font-bold mb-4">Demander un gardiennage</h2>
                         <div className="mb-4">
                             <label htmlFor="dateDebut" className="block text-gray-700 font-bold mb-2">Date de début</label>
@@ -232,7 +286,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                                 id="dateDebut"
                                 value={dateDebut}
                                 onChange={(e) => setDateDebut(e.target.value)}
-                                className="border rounded-lg p-2 w-full"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 required
                             />
                         </div>
@@ -243,13 +297,16 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                                 id="dateFin"
                                 value={dateFin}
                                 onChange={(e) => setDateFin(e.target.value)}
-                                className="border rounded-lg p-2 w-full"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 required
                             />
                         </div>
-                        <Button className="bg-[#1CD672] text-white font-bold py-2 px-4 rounded" type="submit">
-                            Envoyer
-                        </Button>
+                        <button
+                            type="submit"
+                            className="bg-[#1CD672] hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Demander un gardiennage
+                        </button>
                     </form>
                 </CardContent>
             </Card>
