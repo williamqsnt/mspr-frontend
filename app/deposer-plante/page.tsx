@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect, ReactNode } from "react";
 import Head from "next/head";
 import axios from "axios";
@@ -17,7 +16,6 @@ const PlantePage = () => {
     id: number;
     nom: string;
   }>>([]);
-  
   const [selectedEspeceId, setSelectedEspeceId] = useState<number | null>(null);
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
@@ -30,12 +28,10 @@ const PlantePage = () => {
   const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null);
   const router = useRouter();
 
-  // Mettez toujours les hooks en premier
   useEffect(() => {
     const fetchEspeces = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/espece/afficher");
-        console.log("Données récupérées:", response.data);
         setEspeces(response.data.especes);
       } catch (error) {
         console.error("Erreur lors de la récupération des espèces :", error);
@@ -46,31 +42,30 @@ const PlantePage = () => {
   }, []);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedIdUtilisateur = localStorage.getItem("idUtilisateur");
+    const storedToken = localStorage.getItem('token');
+    const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
     setToken(storedToken);
     setIdUtilisateur(storedIdUtilisateur);
   }, []);
 
-  // Ensuite, gérez vos conditions
-  if (!description) {
-    setErrorMessage("Veuillez ajouter une description de la plante.");
-    return null;
-  }
-
-  if (!nom) {
-    setErrorMessage("Veuillez ajouter un nom de la plante.");
-    return null;
-  }
-
-  if (!adresse) {
-    setErrorMessage("Veuillez ajouter une adresse.");
-    return null;
-  }
-
   const ajouterPlante = async () => {
+    if (!description) {
+      setErrorMessage("Veuillez ajouter une description de la plante.");
+      return;
+    }
+
+    if (!nom) {
+      setErrorMessage("Veuillez ajouter un nom de la plante.");
+      return;
+    }
+
+    if (!adresse) {
+      setErrorMessage("Veuillez ajouter une adresse.");
+      return;
+    }
+
     if (!photos) {
-      setErrorMessage("Veuillez ajouter une photo de la plante.");
+      setErrorMessage('Veuillez ajouter une photo de la plante.');
       return;
     }
 
@@ -83,21 +78,25 @@ const PlantePage = () => {
 
       const params = new URLSearchParams({
         idEspece: selectedEspeceId ? selectedEspeceId.toString() : "",
-        description: description,
-        nom: nom,
-        adresse: adresse,
+        description,
+        nom,
+        adresse,
         idUtilisateur: idUtilisateur ?? "",
-        photoUrl: responsePhoto,
+        photoUrl: responsePhoto
       });
 
       const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/ajouter?${params.toString()}`;
 
       const headers = {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       };
 
-      const response = await axios.post(url, {}, { headers });
+      const response = await axios.post(
+        url,
+        {},
+        { headers }
+      );
 
       if (response.status === 200) {
         setSuccessDialogOpen(true);
@@ -121,15 +120,15 @@ const PlantePage = () => {
         { image: photo },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
       );
       return response.data.imageUrl;
     } catch (error) {
-      console.error("Error uploading photo:", error);
-      throw new Error("Failed to upload photo");
+      console.error('Error uploading photo:', error);
+      throw new Error('Failed to upload photo');
     }
   };
 
@@ -141,7 +140,6 @@ const PlantePage = () => {
   const handleCloseErrorDialog = () => {
     setErrorDialogOpen(false);
   };
-
   return (
     <div className="h-screen">
       <Head>
