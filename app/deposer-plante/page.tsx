@@ -13,8 +13,12 @@ import { useRouter } from "next/navigation";
 const PlantePage = () => {
   const [especes, setEspeces] = useState<Array<{
     libelle: ReactNode;
-    idEspece: string | number | readonly string[] | undefined; id: number; nom: string
-  }>>([]); const [selectedEspeceId, setSelectedEspeceId] = useState<number | null>(null);
+    idEspece: string | number | readonly string[] | undefined;
+    id: number;
+    nom: string;
+  }>>([]);
+  
+  const [selectedEspeceId, setSelectedEspeceId] = useState<number | null>(null);
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
   const [adresse, setAdresse] = useState<string>("");
@@ -26,28 +30,13 @@ const PlantePage = () => {
   const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null);
   const router = useRouter();
 
-  if (!description) {
-    setErrorMessage("Veuillez ajouter une description de la plante.");
-    return;
-  }
-
-  if (!nom) {
-    setErrorMessage("Veuillez ajouter un nom de la plante.");
-    return;
-  }
-
-  if (!adresse) {
-    setErrorMessage("Veuillez ajouter une adresse.");
-    return;
-  }
-
-
+  // Mettez toujours les hooks en premier
   useEffect(() => {
     const fetchEspeces = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/espece/afficher");
         console.log("Données récupérées:", response.data);
-        setEspeces(response.data.especes); // Accéder au tableau d'espèces dans l'objet retourné
+        setEspeces(response.data.especes);
       } catch (error) {
         console.error("Erreur lors de la récupération des espèces :", error);
       }
@@ -55,16 +44,33 @@ const PlantePage = () => {
 
     fetchEspeces();
   }, []);
+
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
+    const storedToken = localStorage.getItem("token");
+    const storedIdUtilisateur = localStorage.getItem("idUtilisateur");
     setToken(storedToken);
     setIdUtilisateur(storedIdUtilisateur);
   }, []);
 
+  // Ensuite, gérez vos conditions
+  if (!description) {
+    setErrorMessage("Veuillez ajouter une description de la plante.");
+    return null;
+  }
+
+  if (!nom) {
+    setErrorMessage("Veuillez ajouter un nom de la plante.");
+    return null;
+  }
+
+  if (!adresse) {
+    setErrorMessage("Veuillez ajouter une adresse.");
+    return null;
+  }
+
   const ajouterPlante = async () => {
     if (!photos) {
-      setErrorMessage('Veuillez ajouter une photo de la plante.');
+      setErrorMessage("Veuillez ajouter une photo de la plante.");
       return;
     }
 
@@ -81,21 +87,17 @@ const PlantePage = () => {
         nom: nom,
         adresse: adresse,
         idUtilisateur: idUtilisateur ?? "",
-        photoUrl: responsePhoto
+        photoUrl: responsePhoto,
       });
 
       const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/ajouter?${params.toString()}`;
 
       const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       };
 
-      const response = await axios.post(
-        url,
-        {},
-        { headers }
-      );
+      const response = await axios.post(url, {}, { headers });
 
       if (response.status === 200) {
         setSuccessDialogOpen(true);
@@ -119,15 +121,15 @@ const PlantePage = () => {
         { image: photo },
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
       return response.data.imageUrl;
     } catch (error) {
-      console.error('Error uploading photo:', error);
-      throw new Error('Failed to upload photo');
+      console.error("Error uploading photo:", error);
+      throw new Error("Failed to upload photo");
     }
   };
 
