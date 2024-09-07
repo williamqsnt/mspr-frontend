@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 interface Plante {
   idPlante: number;
-  espece: string;
+  idEspece: string;
   description: string;
   nom: string;
   adresse: string;
@@ -19,6 +19,9 @@ interface Plante {
     dateDebut: string;
     dateFin: string;
   }[];
+  espece:{
+    libelle: string;
+  }
 }
 
 const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
@@ -138,7 +141,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
           <div className="w-full space-y-3">
             <p className="text-lg text-gray-700"><strong>Nom:</strong> {plante.nom}</p>
-            <p className="text-lg text-gray-700"><strong>Espèce:</strong> {plante.espece}</p>
+            <p className="text-lg text-gray-700"><strong>Espèce:</strong> {plante.espece.libelle}</p>
             <p className="text-lg text-gray-700"><strong>Description:</strong> {plante.description}</p>
             <p className="text-lg text-gray-700"><strong>Adresse:</strong> {plante.adresse}</p>
           </div>

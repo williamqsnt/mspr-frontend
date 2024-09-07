@@ -26,7 +26,6 @@ export default function Inscription() {
       const encryptedDateNaissance = encrypt(dateNaissance);
       const encryptedNumero = encrypt(numero);
       const encryptedEmail = encrypt(email);
-      const encryptedAdresse = encrypt(adresse);
       const encryptedMotDePasse = encrypt(motDePasse);
 
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/utilisateur/ajouter`, {
@@ -35,7 +34,6 @@ export default function Inscription() {
         dateNaissance: encryptedDateNaissance,
         numero: encryptedNumero,
         email: encryptedEmail,
-        adresse: encryptedAdresse,
         pseudo: pseudo,
         motDePasse: encryptedMotDePasse,
       });
@@ -231,22 +229,7 @@ export default function Inscription() {
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
-            <div>
-              <label
-                htmlFor="adresse"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Adresse
-              </label>
-              <input
-                type="text"
-                id="adresse"
-                value={adresse}
-                onChange={(e) => setAdresse(e.target.value)}
-                required
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
+            
             <div>
               <label
                 htmlFor="pseudo"

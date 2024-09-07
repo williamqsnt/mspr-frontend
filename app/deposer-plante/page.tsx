@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import Head from "next/head";
 import axios from "axios";
 import { Label } from "@/components/ui/label";
@@ -8,9 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft } from "lucide-react";
 import PrendrePhoto from "@/components/prendrePhoto";
 import Menu from "@/components/menu";
+import { useRouter } from "next/navigation";
 
 const PlantePage = () => {
-  const [espece, setEspece] = useState<string>("");
+  const [especes, setEspeces] = useState<Array<{
+    libelle: ReactNode;
+    idEspece: string | number | readonly string[] | undefined; id: number; nom: string
+  }>>([]); const [selectedEspeceId, setSelectedEspeceId] = useState<number | null>(null);
   const [description, setDescription] = useState<string>("");
   const [nom, setNom] = useState<string>("");
   const [adresse, setAdresse] = useState<string>("");
@@ -20,7 +24,37 @@ const PlantePage = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [idUtilisateur, setIdUtilisateur] = useState<string | null>(null);
+  const router = useRouter();
 
+  if (!description) {
+    setErrorMessage("Veuillez ajouter une description de la plante.");
+    return;
+  }
+
+  if (!nom) {
+    setErrorMessage("Veuillez ajouter un nom de la plante.");
+    return;
+  }
+
+  if (!adresse) {
+    setErrorMessage("Veuillez ajouter une adresse.");
+    return;
+  }
+
+
+  useEffect(() => {
+    const fetchEspeces = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/espece/afficher");
+        console.log("Données récupérées:", response.data);
+        setEspeces(response.data.especes); // Accéder au tableau d'espèces dans l'objet retourné
+      } catch (error) {
+        console.error("Erreur lors de la récupération des espèces :", error);
+      }
+    };
+
+    fetchEspeces();
+  }, []);
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedIdUtilisateur = localStorage.getItem('idUtilisateur');
@@ -42,7 +76,7 @@ const PlantePage = () => {
       const responsePhoto = await ajouterPhotos(photos);
 
       const params = new URLSearchParams({
-        espece: espece,
+        idEspece: selectedEspeceId ? selectedEspeceId.toString() : "",
         description: description,
         nom: nom,
         adresse: adresse,
@@ -147,16 +181,20 @@ const PlantePage = () => {
               className="min-h-[100px]"
             />
           </div>
+          <select
+            id="species"
+            value={selectedEspeceId ?? ""}
+            onChange={(e) => setSelectedEspeceId(parseInt(e.target.value))}
+            className="border p-2 rounded w-full max-h-48 overflow-y-auto"
+          >
+            <option value="">Sélectionner une espèce...</option>
+            {Array.isArray(especes) && especes.map((espece) => (
+              <option key={String(espece.idEspece)} value={espece.idEspece}>
+                {espece.libelle}
+              </option>
+            ))}
+          </select>
 
-          <div className="mb-4">
-            <Label htmlFor="species">Espèce de la plante</Label>
-            <Input
-              id="species"
-              placeholder="famille des Rosaceae..."
-              value={espece}
-              onChange={(e) => setEspece(e.target.value)}
-            />
-          </div>
 
           <div className="mb-4">
             <Label htmlFor="address">Adresse</Label>

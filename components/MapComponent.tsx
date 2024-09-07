@@ -108,7 +108,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ addresses, onSave }) => {
             className="w-full h-32 object-cover rounded-md mb-4"
           />
           <p><span className="font-semibold">Nom:</span> {plant.nom}</p>
-          <p><span className="font-semibold">Espèce:</span> {plant.espece}</p>
+          <p><span className="font-semibold">Espèce:</span> {plant.espece.libelle}</p>
           <p><span className="font-semibold">Description:</span> {plant.description}</p>
           <div>
             <h3 className="text-base font-semibold mb-2">Gardiennage(s):</h3>

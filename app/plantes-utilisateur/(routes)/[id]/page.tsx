@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronLeft, Edit } from 'lucide-react';
+import { ChevronLeft, Trash, Edit } from 'lucide-react';
 import axios from 'axios';
 import Menu from '@/components/menu';
 import toast from 'react-hot-toast';
@@ -14,47 +14,53 @@ import { Separator } from '@/components/ui/separator';
 
 interface Plante {
     idPlante: number;
-    espece: string;
     description: string;
     nom: string;
     adresse: string;
     photoUrl: string;
     idUtilisateur: number;
+    idEspece: number;
+    gardiennages: any[];
+    espece: {
+        libelle: string;
+    };
+}
+
+interface Espece {
+    idEspece: number;
+    libelle: string;
 }
 
 const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
     const { id } = params;
     const [plante, setPlante] = useState<Plante | null>(null);
+    const [especes, setEspeces] = useState<Espece[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [dateDebut, setDateDebut] = useState<string>('');
     const [dateFin, setDateFin] = useState<string>('');
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [editFields, setEditFields] = useState<Partial<Plante>>({});
-    const [token, setToken] = useState<string | null>(null);
     const router = useRouter();
+    const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
+        // Appel du localStorage côté client
         const storedToken = localStorage.getItem('token');
-        setToken(storedToken);
+        if (storedToken) {
+            setToken(storedToken);
+        }
+    }, []);
 
+    const headers = new Headers();
+    if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+    }
+
+    useEffect(() => {
         const fetchPlante = async () => {
-            if (!id) {
-                setError('ID invalide');
-                setLoading(false);
-                return;
-            }
-
-            if (!storedToken) {
-                setError('Token non trouvé dans localStorage');
-                setLoading(false);
-                return;
-            }
-
-            const headers = new Headers();
-            headers.append('Authorization', `Bearer ${storedToken}`);
-
             try {
+                if (!id) throw new Error('ID invalide');
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/afficher?idPlante=${id}`, { headers });
 
                 if (!response.ok) {
@@ -67,7 +73,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                     setPlante(data.plante);
                     setEditFields({
                         nom: data.plante.nom,
-                        espece: data.plante.espece,
+                        idEspece: data.plante.idEspece,
                         description: data.plante.description,
                         adresse: data.plante.adresse,
                     });
@@ -82,8 +88,47 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
             }
         };
 
+        const fetchEspeces = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/espece/afficher`);
+                setEspeces(response.data.especes);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des espèces :', error);
+            }
+        };
+
         fetchPlante();
-    }, [id]); // Dépendance sur id pour recharger les détails si id change
+        fetchEspeces();
+
+    }, [id, token]);
+
+    const handleModify = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        try {
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/modifier`, null, {
+                params: {
+                    idPlante: id,
+                    ...editFields
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                toast.success('Plante modifiée avec succès');
+                setPlante(response.data.plante);
+                setIsEditing(false);
+                router.push(`/`);
+            } else {
+                throw new Error(response.data.message || 'Erreur lors de la modification de la plante');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la modification de la plante:', error);
+            alert('Erreur lors de la modification de la plante');
+        }
+    };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -128,7 +173,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
 
             if (response.status === 200) {
                 toast.success('Demande de gardiennage envoyée avec succès');
-                router.push('/plantes-utilisateur');
+                router.push('/');
             } else {
                 toast.error(response.data.message || 'Erreur lors de la demande de gardiennage');
                 throw new Error(response.data.message || 'Erreur lors de la demande de gardiennage');
@@ -139,45 +184,8 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
         }
     };
 
-    const handleModify = async (event: React.FormEvent) => {
-        event.preventDefault();
-
-        try {
-            if (!token) {
-                toast.error('Token non trouvé');
-                return;
-            }
-
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/modifier`, null, {
-                params: {
-                    idPlante: id,
-                    ...editFields
-                },
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.status === 200) {
-                toast.success('Plante modifiée avec succès');
-                setPlante(response.data.plante);
-                setIsEditing(false);
-            } else {
-                throw new Error(response.data.message || 'Erreur lors de la modification de la plante');
-            }
-        } catch (error) {
-            console.error('Erreur lors de la modification de la plante:', error);
-            alert('Erreur lors de la modification de la plante');
-        }
-    };
-
     const handleDelete = async () => {
         try {
-            if (!token) {
-                toast.error('Token non trouvé');
-                return;
-            }
-
             const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/plante/supprimer`, {
                 params: { idPlante: id },
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -187,7 +195,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                 toast.success('Plante supprimée avec succès');
                 router.push('/');
             } else {
-                toast.error('Erreur lors de la suppression de la plante');
+                toast.error(error);
                 throw new Error(response.data.message || 'Erreur lors de la suppression de la plante');
             }
         } catch (error) {
@@ -226,7 +234,7 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                         <Edit className="inline-block mr-2" />
                         {isEditing ? 'Annuler' : 'Modifier'}
                     </button>
-                    <div className={`w-full mt-8 mb-12 ${isEditing ? 'bg-white' : ''}`}>
+                    <div className={`w-full mt-8 mb-12 ${isEditing ? ' bg-white' : ''}`}>
                         <h1 className="text-base mb-2">Nom : {isEditing ? (
                             <input
                                 type="text"
@@ -235,14 +243,22 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                                 className="border p-2 rounded w-full"
                             />
                         ) : plante.nom}</h1>
+
                         <p className="text-base mb-2">Espèce : {isEditing ? (
-                            <input
-                                type="text"
-                                value={editFields.espece}
-                                onChange={(e) => setEditFields({ ...editFields, espece: e.target.value })}
+                            <select
+                                value={editFields.idEspece ?? ''}
+                                onChange={(e) => setEditFields({ ...editFields, idEspece: parseInt(e.target.value) })}
                                 className="border p-2 rounded w-full"
-                            />
-                        ) : plante.espece}</p>
+                            >
+                                <option value="">Sélectionner une espèce...</option>
+                                {especes.map((espece) => (
+                                    <option key={espece.idEspece} value={espece.idEspece}>
+                                        {espece.libelle}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : plante.espece ? plante.espece.libelle : 'Espèce non définie'}</p>
+
                         <p className="text-base mb-4">Description : {isEditing ? (
                             <textarea
                                 value={editFields.description}
@@ -301,34 +317,26 @@ const PlantDetailPage: React.FC<{ params: { id: string } }> = ({ params }) => {
                         </button>
                     </form>
                 </CardContent>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button className="bg-white hover:bg-white text-red-500 mt-12 font-bold py-2 px-4 rounded flex items-center w-full">
+            </Card>
+
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button className="bg-[#1CD672] text-white font-bold py-2 px-4 rounded flex items-center mx-auto mt-4">
+                        <Trash className="mr-2" /> Supprimer la plante
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white p-4 rounded-lg shadow-md">
+                    <h2 className="text-lg font-bold mb-4">Êtes-vous sûr de vouloir supprimer cette plante ?</h2>
+                    <p className="text-gray-600 mb-4">Cette action est irréversible.</p>
+                    <PopoverClose asChild>
+                        <Button className="bg-red-500 text-white font-bold py-2 px-4 rounded" onClick={handleDelete}>
                             Supprimer
                         </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-4 bg-white shadow-lg rounded">
-                        <p className="text-lg mb-4">Êtes-vous sûr de vouloir supprimer cette plante ?</p>
-                        <div className="flex space-x-4">
-                            <Button
-                                onClick={handleDelete}
-                                className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded"
-                            >
-                                Supprimer
-                            </Button>
-                            <PopoverClose asChild>
-                                <Button className="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded">
-                                    Annuler
-                                </Button>
-                            </PopoverClose>
-
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            </Card>
-            <Menu />
+                    </PopoverClose>
+                </PopoverContent>
+            </Popover>
         </div>
     );
-};
+}
 
 export default PlantDetailPage;
